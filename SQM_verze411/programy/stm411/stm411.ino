@@ -529,9 +529,9 @@ uint8_t znacka_listu;                                   // pri vypisu svetla se 
 
 uint8_t znak_stupen = 32;
 
-int16_t kal_svetlo[20][2] ;                             // pole kalibracnich hodnot pro svetlo
+uint16_t kal_svetlo[20][2] ;                            // pole kalibracnich hodnot pro svetlo
 uint16_t kal_teplota[10][2];                            // pole kalibracnich hodnot pro teplotu
-int16_t kal_serial[20][2] ;                             // pres seriovou linku se nejdriv ulozi prijata data do tohoto pole. Po jejich prekontrolovani se pak prepisou do jednoho z poli kal_teplota[], nebo kal_svetlo[]
+uint16_t kal_serial[20][2] ;                            // pres seriovou linku se nejdriv ulozi prijata data do tohoto pole. Po jejich prekontrolovani se pak prepisou do jednoho z poli kal_teplota[], nebo kal_svetlo[]
 
 
 //  index pole 100x                                                                                                            111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111122222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222223
