@@ -1,0 +1,8 @@
+<map id="ArduinoSdFat/libraries/SdFat/src/common/FsCache.h" name="ArduinoSdFat/libraries/SdFat/src/common/FsCache.h">
+<area shape="rect" id="node1" title="Common cache code for exFAT and FAT." alt="" coords="145,5,349,45"/>
+<area shape="rect" id="node2" href="$_ex_fat_partition_8h.html" title="ExFatPartition include file." alt="" coords="5,93,243,133"/>
+<area shape="rect" id="node4" href="$_fat_partition_8h.html" title="FatPartition class." alt="" coords="267,93,472,133"/>
+<area shape="rect" id="node3" href="$_ex_fat_file_8h.html" title="ExFatFile class." alt="" coords="19,181,229,221"/>
+<area shape="rect" id="node5" href="$_fat_file_8h.html" title="FatFile class." alt="" coords="280,181,459,221"/>
+<area shape="rect" id="node6" href="$_fat_volume_8h.html" title="FatVolume class." alt="" coords="269,269,470,309"/>
+</map>

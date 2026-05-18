@@ -1,0 +1,10 @@
+<map id="ArduinoSdFat/libraries/SdFat/src/SdCard/SdCardInterface.h" name="ArduinoSdFat/libraries/SdFat/src/SdCard/SdCardInterface.h">
+<area shape="rect" id="node1" title="Abstract interface for an SD card." alt="" coords="81,5,319,45"/>
+<area shape="rect" id="node2" href="$_fs_block_device_interface_8h.html" title="FsBlockDeviceInterface include file." alt="" coords="5,167,240,192"/>
+<area shape="rect" id="node5" href="$_sd_card_info_8h.html" title="Definitions for SD cards." alt="" coords="229,93,325,119"/>
+<area shape="rect" id="node3" title=" " alt="" coords="169,240,237,265"/>
+<area shape="rect" id="node4" title=" " alt="" coords="270,313,335,339"/>
+<area shape="rect" id="node6" href="$_sys_call_8h.html" title="SysCall class." alt="" coords="315,167,459,192"/>
+<area shape="rect" id="node7" href="$_sd_fat_config_8h.html" title="configuration definitions" alt="" coords="366,240,482,265"/>
+<area shape="rect" id="node8" title=" " alt="" coords="385,313,463,339"/>
+</map>

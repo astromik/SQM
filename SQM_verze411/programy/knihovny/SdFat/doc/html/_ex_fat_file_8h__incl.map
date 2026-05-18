@@ -1,0 +1,14 @@
+<map id="ArduinoSdFat/libraries/SdFat/src/ExFatLib/ExFatFile.h" name="ArduinoSdFat/libraries/SdFat/src/ExFatLib/ExFatFile.h">
+<area shape="rect" id="node1" title="ExFatFile class." alt="" coords="56,5,267,45"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,93,69,119"/>
+<area shape="rect" id="node3" title=" " alt="" coords="94,93,159,119"/>
+<area shape="rect" id="node4" href="$_fs_name_8h.html" title="FsName class." alt="" coords="115,167,263,192"/>
+<area shape="rect" id="node10" href="$_ex_fat_partition_8h.html" title="ExFatPartition include file." alt="" coords="299,93,415,119"/>
+<area shape="rect" id="node5" title=" " alt="" coords="202,387,267,412"/>
+<area shape="rect" id="node6" href="$_sys_call_8h.html" title="SysCall class." alt="" coords="265,240,343,265"/>
+<area shape="rect" id="node7" title=" " alt="" coords="273,313,341,339"/>
+<area shape="rect" id="node8" href="$_sd_fat_config_8h.html" title="configuration definitions" alt="" coords="365,313,481,339"/>
+<area shape="rect" id="node9" title=" " alt="" coords="384,387,461,412"/>
+<area shape="rect" id="node11" href="$_fs_cache_8h.html" title="Common cache code for exFAT and FAT." alt="" coords="339,167,490,192"/>
+<area shape="rect" id="node12" title=" " alt="" coords="514,167,670,192"/>
+</map>

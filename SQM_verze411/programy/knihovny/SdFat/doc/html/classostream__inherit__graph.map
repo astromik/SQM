@@ -1,0 +1,10 @@
+<map id="ostream" name="ostream">
+<area shape="rect" id="node1" title="Output Stream." alt="" coords="213,152,282,177"/>
+<area shape="rect" id="node4" href="$class_arduino_out_stream.html" title="Output stream for Arduino Print objects." alt="" coords="5,225,135,251"/>
+<area shape="rect" id="node5" href="$classiostream.html" title="Input/Output stream." alt="" coords="159,225,231,251"/>
+<area shape="rect" id="node7" href="$classobufstream.html" title="format a char string" alt="" coords="256,225,343,251"/>
+<area shape="rect" id="node8" href="$classofstream.html" title="file output stream." alt="" coords="367,225,439,251"/>
+<area shape="rect" id="node2" href="$classios.html" title="Error and state information for all streams." alt="" coords="228,79,267,104"/>
+<area shape="rect" id="node3" href="$classios__base.html" title="Base class for all streams." alt="" coords="210,5,285,31"/>
+<area shape="rect" id="node6" href="$classfstream.html" title="file input/output stream." alt="" coords="163,299,228,324"/>
+</map>

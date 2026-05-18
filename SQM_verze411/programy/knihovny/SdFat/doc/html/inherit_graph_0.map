@@ -1,0 +1,33 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" title=" " alt="" coords="135,5,209,31"/>
+<area shape="rect" id="node2" href="$class_print_file.html" title="PrintFile class." alt="" coords="275,5,420,31"/>
+<area shape="rect" id="node3" href="$class_stream_file.html" title="StreamFile class." alt="" coords="271,105,423,145"/>
+<area shape="rect" id="node4" href="$class_ex_fat_file.html" title="Basic file class." alt="" coords="133,176,211,201"/>
+<area shape="rect" id="node5" href="$class_stream_file.html" title=" " alt="" coords="269,169,426,209"/>
+<area shape="rect" id="node6" href="$class_ex_file.html" title="exFAT file with Arduino Stream." alt="" coords="514,176,573,201"/>
+<area shape="rect" id="node7" href="$class_fat_file.html" title="Basic file class." alt="" coords="141,384,203,409"/>
+<area shape="rect" id="node8" href="$class_print_file.html" title=" " alt="" coords="267,233,428,259"/>
+<area shape="rect" id="node10" href="$class_stream_file.html" title=" " alt="" coords="277,347,418,387"/>
+<area shape="rect" id="node12" href="$class_stdio_stream.html" title="StdioStream implements a minimal stdio stream." alt="" coords="300,412,395,437"/>
+<area shape="rect" id="node13" href="$class_stream_base_class.html" title="base type for FAT and exFAT streams" alt="" coords="284,461,411,487"/>
+<area shape="rect" id="node9" href="$class_sd_file.html" title="FAT16/FAT32 file with Print." alt="" coords="514,233,573,259"/>
+<area shape="rect" id="node11" href="$class_file32.html" title="FAT16/FAT32 file with Arduino Stream." alt="" coords="515,355,572,380"/>
+<area shape="rect" id="node14" href="$classfstream.html" title="file input/output stream." alt="" coords="683,532,748,557"/>
+<area shape="rect" id="node15" href="$classifstream.html" title="file input stream." alt="" coords="509,557,577,583"/>
+<area shape="rect" id="node16" href="$classofstream.html" title="file output stream." alt="" coords="507,459,579,484"/>
+<area shape="rect" id="node17" href="$class_fs_base_file.html" title="FsBaseFile class." alt="" coords="128,291,216,316"/>
+<area shape="rect" id="node18" href="$class_stream_file.html" title=" " alt="" coords="264,283,431,323"/>
+<area shape="rect" id="node19" href="$class_fs_file.html" title="FsBaseFile file with Arduino Stream." alt="" coords="514,291,573,316"/>
+<area shape="rect" id="node20" href="$classios__base.html" title="Base class for all streams." alt="" coords="5,559,80,584"/>
+<area shape="rect" id="node21" href="$classios.html" title="Error and state information for all streams." alt="" coords="153,559,191,584"/>
+<area shape="rect" id="node22" href="$classistream.html" title="Input Stream." alt="" coords="315,608,380,633"/>
+<area shape="rect" id="node26" href="$classostream.html" title="Output Stream." alt="" coords="313,559,382,584"/>
+<area shape="rect" id="node23" href="$classibufstream.html" title="parse a char string" alt="" coords="502,705,585,731"/>
+<area shape="rect" id="node25" href="$classiostream.html" title="Input/Output stream." alt="" coords="507,656,579,681"/>
+<area shape="rect" id="node24" href="$class_arduino_in_stream.html" title="Input stream for Arduino Stream objects." alt="" coords="656,705,775,731"/>
+<area shape="rect" id="node27" href="$class_arduino_out_stream.html" title="Output stream for Arduino Print objects." alt="" coords="479,607,608,632"/>
+<area shape="rect" id="node28" href="$classobufstream.html" title="format a char string" alt="" coords="500,508,587,533"/>
+<area shape="rect" id="node29" title=" " alt="" coords="143,55,201,80"/>
+<area shape="rect" id="node30" href="$class_minimum_serial.html" title="mini serial class for the SdFat library." alt="" coords="293,55,401,80"/>
+<area shape="rect" id="node31" title=" " alt="" coords="135,233,209,259"/>
+</map>

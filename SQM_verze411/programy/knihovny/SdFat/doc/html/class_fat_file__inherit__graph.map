@@ -1,0 +1,12 @@
+<map id="FatFile" name="FatFile">
+<area shape="rect" id="node1" title="Basic file class." alt="" coords="301,5,364,31"/>
+<area shape="rect" id="node2" href="$class_print_file.html" title=" " alt="" coords="5,86,167,111"/>
+<area shape="rect" id="node4" href="$class_stream_file.html" title=" " alt="" coords="191,79,333,119"/>
+<area shape="rect" id="node6" href="$class_stdio_stream.html" title="StdioStream implements a minimal stdio stream." alt="" coords="357,86,452,111"/>
+<area shape="rect" id="node7" href="$class_stream_base_class.html" title="base type for FAT and exFAT streams" alt="" coords="476,86,603,111"/>
+<area shape="rect" id="node3" href="$class_sd_file.html" title="FAT16/FAT32 file with Print." alt="" coords="57,167,115,192"/>
+<area shape="rect" id="node5" href="$class_file32.html" title="FAT16/FAT32 file with Arduino Stream." alt="" coords="233,167,291,192"/>
+<area shape="rect" id="node8" href="$classfstream.html" title="file input/output stream." alt="" coords="416,167,481,192"/>
+<area shape="rect" id="node9" href="$classifstream.html" title="file input stream." alt="" coords="505,167,573,192"/>
+<area shape="rect" id="node10" href="$classofstream.html" title="file output stream." alt="" coords="598,167,670,192"/>
+</map>

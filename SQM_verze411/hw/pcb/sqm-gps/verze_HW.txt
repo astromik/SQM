@@ -1,0 +1,81 @@
+Zmìny ve schématu a na plošném spoji po verzi 6  (zatím neobjednáno)
+---------------------------------------------------------
+ - oprava popisku pinu pro odposlech GPS (pùvodní "R" bylo ve špatné vrstvì, nahrazeno "GPS_OUT" do vrstvy b_Place)
+ - jedna cesta mìla nedotažené "AIR WIRE" propojení, ale ve skuteènosti tam spoj byl
+ - kvùli sjednocení oznaèení souèástek s ostatními deskami pøejmenováno "U1" na "IC1"
+  
+ Vzhledem k tomu, že jsou to jen nevýznamné úpravy, ponecháno zatím oznaèení "verze 6".
+        Oznaèení "verze 6" platí i pro všechny ostatní dokumenty (návody, webový generátor osazovaèky)
+        Až se nìkdy bude vyrábìt další balík plošòákù, tak se mùže zmìnit oznaèení na "verzi 7" (to by ale znamenalo zmìnu v dokumentech),
+         nebo se ponechá verze 6 (a bude se pøedstírat, že je to první vyrobená série desek verze 6).
+
+
+
+Zmìny ve schématu a na plošném spoji mezi verzemi 5 a 6  (objednávka 5)
+---------------------------------------------------------
+ - Zmìna èísla verze z 5 na 6.
+ - doplnìní prokovù pro piny, které jsou potøeba pro reset FUSE (B0, B1, B2, C0, C2, D5, D7) 
+ - èásteèné posunutí textu MOSI, aby nešel skrz nový prokov
+ - posunutí prokovu kvùli kolizi s popisem (høebínkový konektor)
+ - prohození popisù T a R na konektoru pro pøipojení GPS modulu (popisy odpovídaji signálùm na desce, takže se s GPS propojují køížem R-T / T-R)
+ - doplnìn pin RX, který umožní propojit modul GPS (NEO) s deskou SQM-BAS(6) a tím odposlouchávat NMEA zprávy do USB portu (za CH340)
+ - popisky T a R doplnìny šipkami se smìrem komunikace
+ - programovací piny MISO, MOSI, SCK uspoøádány do bìžné rozteèe 2.54 mm (cesty mezi dírkami trochu zúženy)  
+ - posunutí propojovacích pinù SDA a SCL na desku SQM-BAS, aby možné používat vnitøní GPS a zároveò komunikovat pøes RS485.
+ - úplné zrušení neosazovaných odporù R6 a R7, pøejmenování pùvodního R8 na R7
+ - srovnání top a bot popisù u propojovacího konektoru
+ - doplnìní pinù A a B pro pøipojení komunikaèního konektoru (pomocí drátù)
+ - pùvodní piny +BAT a GND na propojovacím konektoru rozšíøeny o další +BAT a GND pro pøipojení komunikaèního konektoru (pomocí drátù)
+  
+
+
+
+
+Zmìny ve schématu a na plošném spoji mezi verzemi 4 a 5 (objednávka 4)
+---------------------------------------------------------
+
+ - Zmìna èísla verze ze 4 na 5.
+ - Zmìna tvaru plošného spoje
+      (pod dvoupolohovým pøepínaèem nemusí být vykousnutá díra, TOP mìï na desce ale vykousnutá zùstala, aby nemohlo dojít k jejímu prodøení).
+ - Zmìna hodnoty SMD kondenzátoru C1 ze 100uF na 10uF.
+ - Úpravy popisù na osazovaèce (rozmìry, zvýraznìní orientace ATmega, oznaèení pinù JP1 až JP6 na BOT stranu).
+ - Zmìna jména ATmega z U2 na U1.
+ - Doplnìní poznámek do osazovaèky ohlednì osazení kolíkù.
+ - Pøi odpojeném napájení ATmega se odpojují i SDA a SCL piny.
+ - Ext_Zap nebude pull-upováno, ale pull-downováno. 
+ - Ext_Zap pøejmenováno na DATA_RDY.
+ - Otoèení funkce vypínaèe (zapíná se posuvem vpravo - k okraji; vypíná se posuvem vlevo - ke støedu krabièky).
+ - Doplnìní programovacích pinù pro pøívod napájení.
+      (Pøi programování desky, která je zapájená do SQM-BAS, se 5V programátor mùže pøipojit jen pøi vypnutém vypínaèi, 
+        protože by se 5V z programátoru mohlo pøenést i na STM a èidla.)
+ - Pøipojení desky NEO-6 bylo køížem - plochý kablík se musel mezi NEO-6M a SQM-GPS pøekroutit.
+
+ - Pozdìjší zmìny, které nemají vliv na výrobu desky:
+      - zmìna hodnot R1 až R3 z pùvodního 1k na 1k5.
+      - Oprava textového popisku "prcesoru" -> "procesoru".
+
+
+
+
+Zmìny ve schématu a na plošném spoji mezi verzemi 3 a 4 (objednávka 3)
+---------------------------------------------------------
+
+ - 3-polohový 2-paketový pøepínaè byl nahrazen obyèejným dvoupolohovým jednopaketovým.
+ - v programu už se nebude testovat stav pinu D5, ale èas se bude nastavovat vždycky, když bude v GPS signálu dostupný.
+
+
+
+Zmìny ve schématu a na plošném spoji mezi verzemi 2 a 3 (neobjednáno)
+---------------------------------------------------------
+ - pøedìlávka, aby se modul GPS vešel dovnitø mírnì zvìtšené krabièky SQM.
+ - pøeèíslování pinù z dùvodu snadnìjšícho routování cest na PCB
+ - pøípolohový pøepínaè: OFF - ON (bez nastavení èasu) - ON s nastavením èasu
+ - pùvodní propojka, podle které SQM poznal, že je GPS modul zasunutý z boku do krabièky, byla nahrazena extra pinem ("Ext_ZAP"),
+          který se po spuštìní programu pøepne do LOW
+
+
+ Verze plošòáku s oznaèením "... +BST" obsahuje prostor pro EERAM, která ale nemá s SQM nic spoleèného.
+ Potøebuju to jen do práce a kvùli tak malému plošòáku jsem nechtìl zakládat novou objednávku. 
+
+
+

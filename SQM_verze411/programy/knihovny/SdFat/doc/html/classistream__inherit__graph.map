@@ -1,0 +1,10 @@
+<map id="istream" name="istream">
+<area shape="rect" id="node1" title="Input Stream." alt="" coords="132,152,197,177"/>
+<area shape="rect" id="node4" href="$classibufstream.html" title="parse a char string" alt="" coords="23,225,106,251"/>
+<area shape="rect" id="node6" href="$classifstream.html" title="file input stream." alt="" coords="131,225,199,251"/>
+<area shape="rect" id="node7" href="$classiostream.html" title="Input/Output stream." alt="" coords="223,225,295,251"/>
+<area shape="rect" id="node2" href="$classios.html" title="Error and state information for all streams." alt="" coords="145,79,184,104"/>
+<area shape="rect" id="node3" href="$classios__base.html" title="Base class for all streams." alt="" coords="127,5,202,31"/>
+<area shape="rect" id="node5" href="$class_arduino_in_stream.html" title="Input stream for Arduino Stream objects." alt="" coords="5,299,124,324"/>
+<area shape="rect" id="node8" href="$classfstream.html" title="file input/output stream." alt="" coords="227,299,292,324"/>
+</map>

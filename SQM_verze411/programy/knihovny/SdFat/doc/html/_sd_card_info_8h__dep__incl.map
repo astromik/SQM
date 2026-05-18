@@ -1,0 +1,8 @@
+<map id="ArduinoSdFat/libraries/SdFat/src/SdCard/SdCardInfo.h" name="ArduinoSdFat/libraries/SdFat/src/SdCard/SdCardInfo.h">
+<area shape="rect" id="node1" title="Definitions for SD cards." alt="" coords="82,5,290,45"/>
+<area shape="rect" id="node2" href="$_sd_card_interface_8h.html" title="Abstract interface for an SD card." alt="" coords="146,93,383,133"/>
+<area shape="rect" id="node3" href="$_sd_spi_card_8h.html" title="Classes for SPI access to SD/SDHC cards." alt="" coords="5,181,212,221"/>
+<area shape="rect" id="node6" href="$_sdio_card_8h.html" title="Classes for SDIO cards." alt="" coords="236,181,435,221"/>
+<area shape="rect" id="node4" href="$_sd_card_8h.html" title="Top level include for SPI and SDIO cards." alt="" coords="128,269,316,309"/>
+<area shape="rect" id="node5" href="$_sd_fat_8h.html" title="main SdFs include file." alt="" coords="147,357,297,397"/>
+</map>

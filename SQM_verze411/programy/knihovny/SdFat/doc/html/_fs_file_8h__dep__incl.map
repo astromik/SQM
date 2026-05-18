@@ -1,0 +1,14 @@
+<map id="ArduinoSdFat/libraries/SdFat/src/FsLib/FsFile.h" name="ArduinoSdFat/libraries/SdFat/src/FsLib/FsFile.h">
+<area shape="rect" id="node1" title="FsBaseFile include file." alt="" coords="87,5,258,45"/>
+<area shape="rect" id="node2" href="$_fs_lib_8h.html" title="FsLib include file." alt="" coords="89,93,256,133"/>
+<area shape="rect" id="node3" href="$_sd_fat_8h.html" title="main SdFs include file." alt="" coords="5,181,156,221"/>
+<area shape="rect" id="node4" href="$ios_8h.html" title="ios_base and ios classes" alt="" coords="180,181,349,221"/>
+<area shape="rect" id="node5" href="$_stdio_stream_8h.html" title="StdioStream class." alt="" coords="18,357,242,397"/>
+<area shape="rect" id="node7" href="$istream_8h.html" title="istream class" alt="" coords="167,269,362,309"/>
+<area shape="rect" id="node12" href="$ostream_8h.html" title="ostream class" alt="" coords="387,269,585,309"/>
+<area shape="rect" id="node6" href="$sdios_8h.html" title="C++ IO Streams features." alt="" coords="212,621,363,661"/>
+<area shape="rect" id="node8" href="$iostream_8h.html" title="iostream class" alt="" coords="297,357,499,397"/>
+<area shape="rect" id="node9" href="$bufstream_8h.html" title="ibufstream and obufstream classes" alt="" coords="207,445,416,485"/>
+<area shape="rect" id="node11" href="$fstream_8h.html" title="iostreams for files." alt="" coords="431,533,626,573"/>
+<area shape="rect" id="node10" href="$_arduino_stream_8h.html" title="ArduinoInStream and ArduinoOutStream classes." alt="" coords="168,533,407,573"/>
+</map>

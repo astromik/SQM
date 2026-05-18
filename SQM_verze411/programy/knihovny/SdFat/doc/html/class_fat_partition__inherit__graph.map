@@ -1,0 +1,6 @@
+<map id="FatPartition" name="FatPartition">
+<area shape="rect" id="node1" title="Access FAT16 and FAT32 partitions on raw file devices." alt="" coords="34,5,123,31"/>
+<area shape="rect" id="node2" href="$class_fat_volume.html" title="Integration class for the FatLib library." alt="" coords="36,79,121,104"/>
+<area shape="rect" id="node3" href="$class_sd_base.html" title=" " alt="" coords="5,152,152,192"/>
+<area shape="rect" id="node4" href="$class_sd_fat32.html" title="SD file system class for FAT volumes." alt="" coords="43,240,114,265"/>
+</map>

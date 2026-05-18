@@ -1,0 +1,6 @@
+<map id="File32" name="File32">
+<area shape="rect" id="node1" title="FAT16/FAT32 file with Arduino Stream." alt="" coords="59,167,116,192"/>
+<area shape="rect" id="node2" href="$class_stream_file.html" title=" " alt="" coords="17,79,158,119"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,5,79,31"/>
+<area shape="rect" id="node4" href="$class_fat_file.html" title="Basic file class." alt="" coords="103,5,165,31"/>
+</map>

@@ -1,0 +1,64 @@
+Verze 5 byla pro starší procesorovou desku BluePill (STM32F103)
+Od verze 6 se používá novìjší procesor STM32F411CEU.
+
+-------------------------
+Verze 7    - vyrobeno v záøí 2024
+
+Hotovo:
+ - doplnìny dutinkové lišty JP10 a JP11 pod deskou STM32F411 (ve schématu jako info, na desce jako obdélníky kolem pinù)
+ - pøejmenování nìkterých JPxx
+ - nìkteré JPxx mìly jména ve špatné vrstvì (pøesunuty do vrstev t_NamDoc a b_NamDoc) a upraveny velikosti a fonty
+ - poloha dokumentaèních popiskù trochu upravena pro lepší èitelnost (R8, R9, IC6, T1, TR2, R1, D2, T3, TR3, T2)
+ - jméno LED1 bylo popsané zrcadlovì
+ - u T1 doplnìn typ (BSS138)
+ - doplnìny konkrétní typy i u zbylých FET tranzistorù
+ - doplnìno zvýraznìní propojù mezi BAS a GPS (pùvodní svorky A a B se propojují pøes 90° kolíky na desku GPS) - vrstva tPlace
+ - ve schématu opraven popis pùvodní propojky Z-Z' na nové R-R' (DATA_RDY).
+      Na plošòáku už to bylo na BOT stranì opraveno ve verzi 6, TOP strana opravena až teï ve verzi 7  - vrstva tPlace.
+ - v informacích pod schématem opraveny varianty osazení (novì mùže být osazena vnitøní GPS spoleènì s RS485)
+ - u elytù doplnìno ke kapacitì i minimální napìtí
+ - Chybìl pin JP7. Piny pøeèíslované, aby dávaly nìjaký logický smysl (související piny èíslovány sousedními èísly)  
+ - Pøeuspoøádáno èíslování odporù (chybìl R12, nepoužité odpory dostaly nejvyšší èísla, související bloky mají èíslování v øadì)
+ - C5 posunutý kousek mimo, aby se nemusel jednou nohou pájet na velkou nemaskovanou plochu
+ - zmìnìný popis verze ze 6 na 7
+ - úpravy v oblasti FETù pro pøemostìní hlavního vypínaèe (u T2 prohozené G-S, doplnìní odporu R15, zmìna hodnoty odporu R17)
+ - doplnìní popiskù D-G-S k FETùm pro pøemostìní hlavního vypínaèe
+ - zvìtšení nìkterých popiskù ve schématu 
+ - doplnìní odporu R16 do série s propojkou "E" - "E'", které omezí napìtí mezi G-S na T3 bezpeènì pod povolených 20V.
+ - zmìna nápisù "CIN-", "CIN+", "CIN++" na "DC-", "DC+", "DC++",  
+ - názvy prázdných dìr upraveny na "PIN_...", s tím souvisí v nìkterých pøípadech i pøidání popiskù (vrstva "t/b_place") na desce, 
+       protože pùvodnì byly popisky pøebírány z vrstvy "t/b_nam_doc"
+ - popisek "R" z horní strany vymazaný
+ - popisky C', D' a R' na BOT stranì pootoèené
+ - u popiskù B3 a B6 doplnìny èárky, aby bylo jasné ke kterým dírám patøí
+ - posunutí prokovu, aby se zvìtšila vzdálenost od chladièe AP1501
+ - posunutí prokovu u RTC obvodu (problém clearance)
+ - po objednání ve schématu opravena verze plošòáku z 6 na 7 a nìjaké popisky (EXT konektor)
+
+-------------------------
+Verze 6
+
+ - popisek verze
+ - úplnì nová knihovna pro desku STM32F411CEU
+ - pøeházení nìkterých pinù (Skoro celá strana je posunutá kvùli posunutému pinu NRST. Další zmìna je u signálù SD_INS, BZUK a DATA_RDY)
+ - RGB LED pøepracována na programovatelnou verzi WS2812
+ - úplné zrušení DHT èidla
+ - na boèním konektoru zrušen jeden pin Vcc a na jeho místo doplnìn pùvodní pin DHT_data (pøejmenovaný na PB14).
+        Pin se dá využít k nìjakému ovládání (Alarm For Darkness / Budík).
+        V pøípadì, že by bylo nutné použít DHT èidlo, tak ho bude možné pøipojit do konektoru zboku, ale v SW už s ním nepoèítám. 
+ - doplnìní malého RTC (DS3231 SO8) se dvìma FETy
+ - zmìna FETu u pískáku na SMD verzi
+ - komunikaèní cesty SDA a SCL na nìkolika místech zmenšeny na 0,24
+ - zmenšení pinu SUPCAP+ 
+ - u knoflíkového èlánku doplnìn popisek pro polaritu
+ - díry C' a D', do kterých se propojuje vnitøní GPS byly doplnìny o díru GND a 3V3, 
+     takže když nebude pøipojena vnitøní GPS, dá se tam pøipojit další vnitøní I2C zaøízení.
+ - vnitøní GPS už není pøipojena na pùvodní signály A a B od komunikace RS485, takže je možné používat GPS i komunikaci souèasnì.
+    I2C komunikace pro desku GPS se pøipojuje do nových propojovacích pinù, které jsou vùèi A a B posunuté o pùl rozteèe (2,54mm).
+     Propojka na I2C sbìrnici se bude provádìt stejnì jako v pøedchozích verzích (drátkama C-C', D-D' a Z-Z')
+   V pøípadì, že nebude pøipojená vnitøní GPS, zùstává dostupná pùvodní 4-svorka V-B-A-G
+   Když se vnitøní GPS použije, pøipojí se pøípadná komunikace i napájecí napìtí na nìjaký konektor (CAN / DIN) pomocí drátù z dseky SQM-GPS-6. 
+   Deska GPS-6 má pøipravené volné díry pro 485 komunikaci
+ - doplnìn pin Tx, který umožòuje propojit drátem signál z GPS modulu Tx na desku SQM-BAS a tím pak lze na USB konektoru odposlouchávat pøímo data z GPS.
+
+ 

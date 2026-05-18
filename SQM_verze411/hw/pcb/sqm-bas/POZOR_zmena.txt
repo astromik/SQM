@@ -1,0 +1,25 @@
+
+Pozor zmìna
+--------------------
+
+
+Pro desku SQM-BAS ver. 7  (STM32F411)
+
+5.10.2025
+   Zmìna hodnoty tlumivky z pùvodních 33mH na správných 33uH/(3,5A).
+   Typ tlumivky zùstává stejný HPI1040-330, jen tam byla chyba v oznaèení hodnoty.
+   Je možné použít i jinou tlumivku se stejnou indukèností na menší proud (s rezervou by staèila i 1A).
+   Plošný spoj je navržený pro rozmìry 10x10mm. Pozor na výšku - mezi krabièkou a plošòákem je jen 5mm prostoru. 
+
+
+
+2.5.2025
+   Zmìna hodnoty kondenzátoru C8 na pinu V3 obvodu CH340 z pùvodních 10n na správných 100n.
+   
+   Nemá to sice žádný velký vliv na funkci (komunikace je bezproblémová i s 10n), ale podle datasheetu tam má být 100n.
+   Pravdìpodobnì jsem se už u první verze plošòáku pøeklepnul pøi zadávání hodnoty do schématu a od té doby se mi ta 
+   špatná hodnota automaticky kopíruje i do nových desek.
+
+Opraveno ve schématu, na osazovaèce a ve webovém konfigurátoru.
+Oznaèení plošòáku zùstává stejné.
+ 

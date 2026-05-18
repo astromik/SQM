@@ -1,0 +1,21 @@
+<map id="ArduinoSdFat/libraries/SdFat/src/SdFat.h" name="ArduinoSdFat/libraries/SdFat/src/SdFat.h">
+<area shape="rect" id="node1" title="main SdFs include file." alt="" coords="315,5,466,45"/>
+<area shape="rect" id="node2" href="$_fs_lib_8h.html" title="FsLib include file." alt="" coords="100,93,201,119"/>
+<area shape="rect" id="node5" href="$_sd_card_8h.html" title="Top level include for SPI and SDIO cards." alt="" coords="329,93,452,119"/>
+<area shape="rect" id="node9" href="$_sys_call_8h.html" title="SysCall class." alt="" coords="423,387,567,412"/>
+<area shape="rect" id="node3" href="$_fs_file_8h.html" title="FsBaseFile include file." alt="" coords="44,167,113,192"/>
+<area shape="rect" id="node4" href="$_fs_volume_8h.html" title="FsVolume include file." alt="" coords="33,240,125,265"/>
+<area shape="rect" id="node6" href="$_sd_spi_card_8h.html" title="Classes for SPI access to SD/SDHC cards." alt="" coords="401,167,495,192"/>
+<area shape="rect" id="node19" href="$_sdio_card_8h.html" title="Classes for SDIO cards." alt="" coords="290,167,377,192"/>
+<area shape="rect" id="node7" title=" " alt="" coords="243,460,311,485"/>
+<area shape="rect" id="node8" href="$_sd_spi_driver_8h.html" title="SpiDriver classes." alt="" coords="537,240,703,265"/>
+<area shape="rect" id="node16" href="$_sd_card_info_8h.html" title="Definitions for SD cards." alt="" coords="315,313,411,339"/>
+<area shape="rect" id="node17" href="$_sd_card_interface_8h.html" title="Abstract interface for an SD card." alt="" coords="149,240,275,265"/>
+<area shape="rect" id="node13" title=" " alt="" coords="587,313,642,339"/>
+<area shape="rect" id="node14" href="$_sd_spi_arduino_driver_8h.html" title="SpiDriver classes for Arduino compatible systems." alt="" coords="667,313,811,339"/>
+<area shape="rect" id="node10" title=" " alt="" coords="346,533,411,559"/>
+<area shape="rect" id="node11" href="$_sd_fat_config_8h.html" title="configuration definitions" alt="" coords="442,460,558,485"/>
+<area shape="rect" id="node12" title=" " alt="" coords="461,533,539,559"/>
+<area shape="rect" id="node15" href="$_sd_spi_lib_driver_8h.html" title="Class using only simple SPI library functions." alt="" coords="680,387,797,412"/>
+<area shape="rect" id="node18" href="$_fs_block_device_interface_8h.html" title="FsBlockDeviceInterface include file." alt="" coords="5,387,240,412"/>
+</map>

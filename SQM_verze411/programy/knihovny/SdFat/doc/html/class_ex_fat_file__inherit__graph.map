@@ -1,0 +1,5 @@
+<map id="ExFatFile" name="ExFatFile">
+<area shape="rect" id="node1" title="Basic file class." alt="" coords="45,5,123,31"/>
+<area shape="rect" id="node2" href="$class_stream_file.html" title=" " alt="" coords="5,79,163,119"/>
+<area shape="rect" id="node3" href="$class_ex_file.html" title="exFAT file with Arduino Stream." alt="" coords="55,167,113,192"/>
+</map>

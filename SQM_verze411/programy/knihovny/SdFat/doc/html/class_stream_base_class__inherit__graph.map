@@ -1,0 +1,9 @@
+<map id="StreamBaseClass" name="StreamBaseClass">
+<area shape="rect" id="node1" title="base type for FAT and exFAT streams" alt="" coords="65,152,192,177"/>
+<area shape="rect" id="node5" href="$classfstream.html" title="file input/output stream." alt="" coords="5,225,71,251"/>
+<area shape="rect" id="node6" href="$classifstream.html" title="file input stream." alt="" coords="95,225,163,251"/>
+<area shape="rect" id="node7" href="$classofstream.html" title="file output stream." alt="" coords="187,225,259,251"/>
+<area shape="rect" id="node2" href="$class_fat_file.html" title="Basic file class." alt="" coords="21,79,135,104"/>
+<area shape="rect" id="node3" href="$classios.html" title="Error and state information for all streams." alt="" coords="160,79,199,104"/>
+<area shape="rect" id="node4" href="$classios__base.html" title="Base class for all streams." alt="" coords="142,5,217,31"/>
+</map>

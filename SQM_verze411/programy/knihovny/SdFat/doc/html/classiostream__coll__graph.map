@@ -1,0 +1,7 @@
+<map id="iostream" name="iostream">
+<area shape="rect" id="node1" title="Input/Output stream." alt="" coords="47,225,119,251"/>
+<area shape="rect" id="node2" href="$classistream.html" title="Input Stream." alt="" coords="5,152,71,177"/>
+<area shape="rect" id="node3" href="$classios.html" title="Error and state information for all streams." alt="" coords="64,79,103,104"/>
+<area shape="rect" id="node5" href="$classostream.html" title="Output Stream." alt="" coords="95,152,165,177"/>
+<area shape="rect" id="node4" href="$classios__base.html" title="Base class for all streams." alt="" coords="46,5,121,31"/>
+</map>

@@ -1,0 +1,18 @@
+
+Zmìny ve schématu a na plošném spoji mezi verzemi 2 a 3 
+---------------------------------------------------------
+objednáno 5.2.2024 pøes JLCPCB.com - (Aura_Milevsko)
+
+
+SQM-DIS
+--------
+
+ - Zmìna oznaèení verze ze 2 na 3.
+ - Otoèení polarity C1.
+ - Ke každému tlaèítku paralelnì nepovinný kondenzátor 220nF proti zákmitùm.
+ - Upøesòující poznámky k propojkám, kondenzátorùm C6 až C8 a LEDkám.
+ - Zmìny vrstev tPlace a bPlace na tNamDoc / bNamDoc / tValDoc / bValDoc
+ - Doplnìní díry Vcc pro pøipojení k debouncovací desce (SQM-BTN)
+       Bylo nutné trochu posunout cestièky
+ - Doplnìní rozmìrù
+
