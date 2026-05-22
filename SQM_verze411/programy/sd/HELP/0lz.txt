@@ -1,0 +1,12 @@
+Prepnuti casove zony (leto / zima)
+=============================================================
+
+Prikaz "z 0" nastavi casovou zonu, ktera je preddefinovana jako zimni. Pro stredni Evropu to je SEC.
+Prikaz "z 1" nastavi casovou zonu, ktera je preddefinovana jako letni. Pro stredni Evropu to je SELC.
+
+
+Posuny casovych zon proti UT a jejich textove popisky se definuji pomoci prikazu:
+  @Gz nn       - casovy posun pro zimni zonu           (priklad pro SEC:  @Gz 1)
+  @Gl nn       - casovy posun pro letni zonu           (priklad pro SELC: @Gl 2)
+  @Gp zzzzllll - textove popisky zimni i letni zony    (priklad:          @Gp SEC SELC)
+ 

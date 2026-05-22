@@ -1,0 +1,48 @@
+Formatovani vnitrni EEPROM
+=============================================================
+
+Vnitrni pamet se po zapneni cyklicky prepisuje. Nekdy ale muze byt vhodne ulozene polozky smazat.
+Pro mazani se pouzivaji dve funkce - SOFT a HARD format.
+
+Prikaz pro SOFT format je:  #FS
+Prikaz pro HARD format je:  #FH
+
+
+SOFT format
+-------------
+
+Pri SOFT formatu se u kazdeho ulozeneho zaznamu jen prepise jeden bit, ktery oznacuje prostor v EEPROM jako volny pro ulozeni dalsiho zaznamu.
+Ve skutecnosti ale zustavaji stara data v pameti a je mozne je obnovit a zobrazit. 
+Ve vypisech jsou takto "smazane" zaznamy rozlisitelne podle toho, ze je u nich prvni znak casove zony nahrazen podtrzitkem 
+    Priklad: misto "SELC / SEC" se ve vypisu zobrazi  "_ELC/_EC".
+
+SOFT format trva vyrazne kratsi dobu nez HARD format.
+Po zadani prikazu #FS se v terminalu objevi jednoduchy, textovy, sloupcovy graf,  ktery se pak zacne postupne vyplnovat znaky '#'
+
+  SOFT format EEPROM ...
+  |---------------------------------------------|
+  |#############################################|
+  EEPROM byla zformatovana.
+
+Behem formatovani probiha odpocet i na displeji. 
+Zobrazene znaky "S.F." na leve strane displeje jsou
+ zkratkou pro "Soft Format"
+
+Po zformatovani se provede automaticky reset SQM a dalsi zaznam se zacne ukladat od prvni pozice (na adresu 700).
+Formatovani je mozne predcasne prerusit 2 sekundy dlouhym stiskem tlacitka [OK].
+Behem stisku se na displej zacnou vypisovat pomlcky. Po zaplneni celeho displeje dojde k preruseni formatovani.
+
+
+
+HARD format
+-------------
+Na rozdil od predchoziho zpusobu mazani EEPROM dochazi pri HARD formatu k uplnemu smazani vsech pametovych bunek v EEPROM.
+Stare zaznamy se tedy neobnovitelne smazou. Tento zpusob formatovani trva vyrazne delsi dobu (desitky minut).
+I tady dochazi k prubeznemu zobrazovani stavu pomoci jednoducheho bargrafu v seriove lince a na displeji.
+Pred odpocitavanym cislem jsou v tomto pripade zobrazeny znaky "H.F." jako zkratka pro "Hard Format"
+
+HARD format je nutne spustit po kazde zmene ukladanych polozek, nebo pri prvnim zapnuti SQM. 
+Pokud by to nebylo ucineno, nesouhlasilo by nove adresovani jednotlivych zaznamu s drive ulozenymi zaznamy v EEPROM a vypisovaly by se nesmysly.
+
+I toto formatovani je mozne prerusit 2 sekundy dlouhym stiskem tlacitka [OK].
+ 

@@ -1,0 +1,125 @@
+Seznam funkci pro seriovou komunikaci
+=============================================================
+
+                  prikaz pro
+                   napovedu
+j                ... ?j  ... zmer plosny jas  - bez ukladani
+v                ... ?v  ... zmer vlhkost     - bez ukladani
+t                ... ?t  ... zmer teplotu     - bez ukladani
+p                ... ?p  ... zmer tlak        - bez ukladani
+n                ... ?n  ... zobrazit aktualni naklon
+s                ... ?s  ... smer natoceni (azimut)
+x                ... ?x  ... zmer osvetleni (lux)  - bez ukladani
+z 0              ... ?z  ... prepnout na zimni zonu
+z 1              ... ?z  ... prepnout na letni zonu
+a nnn            ... ?a  ... nastaveni automatickeho spousteni 0-255 minut
+r                ... ?r  ... vypis poslednich 100 zaznamu z EEPROM
+rp               ... ?r  ... vypis posledniho zaznamu z EEPROM
+ra               ... ?r  ... vypis vsech zaznamu z EEPROM
+rz nnnnn         ... ?r  ... vypis jednoho zvoleneho zazamu
+rh nnnnn         ... ?r  ... vypsat zaznamy z poslednich 'nnnnn' hodin
+rd nnnnn         ... ?r  ... vypis jednoho zvoleneho zazamu v integerovem (datovem) formatu
+c                ... ?c  ... aktualni cas
+i                ... ?i  ... informace o aktualnim nastaveni systemu
+b n hh:mm        ... ?b  ... nastaveni jednoho z 5 budiku
+o -nnn           ... ?o  ... nastaveni odpoctoveho alarmu [nnn = minuty]
+h                ... ?h  ... zobrazeni hlavicky pro formatovany vystup
+m                ... ?m  ... spusteni vsech mereni se zapisem do EEPROM
+kj               ... ?k  ... kalibracni mereni jasu (vystup bez korekce)
+kt               ... ?k  ... kalibracni mereni teploty (vystup bez korekce)
+
+#Tyyyymmddhhnnss ... ?#T ... nastaveni casu
+#TG              ... ?#T ... nastaveni casu z GPS
+#P nn            ... ?#P ... nastaveni poctu prumerovani jasu (1-20)
+#S nnn           ... ?#S ... nastaveni urovne stability (0-255)
+#I               ... ?#I ... detailni informace o kalibraci vnitrnich hodin
+#A nn            ... ?#A ... nastaveni SLAVE adresy pro komunikaci (1-15)
+#C 0             ... ?#C ... vypnuti CRC kontroly pro RS485
+#C 1             ... ?#C ... zapnuti CRC kontroly pro RS485
+#O?              ... ?#O ... nastaveni oddelovacu
+#FS              ... ?#F ... SOFT format EEPROM
+#FH              ... ?#F ... HARD format EEPROM
+#U nnn           ... ?#U ... hranice jasu pro ukladani - v desetinach mag/arcsec2 (0-255)
+#D ff.f          ... ?#D ... nastaveni hranice AfD (13.0 - 25.4) ostatni = vypnuto
+#KJ n;x;y*       ... ?#K ... zapis bodu do kalibracni tabulky jasu
+#KT n;x;y*       ... ?#K ... zapis bodu do kalibracni tabulky teploty
+#Nk              ... ?#N ... Kalibrace naklonomeru
+#Ni              ... ?#N ... Info o naklonomeru
+#Mk              ... ?#M ... kalibrace magnetometru (kompasu)
+#Mo nn.n         ... ?#M ... nastaveni offsetu kompasu (-12.7 ... +12.7 stupne)
+#Mi              ... ?#M ... Info o magnetometru
+#E               ... ?#E ... vypis pozorovacich stanovist
+#ETn text        ... ?#E ... editace textu u pozorovacich stanovist
+#EGn g,g,g,g,g   ... ?#E ... editace grafiky u pozorovacich stanovist
+#Xa n.nn         ... ?#X ... kalibrace luxmetru - parametr 'a'
+#Xb n.nn         ... ?#X ... kalibrace luxmetru - parametr 'b'
+#Xc n.nn         ... ?#X ... kalibrace luxmetru - parametr 'c'
+
+@W addr,data     ... ?@W ... primy zapis do EEPROM
+@R addr          ... ?@R ... prime cteni z EEPROM
+@E               ... ?@E ... test postupneho prepinani cidel na expanzni desce
+@X n             ... ?@X ... nastaveni poctu vstupu na expanzni desce (1-7)
+@DS              ... ?@D ... defaultni kalibracni hodnoty pro jas
+@DT              ... ?@D ... defaultni kalibracni hodnoty pro teplotu
+@DP              ... ?@D ... defaultni parametry systemu
+@m   (M)         ... ?@M ... vypnout (zapnout) modbus
+@@               ... ?@@ ... softwarovy RESET
+@G               ... ?@G ... vypis dat z GPS modulu
+@Gs nnn          ... ?@G ... domaci zemepisna sirka pro astro vypocty
+@Gd nnn          ... ?@G ... domaci zemepisna delka pro astro vypocty
+@Gz nn           ... ?@G ... domaci zimni casova zona
+@Gl nn           ... ?@G ... domaci letni casova zona
+@Gp SEC SELC     ... ?@G ... textovy popis pro zimni a letni casovou zonu
+@S n             ... ?@S ... rychlost seriove komunikace (0=9600; 1=19200; 2=38400; 3=115200)
+@P               ... ?@P ... zakazat / povolit pipani
+     @Pb (B)     ... ?@P ... zakazat (povolit) pipani pro signalizaci baterie
+     @Pm (M)     ... ?@P ... zakazat (povolit) pipani pro mereni
+     @Pa (A)     ... ?@P ... zakazat (povolit) pipani pro budiky a odpocet
+     @Pe (E)     ... ?@P ... zakazat (povolit) pipani pro HW chyby
+     @Pt (T)     ... ?@P ... zakazat (povolit) pipani pro operace s TS tlacitkem
+     @Po (O)     ... ?@P ... zakazat (povolit) pipani pro priblizovani k objektu (Ra/Dec)
+     @Pv (V)     ... ?@P ... zakazat (povolit) pipani pro dalsi vystrahy
+     @Ps (S)     ... ?@P ... zakazat (povolit) pipani pro stopky
+@L               ... ?@L ... vypnout / zapnout RGB LED
+     @Lb (B)     ... ?@L ... vypnout (zapnout) LED pro test baterie
+     @Lm (M)     ... ?@L ... vypnout (zapnout) LED mereni
+     @Le (E)     ... ?@L ... vypnout (zapnout) LED pri chybe
+     @Lk (K)     ... ?@L ... vypnout (zapnout) LED pri komunikaci
+     @La (A)     ... ?@L ... vypnout (zapnout) LED pri funkci AfD
+     @Lt (T)     ... ?@L ... vypnout (zapnout) LED pri GPS trasovani
+@> T,n,par       ... ?@> ... vypis souboru z SD karty do seriove linky
+@h   (H)         ... ?@H ... zakazat (povolit) zapis do souboru RTC_set.csv
+@N               ... ?@N ... nastavit elevaci Slunce pro signalizaci uzivatelsky definovaneho soumraku
+@Vd              ... ?@V ... displejova verze SQM
+@Vl              ... ?@V ... LED verze SQM
+@Z               ... ?@Z ... Zapsat parametry na SD
+@O               ... ?@O ... Obnovit parametry z SD
+@T               ... ?@T ... Test HW
+@A l,f,o         ... ?@A ... Automaticke odesilani dat do seriove linky po kazdem mereni (rezim MASTER)
+
+Pro rezim "30s"
+%I               ... ?%I ... detailni informace
+%L               ... ?%L ... vypis poslednich 24 hod. do seriove linky
+%Lh n            ... ?%L ... poslednich 'n' hod. do seriove linky
+%La              ... ?%L ... kompletni vypis do seriove linky
+%Lz n            ... ?%L ... poslednich 'n' zaznamu do seriove linky
+%Lb              ... ?%L ... bajtovy vypis
+%S               ... ?%S ... ulozeni na SD kartu
+%P               ... ?%P ... pozastavit mereni
+%R               ... ?%R ... pokracovat v mereni
+%C n             ... ?%C ... nastaveni mericiho intervalu (10-255)
+%F               ... ?%F ... formatovani pridavne EEPROM
+%N               ... ?%N ... nastaveni na nulovou pozici
+%W aaa,ddd       ... ?%W ... primy zapis dat na adresu v pridavne EEPROM
+%X aaa           ... ?%X ... prime cteni dat z adresy v pridavne EEPROM
+
+Funkce pro komunikaci s PC programem
+*m               ... ?*m ... spusteni mereni bez vystupu do seriove linky
+*n               ... ?*n ... zadost o cislo posledniho zaznamu (vraci cislo v citelnem formatu jako text)
+*a nn            ... ?*a ... test na shodu SLAVE adresy
+*f               ... ?*f ... vrati retezec vsech nadefinovanych znaku pro jednotlive funkce spoustene pres USB seriovou linku           
+*r nnn           ... ?*r ... stazeni jednoho vybraneho zaznamu v datovem formatu (alternativa k prikazu 'rd')
+*s p c d.m.y     ... ?*s ... simulace planet slunecni soustavy
+*e               ... ?*e ... vypis obsahu pametove bunky EEPROM1 nebo EEPROM2
+            
+

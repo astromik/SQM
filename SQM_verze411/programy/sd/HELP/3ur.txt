@@ -1,0 +1,10 @@
+Rezim 30S: Spustit / pokracovat v mereni 
+=============================================================
+
+Prikaz %R spusti zaznam (Run).
+Do seriove linky se vrati informace o zmene stavu:
+  Mereni spusteno
+
+Pokud zaznam probiha, bliknou v okamziku ukladani zmerenych hodnot na prvni sedmisegmentovce zleva nejnizsim moznym jasem tri pomlcky.
+Zaznam hodnot je mozne spustit a zastavit i pres menu polozkou " SPEC".
+ 

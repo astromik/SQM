@@ -1,0 +1,22 @@
+Vypis jedne pametove bunky z vnitrni EEPROM
+=============================================================
+
+Prikaz: *e aaa
+
+aaa ... adresa v rozsahu 0 az 131071
+               nebo 200000 az 265535
+
+Vraci se jednobajtova hodnota pametove bunky v textovem formatu (zakoncena odradkovanim <cr><lf>).
+Pri zadani adresy vetsi nez 200000 se vypisuje obsah EEPROM pro rezim "R30S"
+
+
+Priklad vypisu hodnoty elevace Slunce pro urcovani soumraku:
+   *e 476
+odpoved:
+   10
+   
+   
+Priklad vypisu casoveho intervalu pro mereni pocasi v rezimu R30S:
+   *e 200001
+odpoved:
+   30

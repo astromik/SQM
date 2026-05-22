@@ -1,0 +1,16 @@
+Nastaveni elevace Slunce pro signalizaci astronomicke noci  
+=============================================================
+
+Prikazem "@N nn" se nastavuje elevace Slunce pod horizontem, pod kterou se vypocitava astronomicka noc (nebo noc obecne).
+
+Parametr 'nn' udava uhel ve stupnich pod horizontem
+
+Pro astronomickou noc se nastavuje na 18 stupnu.
+Je ale mozne nastavit libovolnou hodnotu od 0 do 90 stupnu.
+Zadavaji se cele stupne jako kladne cislo.
+
+Tato hodnota se vyuziva ve funkci "Astro" -> "noc", ktera se voli tlacitky pres menu.
+Funkce "noc" pak zobrazuje cas, kdy zacne, nebo skonci astronomicka noc.
+
+Napriklad pri zadani 12 stupnu se pak muze pocitat cas prechodu mezi namornim a astronomickym soumrakem.
+Jinou hodnotou se muze zobrazovat cas, kdy se objevi prvni hvezdy. 

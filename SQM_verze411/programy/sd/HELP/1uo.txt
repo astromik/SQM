@@ -1,0 +1,60 @@
+Nastaveni oddelovacu v CSV souborech na SD karte
+=============================================================
+
+Pro nastaveni dddelovacu v CSV souborech je zakladni format prikazu: 
+
+  #Oxy
+
+Parametry 'x' a 'y' jsou textove znaky a zadavaji se bez mezer.
+
+Seznam vsech kodu je dostupny v mininapovede po prikazu:  #O?
+
+    #O,1 ... desetinny oddelovac: carka
+    #O,0 ... desetinny oddelovac: tecka
+    #O"1 ... uzavirat polozky do uvozovek
+    #O"0 ... neuzavirat polozky do uvozovek
+    #Oh1 ... na zacatku kazdeho noveho souboru vytvaret hlavicky
+    #Oh0 ... na zacatku kazdeho noveho souboru nevytvaret hlavicky
+    #Oo_ ... oddelovac polozek: mezera
+    #Oo, ... oddelovac polozek: carka
+    #Oo; ... oddelovac polozek: strednik
+    #Oot ... oddelovac polozek: tabulator
+
+
+Pozor na pripady, kdy se jako oddelovac polozek pouzije carka a zaroven se jako desetinny oddelovac pouzije take carka.
+Takoveto kombinace mohou zpusobit problemy v naslednem zpracovani dat.  
+Proto se pri takove kombinaci nastaveni zobrazi varovani:
+    "Varovani: oddelovac polozek i desetinnych mist je carka."
+
+Pri nastaveni oddelovacu na tabulator pozor na to, jak bude znak tabulatoru zpracovavat zobrazovaci program.
+V CSV souboru je tabulator ulozen jako znak s ACII kodem 0x09 ('\t').
+
+
+Ukazky vypisu CSV souboru pro ruzne oddelovace:
+
+------------------------------------
+desetinny oddelovac: carka             #O,1
+neuzavirat polozky do uvozovek         #O"0
+oddelovac polozek: strednik            #Oo;
+
+  pol. ; EEPROM ;  sek_1970  ;    datum   ;    cas   ; dvt; zona ;  jas  ;   jas  ;
+ 00533 ; 019852 ; 1716890415 ; 28.05.2024 ; 10:00:15 ; Ut ; SELC ; 11984 ; 11,984 ;
+ 
+------------------------------------
+desetinny oddelovac: tecka             #O,0
+uzavirat polozky do uvozovek           #O"1
+oddelovac polozek: carka               #Oo,
+
+  pol. , EEPROM ,  sek_1970  ,    datum   ,    cas   , dvt, zona ,  jas  ,   jas  ,
+"00533","019852","1716890415","28.05.2024","10:00:15","Ut","SELC","11984","11.984",
+ 
+------------------------------------
+desetinny oddelovac: carka             #O,1
+uzavirat polozky do uvozovek           #O"1
+oddelovac polozek: tabulator           #Oot
+
+  pol. 	 EEPROM 	  sek_1970  	    datum   	    cas   	 dvt	 zona 	  jas  	   jas   	
+"00533"	"019852"	"1716890415"	"28.05.2024"	"10:00:15"	"Ut"	"SELC"	"11984"	"11,984"	
+
+------------------------------------
+ 

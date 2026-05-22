@@ -1,0 +1,97 @@
+Prikazy pro praci s magnetometrem (cidlem naklonu a azimutu)
+=============================================================
+
+Kalibrace kompasu
+-----------------------------------------------
+
+Kalibrace kompasu se provadi prikazem #Mk bez parametru.
+
+Po zadani prikazu '#Mk' se zacne merit sila magnetickeho pole ve vsech trech osach magnetometru. 
+Zaroven se zaznamenavaji minimalni a maximalni hodnoty magneticke sily v kazde ose (extremy).
+Behem teto operace je nutne s krabickou otacet ve vsech smerech 
+    (podobne, jako se kalibruje kompas v mobilnim telefonu).
+
+Pokud se pri mereni po dobu 10 sekund zadny novy extrem neobjevi, dojde k automatickemu ukonceni kalibrace a zapisu zjistenych extremu do EEPROM.
+Pri kazdem zjisteni noveho extremu se odpocet nastavuje zpatky na 10 sekund.
+
+Ve vypisu se zobrazuji extremy ve vsech 3 osach a 10-sekundovy odpocet (radky s hvezdickou).
+Poradi vypsanych hodnot je: minimum os x, y, z, maximum os x, y, z.
+Priklad casti vypisu do seriove linky:
+
+----------------
+  .
+  .
+  .
+  231 ; -1276 ; -683 ; 957 ; -442 ; -183
+  231 ; -1276 ; -683 ; 1099 ; -442 ; -183
+  231 ; -1276 ; -683 ; 1099 ; -208 ; -183
+  231 ; -1276 ; -683 ; 1099 ; -173 ; -15
+  231 ; -1276 ; -683 ; 1099 ; -128 ; -15
+  114 ; -1276 ; -683 ; 1099 ; -128 ; -15
+  100 ; -1276 ; -683 ; 1099 ; -128 ; -15
+  100 ; -1276 ; -696 ; 1099 ; -128 ; -15
+  100 ; -1276 ; -698 ; 1099 ; -128 ; -15
+  *10
+  *9
+  *8
+  *7
+  100 ; -1276 ; -724 ; 1099 ; -128 ; -15
+  *10
+  *9
+  *8
+  52 ; -1276 ; -724 ; 1099 ; -128 ; -15
+  24 ; -1276 ; -724 ; 1099 ; -128 ; -15
+  *10
+  *9
+  *8
+  *7
+  *6
+  *5
+  *4
+  *3
+  *2
+  *1
+mag_x_min: 24    mag_x_max: 1099
+mag_y_min: -1276    mag_y_max: -128
+mag_z_min: -724    mag_z_max: -15
+----------------
+
+
+Ucelem je najit co nejvetsi rozdily extremu v kazde ose.
+Cim vetsi rozdily se naleznou, tim je nasledny vypocet azimutu presnejsi.
+
+Kdyz nebudou zjistene extremy dostatecne velke, program zahlasi chybu kalibrace:
+
+----------------
+.
+.
+.
+*3
+*2
+*1
+mag_x_min: 1060    mag_x_max: 1068
+mag_y_min: -753    mag_y_max: -735
+mag_z_min: -540    mag_z_max: -528
+Chyba kalibrace kompasu
+----------------
+
+V tom pripade je treba hledat problem v okolnim magnetickem ruseni.
+
+
+
+ 
+
+
+Doladeni azimutu spatne nalepeneho modulu magnetometru
+-----------------------------------------------------------
+Kdyz se nepodari modul magnetometru nalepit na urcene misto presne,
+ je mozne ho na spravny uhel doladit pomoci prikazu:  #Mo ff.f
+
+Parametr 'ff.f' udava posun zobrazeneho cisla proti zmerenemu.
+Muze byt v rozsahu -12.7 az +12.7 stupne.
+
+Priklad:
+   #Mo -3.7
+
+Tento prikaz bude pred zobrazenim hodnoty od zmereneho azimutu odecitat 3,7 stupne.
+ 

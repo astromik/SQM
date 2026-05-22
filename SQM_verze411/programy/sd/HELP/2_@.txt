@@ -1,0 +1,12 @@
+Softwarovy reset
+=============================================================
+
+Prikaz: @@
+
+Funkce nema zadne parametry.
+
+Po spusteni se na displeji zobrazi napis "rESEt", watchdog se nastavi na 50ms a na sekundu se funkci "delay(1000)" pozazstavi program.
+Tim dojde k zamernemu preteceni WD timeru, ktere vyvola reset.
+
+Hodi se v pripade, kdy je nutne provest reset, ale odpojeni napajeni by zpusobilo ztratu fixace na GPS druzice.
+ 

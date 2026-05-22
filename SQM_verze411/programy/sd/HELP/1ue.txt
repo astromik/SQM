@@ -1,0 +1,55 @@
+Editace prednastavenych pozorovacich stanovist
+=============================================================
+
+Kdyz neni zapnuta GPS, je mozne si zvolit jedno z peti prednastavenych pozorovacich stanovist.
+Textovy popisek zvoleneho stanoviste se pak pridava k zaznamum misto GPS souradnic.
+
+Prikazem "#E" se vypisou vsechna pozorovaci stanoviste vcetne dat grafickych symbolu pro displej.
+Soucasne s tim se postupne zobrazuje popis i na displeji.
+V prvnim sloupci je poradove cislo stanoviste, pak nasleduje textovy popis a na zaver je 5 bajtu grafickych symbolu pro sedmisegmentovky. 
+
+1 - Poz.Stan.1 -  109 ,  120 ,  119 ,  212 ,    6 ,  
+2 - Poz.Stan.2 -  109 ,  120 ,  119 ,  212 ,   91 ,  
+3 - Poz.Stan.3 -  109 ,  120 ,  119 ,  212 ,   79 ,  
+4 - Poz.Stan.4 -  109 ,  120 ,  119 ,  212 ,  102 ,  
+5 - Poz.Stan.5 -  109 ,  120 ,  119 ,  212 ,  109 ,  
+
+
+Prikazem "#ETn xxxxxxxxxx" je mozne menit textovy popisek u nektereho ze stanovist.
+  ('n' je poradove cislo 1 az 5, 'x' jsou znaky textoveho popisku)
+Text muze byt az 10 znaku dlouhy.
+Delsi texty se oriznou, kratsi se doplni mezerami.
+Mezi poradovym cislem a textem musi byt jeden znak mezera.
+
+Priklad:
+    #ET3 Na poli
+
+zmeni predchozi tabulku takto:
+1 - Poz.Stan.1 -  109 ,  120 ,  119 ,  212 ,    6 ,  
+2 - Poz.Stan.2 -  109 ,  120 ,  119 ,  212 ,   91 ,  
+3 - Na poli    -  109 ,  120 ,  119 ,  212 ,   79 ,  
+4 - Poz.Stan.4 -  109 ,  120 ,  119 ,  212 ,  102 ,  
+5 - Poz.Stan.5 -  109 ,  120 ,  119 ,  212 ,  109 , 
+
+
+Prikazem "#EGn g,g,g,g,g"  se meni graficka znacka na displeji (pro prehledne listovani).
+Parametr 'n' je opet poradove cislo stanoviste a 'g' jsou cisla, ktera v binarnim tvaru urcuji rozsvicene segmenty na displeji. 
+
+Pro urceni techto cisel je vhodne pouzit excelovsky dokument "fontgen.xls" z prilohy.
+V nem se na segmenty, ktere maji svitit, zapise 1, pro zhasnute segmenty se na ne zapise 0.
+Vysledne cislo pro cely znak se pak zobrazi dole.
+Pro napis "PoLE " by byla ziskana cisla nasledujici: 'P'=115, 'o'=92, 'L'=56, 'E'=121, ' '=0
+
+
+Prikaz pro vlozeni grafickeho napisu 'PoLE ' na displeji pro treti stanoviste by tedy vypadal takto: 
+    #EG3 115,92,56,121,0
+
+
+Po kazde editaci se automaticky provadi vypis tabulky:
+
+1 - Poz.Stan.1 -  109 ,  120 ,  119 ,  212 ,    6 ,  
+2 - Poz.Stan.2 -  109 ,  120 ,  119 ,  212 ,   91 ,  
+3 - Na poli    -  115 ,   92 ,   56 ,  121 ,    0 ,  
+4 - Poz.Stan.4 -  109 ,  120 ,  119 ,  212 ,  102 ,  
+5 - Poz.Stan.5 -  109 ,  120 ,  119 ,  212 ,  109 ,
+

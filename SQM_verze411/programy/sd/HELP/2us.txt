@@ -1,0 +1,24 @@
+Nastaveni rychlosti komunikace
+=============================================================
+
+Rychlost komunikace je spolecna pro USB seriovou linku i pro komunikaci pres RS485.
+
+Format prikazu je: @S nnn 
+
+Parametr 'nnn' udava rychlost komunikace je mozne ho zadat pomoci cisla 0 az 3:
+    0 =   9600 baudu
+    1 =  19200 baudu
+    2 =  38400 baudu
+    3 = 115200 baudu
+
+Tyto rychlosti je mozne zadavat i primo.
+
+Napriklad:
+    @S 19200
+
+Po zadani nove rychlosti se nova rychlost vypise do serioveho terminalu a provede se automaticky reset zarizeni. 
+
+    Baudrate: 19200
+
+Pro dalsi komunikaci je nutne v terminalu zmenit rychlost.
+ 

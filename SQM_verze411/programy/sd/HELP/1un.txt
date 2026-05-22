@@ -1,0 +1,41 @@
+Kalibrace a informace o naklonomeru
+=============================================================
+
+Naklonomer se kalibruje pres seriovou linku prikazem #Nk .
+
+Po zadani prikazu #Nk se spusti pruvodce, ktery ma ale jen 2 kroky:
+1)	polozit krabicku horizontalne a odeslat libovolny znak do seriove linky:
+       Poloz SQM horizontalne
+       >>
+
+2)	postavit krabicku vertikalne a odeslat libovolny znak do seriove linky:
+       Postav SQM svisle
+       >>
+
+
+Znaky >> cekaji na odeslani libovolneho znaku do seriove linky, ktere zpusobi pokracovani v pruvodci.
+
+Hodnoty zrychleni pro obe polohy jsou po kalibraci ulozeny do EEPROM.
+Na tyto krajni polohy je pak prepocitavan skutecny naklon pri mereni.
+
+---------------------------
+
+Informace o naklonomeru se ziskaji prikazem #Ni
+
+Vystupem je seznam ulozenych kalibracnich hodnot z akcelerometru.
+Dale nasleduje 10 vzorku aktualnich zrychleni ve vsech osach.
+
+aX0 : -3216    aY0:   638    aZ0 : 18627
+aX90: -4073   aY90:-16203    aZ90:  1311
+
+  AX: -4592     AY: -7136      AZ: 13968
+  AX: -4464     AY: -7296      AZ: 13760
+  AX: -4320     AY: -7248      AZ: 14032
+  AX: -4368     AY: -7280      AZ: 13776
+  AX: -4496     AY: -7248      AZ: 13776
+  AX: -4432     AY: -7296      AZ: 13824
+  AX: -4448     AY: -7296      AZ: 13856
+  AX: -4432     AY: -7232      AZ: 14016
+  AX: -4320     AY: -7424      AZ: 13824
+  AX: -4432     AY: -7328      AZ: 13664
+   

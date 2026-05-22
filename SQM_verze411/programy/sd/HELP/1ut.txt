@@ -1,0 +1,73 @@
+Napoveda pro nastaveni casu ve vnitrim RTC procesoru
+=============================================================
+
+Pred nastavenim casu musi byt spravne zvolena casova zona (leto/zima)!
+
+    (prikazy "z 0", nebo "z 1", pripadne pres polozku "ZonA" v menu)
+
+------------
+Prvni moznosti nastaveni casu je prikaz:
+     "#Tyyyymmddhhnnss"
+ 
+Zadava se lokalni cas pomoci retezce, ktery obsahuje:
+  rok (4 znaky),
+  mesic (2 znaky), 
+  den (2 znaky), 
+  hodiny (2 znaky), 
+  minuty (2 znaky) a 
+  sekundy (2 znaky) bez mezer a oddelovacu.
+
+Den v tydnu se vypocitava automaticky.
+
+Priklad nastavi vnitrni hodiny na stredu 22.5.2024 16:48:00 : 
+
+  #T20240522164800
+
+
+Program netestuje spravnost zadani. Nektere polozky se sice kontroluji 
+   (hodina nesmi byt treba vetsi nez 23, rok nesmi byt nizsi, nez 2020, nebo vyssi nez 2099, mesic musi byt v rozsahu 1 az 12....).
+Datumy se ale netestuji (bez varovani je mozne treba zadat 31. unora).
+
+
+Po zadani spravneho datumu a casu se do seriove linky vypisi nove nastavene hodnoty.
+   Prijato: 20240522164800
+   22.5.2024 16:48:00 St 
+
+
+Nekdy mohou byt tyto hodnoty doplneny i dalsimi informacemi, ktere se vyuzivaji pro autokalibraci RTC.
+
+Napriklad: 
+  "Kratky interval od posledniho serizeni (< 1 den)"
+  "Velka odchylka mezi novym casem a casem v RTC - Automaticka kalibrace RTC zrusena."
+  "Chyba RTC (sekunda se ma korigovat casteji, nez za 5 minut)."
+  
+
+Pri zadani hodnot, ktere jsou na prvni pohled nesmyslne, se zobrazi varovani "Vstup mimo rozsah".
+   (pri nedostatecnem poctu znaku za prikazem #T, prebyvajicich oddelovacich, nebo pri nejakem preklepu)
+  
+
+Pokud se zadane hodnoty daji rozeznat jako cisla, ale jsou mimo povolene rozsahy, jednotlive casove polozky se jeste vypisi: 
+
+   Prijato: 20240622991800
+   Vstup mimo rozsah 
+   Rok: 2024
+   Mesic: 6
+   Den: 22
+   Hodina: 99
+   Minuta: 18
+   Sekunda: 0
+   22.6.2024 16:23:22 So 
+
+
+
+
+
+------------
+Druhou moznosti nastaveni casu je prikaz "#TG".
+
+Tento prikaz se pokusi nastavit cas podle signalu GPS. Podminkou je, ze je GPS modul zapnuty a signal obsahuje casovou znacku.
+ (prostredni LED na GPS modulu je zhasnuta).
+Kdyz casovy signal neni k dispozici, nebo kdyz je GPS vypnuta, zobrazi se upozorneni a cas se nenastavi.
+
+   "Cas neni v signalu GPS dostupny"
+ 

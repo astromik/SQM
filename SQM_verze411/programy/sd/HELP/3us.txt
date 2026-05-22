@@ -1,0 +1,41 @@
+Rezim 30S: Ulozeni zaznamu na SD kartu 
+=============================================================
+
+Prikaz %S prekopiruje cely obsah EEPROM na SD kartu v citelnem "csv" formatu.
+
+V seriove lince se zobrazi informace o ukladani souboru s bargrafem:
+
+  Ukladam zaznamy na SD kartu ... 
+  r_30s_07.csv
+  |---------------------------------------------------|
+  |***************************************************|
+  ULOZENO
+  Konec vypisu 
+
+Na displeji probiha odpocet.
+
+Na SD karte se v podadresari /R30S/ vytvori dva soubory:
+ "r_30_nn.csv" , kde 'nn' je poradove cislo 0 az 99. 
+Toto cislo se pri kazdem spusteni funkce automaticky zvysuje, takze nehrozi prepsani starych dat.
+Pri pripadnem prekroceni cisla 99 se vytvori posledni soubor  "r_30_xx.csv". Tento soubor se ale uz prepisuje.
+
+Druhy soubor se take vytvori v korenovem adresari.
+Jeho jmeno je "r_30_den.csv" a obsahuje jen zaznamy za poslednich 24 hodin. 
+Jmeno souboru je porad stejne, takze se soubor pri kazdem spusteni funkce prepisuje (obsahuje vzdycky jen poslednich 24 hodin).
+
+Pokud neni SD karta zasunuta, nebo pokud neni vubec v programu povolena, zobrazi se na displeji chybove hlaseni:
+  "no Sd" a varovani do seriove linky:
+    SD karta: vysunuta
+    Konec vypisu 
+
+
+V pripade, ze dojde k zaplneni cele EEPROM, probehne automaticke zkopirovani obsahu pameti do souboru na SD karte " r_30_nn.csv "
+ s nasledujicim poradovym cislem.
+V tomto pripade se druhy soubor s 24 hodinovymi daty nevytvari.
+ 
+
+Pri kopirovani zaznamu probiha na displeji odpocet "rd.500" az "rd.  0".
+Operaci je mozne prerusit stiskem tlacitka [OK].
+
+Krome spusteni funkce pres seriovou linku je mozne vyvolat stejnou funkci i pres menu  "  CoPy".
+

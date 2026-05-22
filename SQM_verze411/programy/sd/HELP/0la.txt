@@ -1,0 +1,13 @@
+Nastaveni automatickeho mereni 
+=============================================================
+
+Zakladni kod funkce je: a nnn
+
+Parametr 'nnn' je interval v minutach mezi automatickym merenim.
+         rozsah zadavanych hodnot je 0 (automat vypnuty) az 255 (4 hodiny 15 minut).
+
+Pri zadani nesmyslne hodnoty (hodnota mimo rozsah, chybejici parametr, nebo nejaky text) 
+     se automat vypina (jakoby se zadal parametr 0).
+
+Behem automatickeho mereni blika na displeji prvni tecka zleva.
+ 

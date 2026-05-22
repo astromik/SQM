@@ -1,0 +1,177 @@
+Vypis prednastavenych znaku pro seriovou komunikaci
+=============================================================
+
+Prikaz: *f
+
+
+Vzhledem k tomu, ze je mozne v kazde jazykove verzi pouzivat jine ovladaci prikazy, bylo nutne v programu pro PC zjistit aktualne platne kody.
+
+Vystupem teto funkce je tabulka znaku, ktera zacina "CHAR:", verzi ("008:") a jazykovym kodem ("CZ:")  a konci znaky ":END" a kody CR+LF.
+
+Mezi temito radky je vypis ovladacich znaku pro vsechny seriove funkce.
+Kazdy radek obsahuje v prvnich 3 znacich index, 
+následuje prefix (' ', '#', '@', '%', '*')
+ a vlastni ovladaci znak. Tyto informace jsou oddeleny stredniky. Kazda radka je zakoncena znaky <CR>+<LF>
+
+Priklad s vyberem nekolika kodu:
+
+CHAR:008:CZ:
+000; ;v
+001; ;t
+033;#;A
+096;@;E
+124;%;I
+140;*;a
+:END
+
+
+Kompletni seznam kodu a jejich indexu pro defaultni ceskou verzi 008:
+prefix = ' ' 
+      [0] ... v = zmer vlhkost - bez ukladani
+      [1] ... t = zmer teplotu - bez ukladani
+      [2] ... p = zmer tlak    - bez ukladani
+      [3] ... j = zmer plosny jas - bez ukladani
+      [4] ... z = prepnout zonu ("z0" pro zimu nebo "z1" pro leto)
+      [5] ... a = nastaveni automatickeho spousteni 0-255 minut
+      [6] ... e = pri pouziti expanzni desky prepne na zvolene cidlo (1-7)
+      [7] ... r = vypis zaznamu z EEPROM (bez dalsiho parametru vypise poslednich 100 zaznamu)
+      [8] ...   rp = vypis posledniho zaznamu
+      [9] ...   ra = vypis vsech zaznamu
+     [10] ...   rz = vypis jednoho vybraneho zaznamu
+     [11] ...   rh = vypis zaznamu za posledni obdobi (treba za posledni den)
+     [12] ...   rx = vypis posledniho zaznamu ve formatu pro software od Unihedronu
+     [13] ...   rd = vypis jednoho vybraneho zaznamu v datovem formatu
+     [14] ... c = aktualni datum a cas
+     [15] ... i = informace o aktualnim nastaveni systemu
+     [16] ...   ix = informace o zarizeni ve formatu pro software od Unihedronu
+     [17] ... h = zobrazeni hlavicky pro formatovany vystup
+     [18] ... m = spusteni vsech mereni se zapisem do EEPROM
+     [19] ... k = kalibrace
+     [20] ...   kj = kalibrace jasu
+     [21] ...   kt = kalibrace teploty
+     [22] ... n = aktualni naklon
+     [23] ... x = zmer osvetleni (lux)
+     [24] ... s = zjisti smer natoceni (azimut)
+     [25] ... R = vypis posledniho zaznamu ve formatu pro software od Unihedronu
+     [26] ... b = nastaveni jednoho z 5 budiku  "b 2 15:48"
+     [27] ... o = nastaveni odpoctu
+prefix = '#' 
+     [28] ... #T = nastaveni datumu a casu
+     [29] ...   #TG = nastaveni datumu a casu z GPS
+     [30] ... #P = nastaveni poctu prumerovani
+     [31] ... #S = nastaveni urovne stability (0-255)
+     [32] ... #I = detailni informace o kalibraci vnitrnich hodin
+     [33] ... #A = nastaveni SLAVE adresy pro komunikaci (1-15)
+     [34] ... #C = zapnuti, nebo vypnuti kontroly CRC pro seriovou komunikaci 
+     [35] ... #O = nastaveni oddelovacu
+     [36] ...   #Oo = oddelovac polozek (nasleduje jeste jeden znak, ktery urcuje oddelovac: #Oo, ; #Oo; ;  #Oo_ ; #Oot)
+     [37] ...   #O, = carka jako desetinny oddelovac  (#O,0 = vypnout carku, zapnout tecku   #O,1 = zapnout carku, vypnout tecku)
+     [38] ...   #O" = uzavirat nebo neuzavirat polozky do uvozovek   (#O"1 = uzavirat #O"0 = neuzavirat)
+     [39] ...   #Oh = zapisovat nebo nezapisovat hlavicku do souboru (#Oh0 = nezapisovat #Oh1 = zapisovat)
+     [40] ... #F = formatovani EEPROM (nasleduje jeste jeden znak pro urceni zpusobu mazani dat)
+     [41] ...   #FS = SOFT format
+     [42] ...   #FH = HARD format
+     [43] ... #U = hranice jasu pro ukladani zaznamu do EEPROM
+     [44] ... #K = zapis bodu kalibracni tabulky (nasleduje jeden znak pro urceni tabulky)
+     [45] ...   #KJ = kalibracni tabulka pro svetlo
+     [46] ...   #KT = kalibracni tabulka pro teplotu
+     [47] ... #E = editace pozorovacich stanovist
+     [48] ...   #ET = textove popisy
+     [49] ...   #EG = graficke popisy na displeje
+     [50] ... #N = nastaveni naklonomeru
+     [51] ...   #Ni = informace o naklonomeru
+     [52] ...   #Nk = kalibrace naklonomeru
+     [53] ... #X = kalibrace luxmetru
+     [54] ...   #Xa = parametr 'a'
+     [55] ...   #Xb = parametr 'b'
+     [56] ...   #Xc = parametr 'c'
+     [57] ... #M = Magnetometr (kompas)
+     [58] ...   #Mk = kalibrace
+     [59] ...   #Mo = offset kompasu (doladeni spatne nalepeneho cidla)
+     [60] ...   #Mi = informace o magnetometru
+     [61] ... #D = nastaveni AfD
+prefix = '@' 
+     [62] ... @E = test postupneho prepinani cidel na expanzni desce
+     [63] ... @X = nastaveni poctu vstupu na expanzni desce (1-7)
+     [64] ... @R = prime cteni dat z EEPROM
+     [65] ... @W = primy zapis hodnoty do EEPROM
+     [66] ... @D = obnoveni defaultnich hodnot (nasleduje 1 znak pro urceni toho, co se ma obnovit)
+     [67] ...   @DS = obnoveni kalibracnich hodnot pro svetlo
+     [68] ...   @DT = obnoveni kalibracnich hodnot pro teplotu
+     [69] ...   @DP = obnoveni parametru systemu
+     [70] ... @@ = reset
+     [71] ... @G = vypis dat z GPS modulu
+     [72] ...   @Gs = nastaveni domaci zemepisne sirky (latitude) pro pozorovaci stanoviste (pouziva se pro vypocet elevace Slunce a Mesice)
+     [73] ...   @Gd = nastaveni domaci zemepisne delky (longitude) pro pozorovaci stanoviste (pouziva se pro vypocet elevace Slunce a Mesice)
+     [74] ...   @Gz = nastaveni domaci casove zony pro "zimni" cas
+     [75] ...   @Gl = nastaveni domaci casove zony pro "letni" cas
+     [76] ...   @Gp = nastaveni textovych popisku pro zimni a letni cas
+     [77] ... @S = nastaveni rychlosti seriove komunikace
+     [78] ... @> = vypis souboru "RTC_set.csv" do seriove linky
+     [79] ... @h = vypnuti zapisu informaci o nastaveni RTC obvodu do souboru "RTC_set.csv
+     [80] ... @H = zapnuti zapisu informaci o nastaveni RTC obvodu do souboru "RTC_set.csv
+     [81] ... @* = nezdokumentovana servisni funkce pro vypis jednoho zaznamu z EEPROM v HEX formatu
+     [82] ... @Z = zapsat systemove parametry na SD kartu
+     [83] ... @O = obnovit systemove parametry z SD karty
+     [84] ... @T = Funkce pro otestovani HW
+     [85] ... @m = vypnout modbus
+     [86] ... @M = zapnout modbus
+     [87] ... @V = verze SQM
+     [88] ...   @Vd = displejova verze
+     [89] ...   @Vl = LED verze
+     [90] ... @L = blokovani/povolovani RGB LED
+     [91] ...   @Lb = blokovani  RGB LED (blikani pri testu baterie)
+     [92] ...   @LB = povolovani RGB LED (blikani pri testu baterie)
+     [93] ...   @Lm = blokovani  RGB LED (blikani pri mereni)
+     [94] ...   @LM = povolovani RGB LED (blikani pri mereni)
+     [95] ...   @Le = blokovani  RGB LED (blikani pri chybe)
+     [96] ...   @LE = povolovani RGB LED (blikani pri chybe)
+     [97] ...   @Lk = blokovani  RGB LED (blikani pri komunikaci pres RS485)
+     [98] ...   @LK = povolovani RGB LED (blikani pri komunikaci pres RS485)
+     [99] ...   @La = blokovani  RGB LED (blikani pri AfD)
+    [100] ...   @LA = povolovani RGB LED (blikani pri AfD)
+    [101] ...   @Lt = blokovani  RGB LED (blikani pri GPS trasovani)
+    [102] ...   @LT = povolovani RGB LED (blikani pri GPS trasovani)
+    [103] ... @P = povolit/zakazat pipani
+    [104] ...   @Pb = vypnout pipani pri zmene urovne napeti baterie
+    [105] ...   @PB = zapnout pipani pri zmene urovne napeti baterie
+    [106] ...   @Pb = vypnout pipani pri mereni
+    [107] ...   @PB = zapnout pipani pri mereni
+    [108] ...   @Pa = vypnout pipani pri alarmu (budiku) / odpoctu
+    [109] ...   @PA = zapnout pipani pri alarmu (budiku) / odpoctu
+    [110] ...   @Pe = vypnout pipani pri HW chybe
+    [111] ...   @PE = zapnout pipani pri HW chybe
+    [112] ...   @Pt = vypnout pipani pri operacich s bocnim tlacitkem
+    [113] ...   @PT = zapnout pipani pri operacich s bocnim tlacitkem
+    [114] ...   @Po = vypnout pipani pri mireni na objekt (RA-DEC)
+    [115] ...   @PO = zapnout pipani pri mireni na objekt (RA-DEC)
+    [116] ...   @Pv = vypnout pipani pri vystahach
+    [117] ...   @PV = zapnout pipani pri vystrahach
+    [118] ...   @Ps = vypnout pipani pri stopkach
+    [119] ...   @PS = zapnout pipani pri stopkach
+    [120] ...   @Pz = vypnout pipnuti pri zapnuti napajeni
+    [121] ...   @PZ = zapnout pipnuti pri zapnuti napajeni
+    [122] ...   @N = nastaveni elevace Slunce pro uzivatelsky definovany soumrak
+    [123] ...   @A = automaticke odesilani dat do seriove linky
+prefix = '%'     
+    [124] ... %I = detailni informace
+    [125] ... %L = vypis poslednich 24 hod. do seriove linky
+    [126] ... %Lh = poslednich 'n' hod. do seriove linky
+    [127] ...   %La = kompletni vypis do seriove linky
+    [128] ...   %Lz = poslednich 'n' zaznamu do seriove linky
+    [129] ...   %Lb = bajtovy vypis
+    [130] ... %S = ulozeni na SD kartu
+    [131] ... %P = pozastavit mereni
+    [132] ... %R = pokracovat v mereni
+    [133] ... %C = nastaveni mericiho intervalu (10-255)
+    [134] ... %F = formatovani pridavne EEPROM
+    [135] ... %N = nastaveni na nulovou pozici
+    [136] ... %W = primy zapis do pridavne EEPROM
+    [137] ... %X = cteni dat z pridavne EEPROM
+prefix = '*' 
+    [138] ... *m = mereni spustene pres seriovou linku, ale bez vystupu do terminalu
+    [139] ... *n = zadost o cislo posledniho zaznamu
+    [140] ... *a = test na shodu adresy
+    [141] ... *r = jeden zaznam v datovem formatu
+    [142] ... *f = zadost o seznam znakovych kodu vsech pouzitych funkci
+    [143] ... *s = simulace planet slunecni soustavy

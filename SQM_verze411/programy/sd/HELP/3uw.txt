@@ -1,0 +1,26 @@
+Rezim 30S: Primy zapis do pridavne EEPROM
+=============================================================
+
+Prikaz ma format:
+  %W adresa , data
+
+Na zadanou adresu zapise pozadovane 8-bitove cislo.
+Pred zapisem jeste do seriove linky vypise puvodni hodnotu na zadane adrese.  
+Je to stejna funkce jako @W, akorat se tyka pridavne EEPROM pro rezim 30s.
+
+Neprovadi kontrolu prekroceni rozsahu adresy pri osazene mensi pameti.
+Rozsah adres je 0 az 65535. Pri osazene 32kB pameti se ale ignoruje nejvyssi bit (bit 15) v zadane adrese.
+
+Priklad:
+  Osazena pamet je 32kB.
+  Prikaz pro zapis hodnoty 123 na adresu 40000 (0b10011100 01000000):
+   %W 40000, 123
+             Zapise hodnotu 123 na adresu 7232 (0b00011100 01000000)
+
+
+Pri osazene plne velikosti pameti (64kB) funguje prikaz pro plny rozsah adres bez omezeni.
+
+
+Priklad vystupu o zadani prikazu "%W 40000, 123":
+   puvodni: EEPROM[40000] = 73   <-  123
+

@@ -1,0 +1,31 @@
+Rezim 30S: Formatovani extra EEPROM 
+=============================================================
+
+Prikazem "%F"dojde ke smazani vsech dat v EEPROM a k nastaveni defaultnich parametru zaznamu.
+Interval mereni se nastavi na 30 sekund.
+
+Formatovani je nutne provest pred prvnim spustenim zaznamu.
+Pokud EEPROM neni zformatovana, nejsou dostupne specialni polozky menu ani prikazy seriove linky zacinajici znakem "%" (krome "%F").
+
+Behem formatovani se zobrazuje v seriove lince bargraf a na displeji probiha odpocet. Velikost bargrafu je zavisla na pouzite pameti (32kB / 64 kB).
+
+FORMAT 32kB
+|--------------------------|
+|**************************|
+EEPROM byla zformatovana.
+
+FORMAT 64kB
+|---------------------------------------------------|
+|***************************************************|
+EEPROM byla zformatovana. 
+
+Formatovani je mozne predcasne ukoncit dlouhym stiskem tlacitka [OK]. 
+Pri stisku se zacnou na displeji zobrazovat vystrazne vodorovne cary.
+Kdyz cary zaplni cely displej (po 2 sekundach), formatovani se predcasne ukonci.
+
+Pokud formatovani nedobehne ani jednou do konce, zustanou rozsirene funkce rezimu "R30s" zablokovane.
+
+
+Pri formatovani se nemaze cela EEPROM, akorat se do prvnich 4 bunek kazdeho zaznamu (tam, kam se uklada cas zaznamu) zapisou nuly.
+Takovyto blok bunek se pak bere jako dostupny pro zapis.
+

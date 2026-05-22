@@ -1,0 +1,8 @@
+Informacni vypis
+=============================================================
+
+Prikaz: i
+
+
+Vypise detaily o nastaveni systemu, vcetne aktualnich napeti, nastavenych budiku a kalibracnich tabulek.
+ 

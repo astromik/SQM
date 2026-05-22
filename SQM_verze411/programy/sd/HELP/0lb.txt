@@ -1,0 +1,62 @@
+Nastaveni jednoho z 5 budiku
+=============================================================
+
+Format prikazu je:  b n hh:mm
+
+Parametr 'n' je index nastavovaneho budiku v rozsahu 1 az 5.
+Parametr 'hh:mm' jsou hodiny a minuty, kdy se ma budik spustit.
+
+Alarmy je mozne nastavit maximalne na pristich 24 hodin (rozsah zadavanych hodin je 0 az 23 a minut 0 az 59). 
+Kdyz parametr hodiny a minuty chybi, prislusny budik se deaktivuje. 
+
+Kdyz neni zadany index budiku, zahlasi se chyba zadani (mimo rozsah) a vypise se jen seznam vsech budiku. 
+
+Znak '*' v seznamu oznacuje nejblizsi budik.
+
+V nastaveny cas se SQM probudi (i v pripade, ze v tu dobu bude vypnuty hlavni vypinac).
+Na displeji se rozblika napis "ALArM", ktery se strida s indexem prave probihajiciho budiku (1 az 5).
+
+Prvnich 10 sekund jen blika prislusny napis. Po 10 sekundach se prida i vystrazne bzukani (pokud je povoleno funkci "@PA").
+Aktivovany alarm je mozne vypnout libovolnym tlacitkem.
+Kdyz nedojde k rucnimu vypnuti, vypne se alarm po 2 minutach automaticky.
+
+Kazdy spusteny alarm se po aktivaci maze. 
+Pokud se ale nastavi vice alarmu na stejny cas, smaze se po aktivaci vzdycky jen jeden, 
+takze ostatni alarmy se stejnym casem se budou spoustet i v nasledujicich dnech.
+
+Priklady:
+-----------------------
+ Zapnout budik c.2 v 18:35
+   b 2 18:35
+
+odpoved:
+   budik c. 1 vypnuty
+   budik c. 2 18:35 * 
+   budik c. 3 vypnuty
+   budik c. 4 vypnuty
+   budik c. 5 vypnuty
+   odpocet    vypnuty
+
+-----------------------
+ Vypnout budik 2
+   b 2
+
+odpoved:
+   budik c. 1 vypnuty
+   budik c. 2 vypnuty
+   budik c. 3 vypnuty
+   budik c. 4 vypnuty
+   budik c. 5 vypnuty
+   odpocet    vypnuty
+-----------------------
+ Seznam budiku
+   b
+
+odpoved:
+   budik c. 1 06:00  
+   budik c. 2 18:35 *
+   budik c. 3 vypnuty
+   budik c. 4 21:45  
+   budik c. 5 vypnuty
+   odpocet    vypnuty
+ 

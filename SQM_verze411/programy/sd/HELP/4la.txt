@@ -1,0 +1,18 @@
+Test na shodu SLAVE adresy
+=============================================================
+
+Format prikazu:   *a nn
+
+Parametr 'nn' urcuje adresu v rozsahu 1 az 15.
+
+Pokud se SLAVE adresa SQM shoduje, vrati se do seriove linky cislo, ktere udava typ seriove linky, na ktere doslo k prijmu prikazu.
+
+Cislo '1' v odpovedi znamena, ze zadost dorazila pres USB seriovou linku.
+Cislo '2' v odpovedi znamena, ze zadost dorazila pres linku RS485 pri nastavenem puvodnim typu komunikace.
+Cislo '3' v odpovedi znamena, ze zadost dorazila pres linku RS485 pri nastavene MODBUS komunikaci.
+Kdyz se adresa neshoduje, nevraci se nic.
+
+Odpoved na pozadavek by mela dorazit do 1 sekundy.
+Pokud ale probiha mereni jasu, nebo nejaka slozitejsi operace, muze odpoved trvat i delsi dobu.
+Pri neprerusitelnych operacich, jako jsou napriklad stopky, k odpovedi nedojde vubec (seriova linka je blokovana).
+

@@ -1,0 +1,41 @@
+Nastaveni odpoctoveho alarmu
+=============================================================
+
+Prikaz:  o mmm
+
+Parametr 'mmm' udava pocet minut, po kterych se ma spustit alarm v rozsahu 0 az 999.
+Pri zadani 0 se alarm vypina.
+
+Parametr 'mmm' je mozne zadat i jako zaporne cislo. Znamenko se v tom pripade ignoruje.
+
+Po kazdem spusteni funkce se vypise tabulka s nastavenim budiku a odpoctovym alarmem
+Tabulka se vypise i v pripade, ze se spusti prikaz 'o' bez parametru.
+   (V tom pripade se zahlasi varovani: "Vstup mimo rozsah 0 - 999")
+Zbyvajici cas odpoctu se v tabulce kazdou minutu aktualizuje.
+Znak '*' oznacuje v tabulce nejblizsi alarm. 
+
+
+Priklad:
+-----------------------
+ Zapnout odpoctovy alarm za 2 hodiny (120 minut)
+   o 120
+
+Odpoved:
+
+  budik c. 1 vypnuty
+  budik c. 2 vypnuty
+  budik c. 3 vypnuty
+  budik c. 4 vypnuty
+  budik c. 5 vypnuty
+  odpocet   120 *
+
+-----------------------
+ 
+
+Po nastavenem case se SQM probudi (i v pripade, ze v tu dobu bude vypnuty hlavni vypinac).
+Na displeji se rozblika napis "odPoC" (Odpocet).
+
+Prvnich 10 sekund jen blika prislusny napis. Po 10 sekundach se prida i vystrazne bzukani (pokud je povoleno funkci '@PA').
+Aktivovany alarm je mozne vypnout libovolnym tlacitkem.
+Kdyz nedojde k rucnimu vypnuti, vypne se alarm po 2 minutach automaticky.
+ 

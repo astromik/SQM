@@ -1,0 +1,12 @@
+Mereni aktualniho azimutu
+=============================================================
+
+Prikaz:  s
+
+Prikaz neobsahuje zadne parametry.
+Do seriove linky se vrati informace o nasmerovani SQM (azimut).
+Hodnota je vcetne korekce, ktera byla zadana prikazem "#Mo".
+
+Priklad odpovedi:
+   Azimut: 153
+ 

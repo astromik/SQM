@@ -1,0 +1,59 @@
+Nastaveni defaultnich systemovych parametru
+=============================================================
+
+Pri prvnim spusteni, nebo pri nejakem problemu po nechtenem prepsani EEPROM je mozne obnovit defaulni systemove parametry a kalibracni tabulky.
+
+
+Prikaz pro nastaveni defaultnich parametru je : @DP
+Prikaz pro obnoveni kalibracnich tabulek pro svetlo je : @DS
+Prikaz pro obnoveni kalibracnich tabulek pro teplotu je : @DT
+
+
+Vyber defaultnich systemovych parametru:
+ eeaddr_RTC_set       ,            0   // cas posledniho serizeni = 1.1.1970 0:00:00
+ eeaddr_RTC_korekce   , 0x7FFFFFFFUL   // sekunda se pricita jednou za 68 let
+ eeaddr_leto_zima     ,            0   // zimni zona
+ eeaddr_oddelovace    ,   0b00010110   // des. oddelovac carka, oddelovac polozek strednik, hlavicku vkladat, nezavirat do uvozovek
+ eeaddr_automat       ,            0   // automaticke spousteni vypnute
+ eeaddr_prumerovani   ,            3   // 3x prumerovani
+ eeaddr_modbus_LED    ,   0b00000011   // displejova verze SQM; modbus pres RS485 je defaultne zapnuty
+ eeaddr_LED           ,            0   // RGB LED je defaultne vypnuta pro vsechny operace (zapina se pres @L_)
+ eeaddr_SLAVE_baud    ,            1   // komunikacni rychlost 9600; SLAVE adresa = 1
+ eeaddr_CRC_tset_lock ,   0b00000001   // testuje kontrolni bajt pri komunikaci pres RS485; tlacitko TS je odemknute, RTC_set.csv zakazan
+ eeaddr_stab          ,           20   // nestabilni jas je hlaseny pri rozdilu dvou sousednich mereni nad 2 %
+ eeaddr_pocet_cidel   ,            1   // pocet cidel na expanzni desce
+ eeaddr_10kB_znacka   ,            0   // zachytny bod hledani (po kazdem 100. zaznamu se aktualizuje kvuli rychlejsimu hledani volneho mista v EEPROM)
+ eeaddr_uroven_EEPROM ,            0   // hranice plosneho jasu pro ukladani do EEPROM a na kartu v desetinach mag/arcsec2) (0 az 25,5 mag/arcsec2)
+ eeaddr_GEO_lat       ,          500   // domaci zemepisna sirka pro astro vypocty na 50.0 stupnu
+ eeaddr_GEO_lon       ,          150   // domaci zemepisna delka pro astro vypocty na 15.0 stupnu
+ eeaddr_zima_hod      ,          101   // posun casu proti UTC v zime = +1 hodina (SEC)      (hodnota je zvetsena o 100, takze -5 hodin by se zapsalo jako 95)
+ eeaddr_leto_hod      ,          102   // posun casu proti UTC v lete = +2 hodiny (SELC)
+ eeaddr_menu_bity     , 0xFFFFFFFFUL   // defaultne jsou vsechny polozky v menu povolene
+ eeaddr_perif_bity    ,       0x000F   // defaultne jsou vsechny 4 periferie zapnute
+ eeaddr_AfD           ,          255   // Alam for Darkness vypnuty (nastaveny na tak vysokou hodnotu, ktera nemuze nastat - 25,5 mag/arcsec2)
+ eeaddr_txt_zony      ,          ' '   // 4 ASCII znaky pro 'zimni' casovou zonu
+ eeaddr_txt_zony + 1  ,          'S'   // 
+ eeaddr_txt_zony + 2  ,          'E'   // 
+ eeaddr_txt_zony + 3  ,          'C'   // 
+ eeaddr_txt_zony + 4  ,          'S'   // 4 ASCII znaky pro letni casovou zonu
+ eeaddr_txt_zony + 5  ,          'E'   // 
+ eeaddr_txt_zony + 6  ,          'L'   // 
+ eeaddr_txt_zony + 7  ,          'C'   // 
+ eeaddr_luxmetr       ,          250   // parametr 'a' pro kalibraci luxmetru (*0.01)   (s ulozenym cislem 250 se bude pocitat jako s 2.5)
+ eeaddr_luxmetr + 2   ,            0   // parametr 'b' pro kalibraci luxmetru (*0.01)  zaporna cisla se ukladaji jako binarni doplnek (-10.55 = 64481)
+ eeaddr_luxmetr + 4   ,            0   // parametr 'c' pro kalibraci luxmetru (*0.000 000 1) ulozene cislo 16 by se pocitalo jako 0.000 001 6
+ eeaddr_kompas_offset ,          127   // doladeni kompasu (127 = pootoceni o 0 stupnu)
+ eeaddr_alarmy        ,         1440   // prvni  budik vypnout
+ eeaddr_alarmy +  2   ,         1440   // druhy  budik vypnout
+ eeaddr_alarmy +  4   ,         1440   // treti  budik vypnout
+ eeaddr_alarmy +  6   ,         1440   // ctvrty budik vypnout
+ eeaddr_alarmy +  8   ,         1440   // paty   budik vypnout
+ eeaddr_alarmy + 10   ,         1440   // odpocet (sesty budik) vypnout
+ eeaddr_TEST_alarm    ,            0   // znacka testovaciho alarmu se maze
+
+Nastavi se i hrube konstanty pro naklonomer a kompas.
+V tomto pripade je ale nutne potom provest kalibraci naklonomeru (funkce #Nk ) a kalibraci kompasu (funkce #Mk). 
+
+
+Defaultni kalibracni tabulky pro teplotu (funkce @DT) a svetlo (funkce @DS) jen kopiruji zmerenou hodnotu na zobrazovanou hodnotu 1:1 (bez prepoctu).
+ 

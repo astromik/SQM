@@ -1,0 +1,40 @@
+Vypnuti kontrolniho souctu pri komunikaci pres RS485
+=============================================================
+
+Pri puvodni verzi komunikace pres linku RS485 se ke kazde zadosti pridaval jeden kontrolni bajt,
+  ktery obsahoval zaporny soucet obsahu vsech bajtu v zadosti.
+
+Priklad:
+=================================================================================
+Pozadavek: Start mereni vsech velicin se zapisem do EEPROM a na pripadne i na SD kartu (pokud bude vlozena) 
+  01 01 00 00 00 00 00 00 00 00 00 00 FE
+   |  |                                |
+   |  |                                \---- kontrolni bajt (256 - 1 - 1 = 0xFE)
+   |  \------------------------------------- pozadovana funkce (1 = spustit mereni)
+   \---------------------------------------- SLAVE adresa zarizeni
+
+
+
+Odpoved:
+   {01}{01}{03}{FB}     
+     |   |   |   |
+     |   |   |   \---- kontrolni bajt (256 - 1 - 1 - 3 = 0xFB)
+     |   |   \-------- pocet prumerovani (nebo 0 pro pripad, ze jeste neni dokonceno predchozi mereni)
+     |   \------------ odpoved s pozadovanou funkci (1 = spustit mereni)
+     \---------------- SLAVE adresa zarizeni
+=================================================================================
+
+
+
+Prikazem "#C n" je mozne testovani kontrolniho bajtu vypnout.
+ 
+
+Parametr 'n' muze mit nasledujici hodnoty:
+   0 ... CRC se nekontroluje
+   1 ... CRC se testuje
+   2 ... CRC se testuje, chyby se hlasi do USB seriove linky
+
+POZOR:
+  Pri pouziti nove verze komunikace (modbus) nema nastaveni na kontrolni bajty vliv.
+  V modbusu jsou kontrolni bajty vzdycky povinne. 
+  

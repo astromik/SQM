@@ -1,0 +1,24 @@
+Napoveda pro nastaveni hranice svetla pro Alarm for Darkness 
+=============================================================
+
+Format funkce je: #D ff.f
+
+Parametr ff.f muze byt desetinne cislo a urcuje hranici, pri ktere se spusti alarm dosazeni pozadovane tmy.
+Hodnota parametru musi byt v rozsahu 13.0 az 25.4.
+
+Pri zadani hodnoty mimo toto povolene pasmo, se funkce Alarm for Darkness vypina
+   (vnitrne se nastavi na hodnotu 25.5, ktera je prakticky nedosazitelna) 
+
+Priklad:
+  #D 15.3 
+
+Pri prekroceni hodnoty 15.3 mag/arcsec2 se spusti alarm.
+Alarm je mozne vypnout libovolnym tlacitkem.
+
+Pri vypnuti alarmu tlacitkem zustava hranice na nastavene hodnote, ale alarm uz se nespusti az do dalsiho vstupu do menu AfD.
+Signal na bocnim konektoru (na pinu OUT - PB14) se ovlada automaticky porovnanim nastavene hranice a aktualni hodnotou svetla.
+Kdyz je mereny jas nizsi (vetsi tma), nez nastavena hranice, prepina se do HIGH, jinak je v LOW.
+Vypnuti alarmu tlacitkem na bosni signal nema vliv.
+
+Testovani se provadi jednou za minutu.
+ 

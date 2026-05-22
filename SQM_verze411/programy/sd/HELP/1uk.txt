@@ -1,0 +1,52 @@
+Zapis bodu do kalibracni tabulky
+=============================================================
+
+Ve vnitrni pameti se nachazi oblasti oznacovane jako kalibracni tabulky.
+Kazda tabulka obsahuje nekolik bodu (kalibracni tabulka svetla obsahuje 15 bodu, tabulka pro teplotu ma 7 bodu).
+Kazdy z techto bodu ma dve "souradnice" :
+  - souradnice X udava hodnotu ziskanou z cidla
+  - souradnice Y udava, jaka hodnota se ma pri te hodnote z cidla zobrazit na displeji
+
+Pomoci prikazu 
+    #KJ n;x;y*
+ a
+    #KT n;x;y*
+
+ je mozne tabulky upravovat.
+
+Parametr 'n' je poradove cislo bodu v tabulce
+Parametr 'x' je hodnota z cidla (pro jas je to v milimag/arcsec2, pro teploty je to v setinach stupne Celsia zvyseno o +50 stupnu Celsia)
+Parametr 'y' je hodnota, ktera se ma zobrazit (ve stejnem formatu jako hodnota X)
+
+Jedne hodnote na ose 'x' (hodnota z cidla) nesmi odpovidat vice bodu na ose 'y' (zobrazena hodnota).
+Kdyby k tomu (napriklad omylem) doslo, zobrazi se varovani "Chyba kalibrace" a k zapisu kalibracniho bodu nedojde. 
+
+Je mozne upravovat vice bodu soucasne (pro teplotu az 4 body, pro jas az 3 body).
+Po poslednim odeslanem bodu musi nasledovat znak hvezdicka (*).
+
+Pro lepsi komfort byl vytvoren excelovsky dokument, do ktereho se do skutecnych tabulek zadavaji hodnoty a z nich se automaticky
+ tvori prikazy, ktere se pak mohou zkopirovat a odeslat do seriove linky.
+
+Priklad prikazu pro upravu 4 bodu v teplotni kalibracni tabulce:
+  #KT01;7300;7380;02;7060;6950;03;6470;6420;04;7820;8010*
+
+To odpovida prevodu:
+    hodnota z cidla:  23,0'C (cislo 7300) se zobrazi jako 23,8'C (cislo 7380)
+    hodnota z cidla:  20,6'C (cislo 7060) se zobrazi jako 19,5'C (cislo 6950)
+    hodnota z cidla:  14,7'C (cislo 6470) se zobrazi jako 14,2'C (cislo 6420)
+    hodnota z cidla:  28,2'C (cislo 7820) se zobrazi jako 30,1'C (cislo 8010)
+
+               (znak apastrof tu nahrazuje stupen, ktery se v seriove lince nemusi zobrazovat spravne)
+
+
+Priklad prikazu pro upravu 3 bodu v kalibracni tabulce jasu:
+  #KJ01;19005;19410;02;21813;21700;03;13874;10750*
+
+To odpovida prevodu:
+ hodnota z cidla:  19,005 mag/arcsec2 (cislo 19005) se zobrazi jako 19,41 mag/arcsec2 (cislo 19410)
+ hodnota z cidla:  21,813 mag/arcsec2 (cislo 21813) se zobrazi jako 21,70 mag/arcsec2 (cislo 21700)
+ hodnota z cidla:  13,874 mag/arcsec2 (cislo 13874) se zobrazi jako 10,75 mag/arcsec2 (cislo 10750)
+
+
+Kdyz cidlo zmeri hodnotu mezi nekterymi ze zadanych bodu, provadi se linearni prepocet vuci temto bodum.
+ 

@@ -1,0 +1,16 @@
+Rucni prepinani cidel svetla na rozsirujici desce
+=============================================================
+
+Funguje pouze v pripade pouziti rozsirujici desky s vice cidly svetla.
+Po spusteni prikazu "@E" se prepne na nasledujici cidlo vcetne jeho kalibracni tabulky. 
+Kdyz je prepnuto na posledni cidlo, zacne se priste znova od cidla 1.
+
+pozadavek: @E
+odpoved:
+  Aktualne je aktivni cidlo: 1
+
+
+pozadavek: @E
+odpoved:
+  Aktualne je aktivni cidlo: 2
+ 

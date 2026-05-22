@@ -1,0 +1,17 @@
+Spusteni mereni pres seriovou linku
+=============================================================
+
+Prikaz: m
+
+Spusti kompletni mereni (jas, teplota, GPS ...).
+Behem mereni se zobrazuje jednoduchy textovy bargraf. Pocet policek odpovida poctu prumerovani.
+Po ukonceni mereni se vypise kompletni zaznam v textovem formatu i s hlavickou.
+Vysledek uklada do EEPROM. Jako poznamka je v tomto pripade uvedeno, ze ke spusteni mereni doslo pres komunikaci ("kom").
+
+
+priklad odpovedi:
+  |-----|
+  |#####|
+    pol. ; EEPROM ;  sek_1970  ;    datum   ;    cas   ; dvt;zona ;  jas  ;   jas  ;adr.;cid.; pozn. ; stab_jas ; infra ; full ; [ms]; citl. ;teplota; tep.'C ;vlhkost; vlh. % ;  tlak  ;   GEO_lat  ;   GEO_long  ;  ALT  ; naklon ; azm ; S_el ; M_el ; M_sv 
+   00021 ; 001420 ; 1675608666 ; 05.02.2023 ; 14:51:06 ; Ne ;SEC  ; 16199 ; 16,199 ; 01 ; 01 ;  kom  ;  STABIL  ; 02145 ;04162 ; 600 ; 9876x ; 07006 ; +20,06 ; 06088 ; 060,88 ; 097501 ; +49,444359 ; +014,366580 ; +0517 ; -000,5 ; 356 ;  +16 ;  -11 ;  99
+ 

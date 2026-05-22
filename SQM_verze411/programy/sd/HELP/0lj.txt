@@ -1,0 +1,14 @@
+Mereni plosneho jasu bez zapisu do EEPROM
+=============================================================
+
+Prikaz pro zobrazeni aktualniho jasu:  j
+
+Prikaz neobsahuje zadne parametry.
+Do seriove linky se vrati informace o zmerenem jasu bez korekce a s korekci podle kalibracni tabulky.
+
+Pri mereni se neprovadi zadne prumerovani.
+
+Priklad odpovedi:
+  Plosny jas bez korekce:             13.320 mag/arcsec2 
+  Plosny jas s korekci podle tabulky: 10.320 mag/arcsec2 
+ 

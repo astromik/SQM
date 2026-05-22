@@ -1,0 +1,31 @@
+Nastaveni akustickeho vystupu
+=============================================================
+
+SQM je vybaveno piskakem, ktery muze signalizovat provozni stavy nebo varovani.
+Akustickou signalizaci je mozne vypnout nebo zapnout prikazem
+    @P
+
+Za timto zakladnim kodem nasleduje dalsi znak, ktery urcuje co se ma signalizovat
+
+Oblasti pro signalizaci jsou nasledujici:
+
+     znak 'b' nebo 'B' - Pipani pri zmene urovne napeti hlavniho zdroje napajeni (baterie)
+     znak 'm' nebo 'M' - Pipani pri mereni 
+     znak 'a' nebo 'A' - Pipani pri alarmu (budiku) a odpoctu
+     znak 'e' nebo 'E' - Pipani pri HW chybach  
+     znak 't' nebo 'T' - pipani pri operacich s bocnim tlacitkem
+     znak 'o' nebo 'O' - pipani pri mireni na objekt ve funkci "Ra-Dec"
+     znak 'v' nebo 'V' - pipani pri vystrahach a upozornenich (napriklad pri dokonceni kalibrace kompasu, nebo chybe v kalibracnich tabulkach)
+     znak 's' nebo 'S' - pipani pri ovladani stopek 
+
+ Kdyz je znak male pismeno, znamena to vypnuti piskani pro prislusny blok. Velke pismeno pipani zapina.
+
+Priklad: 
+  @Pm          Vypne pipani pri mereni. Nebude signalizovano ani stabilni / nestabilni mereni.
+  @PS          Zapne pipani pri ovladani stopek. Pri stisku tlacitek Start / Stop / Mezicas se pipne.
+  @Pe          Vypne vystrazne pipani pri chybach HW (vytazena SD karta, chyba I2C komunikace)
+  @PB          Zapne pipnuti pri poklesu napeti baterie o jednu uroven (kdyz se na displeji rozblika dalsi desetinna tecka)          
+    
+
+Aktualni nastaveni je mozne vypsat pomoci prikazu @P bez parametru.
+ 

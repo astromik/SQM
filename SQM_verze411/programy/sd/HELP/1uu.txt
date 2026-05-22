@@ -1,0 +1,22 @@
+Nastaveni hranice jasu pro ukladani do EEPROM 
+=============================================================
+
+Pomoci prikazu "#U nnn" je mozne urcit hranici jasu, pod kterou se nebudou zaznamy ukladat do EEPROM.
+Parametr 'nnn' je v rozsahu 0 az 255 a odpovida jasu 0 az 25,5 mag/arcsec2 . 
+
+Pri 0 se budou ukladat vsechny zaznamy.
+Pri cisle 100 se budou ukladat jen ty zaznamy, jejichz hodnota jasu byla vyssi (vetsi tma), nez 10 mag/arcsec2 . 
+
+Vyuziti teto funkce bylo planovano pro trvale nainstalovane SQM, aby se pres den zbytecne nezaplnovala pamet.
+
+Toto nastaveni se tyka jen ukladani do EEPROM.
+Na SD kartu se ukladaji vsechny zaznamy (pokud je zasunuta).
+
+Vyjimkou je kalibracni mereni jasu. 
+Pri teto funkci se do EEPROM ukladaji vsechny zmerene zaznamy - nezavisle na tom, jaky je zmereny jas.
+
+Priklad: #U 123
+
+Odpoved:
+  Do EEPROM se budou ukladat zaznamy s hodnotou plosneho jasu vetsi (tmavsi) nez 12.30 mag/arcsec2
+ 

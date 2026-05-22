@@ -1,0 +1,96 @@
+Prepinani zpusobu komunikace
+=============================================================
+
+Prikazem @m nebo @M se voli typ komunikace pres RS485.
+
+@m prepina na puvodni verzi komunikace.
+@M prepina na klasicky modbus RTU
+
+Priklad puvodni verze komunikace:
+----------------------------------------------
+Pozadavek: zadost o posledni namerena data
+  01 02 00 00 00 00 00 00 00 00 00 00 FD
+   |  |  |                             |
+   |  |  |                             \---- kontrolni bajt (256 - 1 - 2 = 0xFD)
+   |  |  \---------------------------------- parametr pro pozadovany format vystupu 00 az 0C  (00 = datovy vystup)
+   |  \------------------------------------- pozadovana funkce (02 = zadost o posledni zmerena data)
+   \---------------------------------------- SLAVE adresa zarizeni
+
+Odpoved:
+01            ... adresa
+02            ... funkce
+24            ... pocet bajtu na jeden zaznam
+83            ... typ zaznamu a dalsi info (typ zaznamu, casova zona ...)
+66 55 AB 2F   ... pocet sekund od 1.1.1970
+2E D0         ... svetlo v tisicinach mag/arcsec2 (11984 = 11,984 mag/arcsec2)
+1B            ... upresnujici znacka pro zaznam (SLAVE adresa, zpusob spusteni mereni, stabilita mereni)
+47 E1         ... infra (18401)
+DA 8C         ... full (55984)
+35            ... config registr pro cidlo svetla (ATIME=600ms; AGAIN=9876x)
+1D 7C         ... teplota (7548 = 25,48 stupnu Celsia)
+14 8D         ... vlhkost (5261 = 52,61%)
+8A 05         ... tlak (3533 = 95333Pa)
+1F FF FF FF   ... zemepisna delka (udaje GPS nejsou k dispozici)
+FF FF FF FF   ... zemepisna sirka (udaje GPS nejsou k dispozici)
+FF FF         ... nadmorska vyska (udaje GPS nejsou k dispozici)
+26 DB         ... naklon (9947 = -5,3 stupnu )
+01 67         ... azimut (359?)
+87            ... elevace Slunce (135 = +45 stupnu )
+54            ... elevace Mesice (84 = -6 stupnu )
+4C            ... osvetleni Mesice (76%)
+76            ... kontrolni soucet
+
+
+----------------------------------------------
+
+Priklad modbusove komunikace:
+----------------------------------------------
+Pozadavek: stahnout posledni data
+   01       04       00 00     00 1E   70 02
+ adresa   funkce    registr    delka    CRC
+                     40001      30
+
+Odpoved:
+01            ... SLAVE adresa
+04            ... funkce (cteni holding registu)
+3C            ... pocet nasledujicich bajtu dat (60 bajtu = 30 registru)
+02 15         ... index zaznamu (533)
+83 1B         ... typ zaznamu a dalsi informace (zona, stabilita, cidlo, adresa ...)
+66 55 AB 2F   ... sekundy od 1.1.1970
+07 E8         ... rok (2024)
+00 05         ... mesic (kveten)
+00 1C         ... den (28.)
+00 0A         ... hodiny (10)
+00 00         ... minuty (0)
+00 0F         ... sekundy (15)
+2E D0         ... svetlo v tisicinach mag/arcsec2 (11984 = 11,984 mag/arcsec2)
+47 E1         ... infra (18401)
+DA 8C         ... full (55984)
+00 35         ... config registr pro cidlo svetla (ATIME=600ms; AGAIN=9876x)
+1D 7C         ... teplota (7548 = 25,48 stupnu Celsia)
+14 8D         ... vlhkost (5261 = 52,61%)
+8A 05         ... tlak (3533 = 95333Pa)
+1F FF FF FF   ... zemepisna delka (udaje GPS nejsou k dispozici)
+FF FF FF FF   ... zemepisna sirka (udaje GPS nejsou k dispozici)
+FF FF         ... nadmorska vyska (udaje GPS nejsou k dispozici)
+26 DB         ... naklon (9947 = -5,3 stupnu )
+01 67         ... azimut (359 stupnu )
+00 87         ... elevace Slunce (135 = +45 stupnu )
+00 54         ... elevace Mesice (84 = -6 stupnu )
+00 4C         ... osvetleni Mesice (76%)
+FF FF         ... rezerva 1
+FF FF         ... rezerva 2
+FF FF         ... rezerva 3
+A8 68         ... CRC
+
+
+
+
+Pro porovnani - textovy vypis k predchozimu modbusovemu vypisu:
+  pol. ; EEPROM ;  sek_1970  ;    datum   ;    cas   ; dvt; zona ;  jas  ;   jas  ;adr.;cid.; pozn. ; stab_jas ; infra ;  full ; [ms]; citl. ;
+ 00533 ; 019852 ; 1716890415 ; 28.05.2024 ; 10:00:15 ; Ut ; SELC ; 11984 ; 11,984 ; 01 ; 01 ; tl_OK ;  STABIL  ; 18401 ; 55948 ; 600 ; 9876x ;
+
+
+teplota; tep.'C ;vlhkost; vlh. % ;  tlak  ;   GEO_lat  ;   GEO_long  ;  ALT  ; naklon ; azm ; S_el ; M_el ; M_sv ;
+ 07548 ; +25,48 ; 05261 ; 052,61 ; 095333 ; ---------- ; ----------- ; ----- ; -005,3 ; 359 ;  +45 ;  -06 ;  76  ;
+ 

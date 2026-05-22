@@ -1,0 +1,27 @@
+Nastaveni funkci RGB LED
+=============================================================
+
+SQM muze byt vybano RGB LED, ktera signaliuje provozni stavy nebo varovani.
+LED se ovlada prikazem:   @L
+
+Za timto zakladnim kodem nasleduje dalsi znak, ktery urcuje co se ma LED signaliovat
+
+Oblasti pro signalizaci jsou nasledujici:
+
+     znak 'b' nebo 'B' - Blikani pri testu hlavniho zdroje napajeni (baterie)
+     znak 'm' nebo 'M' - Blikani pri mereni 
+     znak 'e' nebo 'E' - blikani pri chybach  
+     znak 'a' nebo 'A' - Blikani pri pri alarmu (budiku) a odpoctu nebo funkc AfD
+     znak 'k' nebo 'K' - Blikani pri komunikaci pres RS485
+     znak 't' nebo 'T' - Blikani pri zapisu dat na SD kartu v rezimu GPS trackovani
+
+ Kdyz je znak male pismeno, znamena to vypnuti LED signalizace pro prislusnou oblast. 
+ Velke pismeno LED zapina.
+
+Priklad: 
+  @Lm          Vypne blikani pri mereni.
+  @LA          Zapne blikani pri alarmech
+   
+
+Aktualni nastaveni je mozne vypsat pomoci prikazu @L bez parametru.
+ 

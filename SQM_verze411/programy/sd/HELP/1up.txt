@@ -1,0 +1,16 @@
+Nastaveni poctu prumerovani
+=============================================================
+
+Prikaz: #P nn
+
+nn je parametr, ktery udava, z kolika hodnot jasu se ma pocitat prumer.
+Minimalni hodnota je 1 (v tom pripade k prumerovani nedochazi a vraci se prvni zmerena hodnota).
+Maximum je 20. Kazde mereni trva pres 1 sekundu, takze vice prumerovani znamena delsi cas mereni.
+
+
+Priklad: 
+  #P 5
+
+Odpoved:
+  Prumerovat 5 mereni
+

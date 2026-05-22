@@ -1,0 +1,11 @@
+Vypis aktualniho casu 
+=============================================================
+
+Prikaz: c
+
+Bez parametru.
+Do seriove linky vrati aktualni datum a cas vcetne automaticke korekce.
+
+Priklad odpovedi:
+   28.5.2024 20:23:22 Ut SELC
+ 

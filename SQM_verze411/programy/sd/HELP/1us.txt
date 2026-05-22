@@ -1,0 +1,19 @@
+Nastaveni urovne stability
+=============================================================
+
+Tato funkce nastavuje maximalni prijatelne kolisani jasu behem mereni v desetinach procenta. 
+Kdyz jas kolisa vice nez je nastaveno, zapisuje se do pameti znacka o nestabilnim mereni a zaroven se po mereni vystrazne zapipa.
+
+Zakladni format prikazu je: #S nnn
+
+Parametr 'nnn' udava desetiny procenta.
+Minimalni hodnota je 0 - v tom pripade bude jako stabilni mereni oznaceno jen takove mereni, ktere nebude vubec kolisat.
+Maximalni hodnota je 255. Potom budou jako nestabilni mereni oznaceny jen zaznamy, ve kterych hodnota kolisa nad 25,5 %.
+
+
+Priklad:
+  #S 15
+
+Odpoved:
+  Rozhodovaci uroven pro stabilni jas je nastavena na 1.5 %
+ 

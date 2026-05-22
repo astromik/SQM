@@ -1,0 +1,13 @@
+Zobrazeni aktualniho naklonu
+=============================================================
+
+Prikaz pro zobrazeni aktualniho naklonu je: n
+
+Zadne dalsi parametry neobsahuje.
+Po spusteni se vypise naklon ve stupnich.
+Predpoklada se, ze drive uz probehla kalibrace naklonomeru prikazem "#Nk".
+
+Priklad vypisu:
+
+  Aktualni naklon: 23.4
+

@@ -1,0 +1,29 @@
+Rezim 30S: Funkce primeho cteni z EEPROM 
+=============================================================
+
+Zakladni kod funkce je: %X aaa
+
+Parametr 'aaa' je adresa v EEPROM v rozsahu 0 az 65535 (to je 16-bitova adresa).
+   Pri zadani vyssiho cisla se prebytecne vysoke bity v adrese osekaji:
+     aaa &= 0xFFFF;
+
+Je to stejna funkce jako @R, akorat pracuje s pridavnou pameti pro rezim 30s.
+ 
+Po spusteni funkce vypise jednobajtovy obsah EEPROM na zadane adrese (v osmibitovem binarnim a desitkovem formatu)
+Zaroven jeste vypise obsah EEPROM slouceny s nasledujici adresou jako 16-bitove bezznamenkove cislo.
+      Vlozena adresa (parametr 'aaa') se predpoklada jako MSB a nasledujici adresa ('aaa + 1') jako LSB
+ 
+  hodnota = EEPROM[aaa] * 256 + EEPROM[aaa + 1]
+
+Priklad:
+  %X 12345
+
+EEPROM2[12345] = 0b10011011 = 155
+MSB[12345] + LSB[12346] = (unsigned int) 39698
+
+
+Pokud je osazena mensi pamet (32kB), ignoruje se nejvyssi bit (bit 15) v adrese. 
+
+
+
+

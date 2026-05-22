@@ -1,0 +1,42 @@
+Zalohovani nastaveni na SD kartu
+=============================================================
+
+Celou systemovou oblast EEPROM od adresy 0 do adresy 699 je mozne zazalohovat do textoveho
+  souboru na SD kartu prikazem: @Z
+ 
+Po spusteni se na SD karte vytvori soubor "LOGS/SYS_MEM.TXT".
+Pokud jiz soubor existuje, dojde jeho prepsani novymi hodnotami.
+
+Protoze se v prubehu vyvoje muze stat, ze budou nejake polozky v EEPROM doplneny, nebo presunuty,
+obsahuje prvni radka informaci o verzi rozlozeni EEPROM, pro kterou byl soubor vytvoren (napriklad: "ver:001").
+Pri obnovovani se pak porovnanim verze testuje, jestli adresy v zalohovacim souboru odpovidaji aktualnimu adresovani EEPROM v programu.
+Pokud se verze neshoduji, data se neobnovi.
+
+Na dalsich radkach soubor obsahuje v citelnem textovem formatu na kazde radce jednu adresu bunky z EEPROM a hodnotu, ktera je v bunce ulozena.
+Obe hodnoty jsou upraveny na konstantni sirku 3 znaky doplnenim uvodnich nul.
+Mezi adresou a hodnotou je znak ';'. 
+
+
+Obnoveni dat ze souboru zpatky do EEPROM se provadi prikazem @O. 
+
+Ukazka vypisu casti souboru:
+-------------------------------
+ver:001
+000;102
+001;083
+002;047
+003;092
+004;127
+005;255
+006;255
+007;255
+008;001
+009;022
+010;000
+011;003
+012;002
+013;000
+...
+...
+-------------------------------
+ 

@@ -1,0 +1,110 @@
+Logovani nastavovani RTC pres GPS na SD kartu
+=============================================================
+
+
+Pouzitim prikazu @H je mozne povolit zapis informaci o nastaveni RTC pres GPS do souboru "RTC_set.csv".
+Prikaz @h zapis informaci o nastaveni RTC vypina.
+
+
+Soubor "RTC_set.csv" slouzi k analyzovani dlouhodobe stability vnitrniho RTC.
+Pokud je zapis povolen, ukladaji se pri kazdem nastaveni casu do souboru tyto informace:
+ - Presny cas z GPS (v citelnem formatu YYYY/MM/DD hh:nn:ss)
+ - Presny cas z GPS (v sekundach od 1.1.1970).
+ - Nezkorigovany cas v RTC (v sekundach od 1.1.1970).
+ - Rozdil techto casu v sekundach (odchylka GPS-RTC).
+ - Interval od predchoziho serizeni (ve dnech).
+ - Vypoctena korekce (po kolika hodinach pridat/ubrat korekcni sekundu).
+
+
+Prikaz "@>D" pak muze tento soubor vypsat do seriove linky (neni tedy nutne vyndavat kartu).
+
+Priklad vypisu:
+
+RTC_set.csv
+-------------
+YYYY/MM/DD;hh:nn:ss;  GPS [s] ;  RTC [s] ;  RTC-GPS  ; int[D];  kor[h]  ;9  Info  0;
+===================================================================================;
+2022/01/29;19:13:29;1643483609;          ;-1643483204;       ;          ;0100000010;
+2022/01/30;20:46:05;1643575565;1643575561;-0000000004;001.064;+000006.39;0010100100;
+2022/01/30;20:56:52;1643576212;1643576214;+0000000002;000.007;+000006.39;0100010001;
+2022/01/31;21:05:20;1643663120;1643663116;-0000000004;001.006;+000006.04;0010100100;
+2022/01/31;21:06:53;1643663213;1643663213;+0000000000;000.001;+000006.04;0100010001;
+2022/01/31;21:07:07;1643663227;1643663226;-0000000001;000.000;+000006.04;0100010001;
+2022/02/02;05:22:55;1643779375;1643779370;-0000000005;001.344;+000006.45;0010100100;
+
+
+Vsechny casy v tabulce jsou v UT (GMT).
+RTC i GPS vnitrne pracuje pouze s UT nezavisle na casove zone nebo letnim a "zimnim" case.
+Letni nebo "zimni" cas se zohlednuje az pri ukladani zaznamu do EEPROM, nebo pri zobrazovani casu na displeji.
+
+---------------------
+Popis sloupcu:
+
+YYYY/MM/DD    - Datum z GPS v citelnem tvaru (UT).
+
+hh:nn:ss      - Cas z GPS v citelnem tvaru (UT).
+
+GPS [s]       - Cas z GPS prevedeny na pocet sekund od 1.1.1970.
+
+RTC [s]       - Aktualni cas v RTC prevedeny na pocet sekund od od 1.1.1970
+                  V pripade, ze neni sloupec zobrazeny, znamena to, ze je v RTC nesmyslny cas (rok je mensi nez 2020).
+
+RTC-GPS       - Odchylka mezi presnym casem GPS a casem ulozenym v RTC v sekundach.
+
+int[D]        - interval mezi poslednim a predposlednim serizenim casu ve dnech (desetinne cislo).  
+                  V pripade, ze neni sloupec zobrazeny, znamena to, ze je interval delsi nez 2 roky.
+
+kor[h]        - Po kolika hodinach se ma pridavat (+) nebo ubirat (-) korekcni sekunda.
+                  V pripade, ze neni sloupec zobrazeny, znamena to, ze je autokorekce vypnuta (nastavena na 1 sekundu za 68 let).
+
+Info          - Sloupec s binarne zakodovanymi informacemi o stavu RTC a autokorekce. Detailni vysvetleni nize.
+
+
+---------------------
+Popis bitu ve sloupci Info (cisla 9 a 0 oznacuji smer cislovani bitu):
+
+bit 0 ...  Moc kratky interval od predchoziho serizeni casu (kratsi nez 1 den).
+            RTC se seridi, ale korekce se prevezme z posledniho vypoctu, ktery byl provedeny za delsi obdobi.
+
+bit 1 ... Moc dlouhy interval od predchoziho serizeni casu (delsi nez pul roku).
+            RTC se seridi, ale korekce se zrusi.
+            Je nutne po nekolika dnech provest nove serizeni, pri kterem probehne novy vypocet korekci.
+            Muze to byt zpusobeno i vybitou baterii v RTC, nebo prvnim zapnutim pred nastavenim casu. 
+
+bit 2 ... Spravny interval od predchoziho serizeni casu (1 den az pul roku). RTC se seridi a rovnou se spocita nova korekce.
+
+bit 3 ... Velka odchylka mezi novym casem a casem v RTC.
+              RTC bylo sice serizeno na novy cas, ale korekce se zrusi. Mozna chyba zalozni baterie, nebo nepresne rucni nastaveni RTC.
+              Je nutne po nekolika dnech provest nove serizeni, pri kterem probehne novy vypocet korekci.
+
+bit 4 ... Odchylka mezi novym casem a casem v RTC je v poradku.
+              RTC bylo serizeno na novy cas, ale korekce zustava beze zmeny - z predchoziho vypoctu. 
+              Vypocet korekce z kratkeho intervalu mezi serizenimi by byl nepresny. 
+
+bit 5 ... Odchylka mezi novym casem a casem v RTC je v poradku. 
+              Protoze je v poradku i interval od posledniho serizeni, bude se pocitat nova autokorekce.
+
+bit 6 ... RTC je az moc nepresne. 
+              Mozna doslo drive k nejakemu spatnemu rucnimu prenastaveni. 
+              RTC bylo sice serizeno na novy cas, ale korekce se zrusi.
+              Autokorekce neni schopna takovouto chybu opravovat.
+              Znamenalo by to pridavat / ubirat sekundu drive nez kazdych 5 minut.
+              Je nutne po nekolika dnech provest novy pokus o serizeni, pri kterem probehne novy vypocet korekci.
+             
+bit 7 ... Zapis zmeny korekce do EEPROM.
+
+bit 8 ... Korekce se nezmenila - do EEPROM se nezapisuje.
+
+bit 9 ... REZERVA (zatim nepouzito = vzdycky 0).
+---------------------
+
+
+V idealnim pripade by mela byt korekce na vsech radkach stejna. To by znamenalo, ze se sice vnitrni RTC rozchazi od skutecneho casu, ale tato nepresnost je porad stejna a da se korigovat autokalibracni funkci.
+(V uplne nejvic nejidealnesim pripade by ta korekce mela byt dokonce porad nulova, ale to se asi nikdy nestane.)
+
+Vetsi rozdily korekci mezi radky ukazuji, ze je vnitrni RTC nestabilni a pro dosazeni presnosti je nutne castejsi serizovani casu.
+Nestabilita muze byt zpusobena treba i zmenou teploty.
+
+V nekterych pripadech mohou zustat nektera pole prazdna. 
+Napriklad kdyz se jedna o prvni serizeni casu, neni mozne zjistit interval od predchoziho serizeni ani z toho vypocitat korekci.
+ 

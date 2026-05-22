@@ -1,0 +1,58 @@
+Nastaveni domacich zemepisnych souradnic a casovych zon
+=============================================================
+
+Zemepisne souradnice se pouzivaji pro astronomicke vypocty polohy Slunce a Mesice.
+Zadavane cislo ve stupnich se zaokrouhluje na 1 desetinne misto:
+Severni zemepisna sirka a vychodni delka jsou zadavana jako kladna cisla
+Jizni sirka a zapadni delka se zadavaji jako zaporna cisla.
+
+Priklad nastaveni zemepisne sirky:
+pozadavek: @Gs 49.58
+odpoved:
+  Zemepisna sirka: 49.6
+
+Priklad nastaveni zemepisne delky:
+pozadavek: @Gd 14.99 
+odpoved:
+  Zemepisna delka: 15.0
+
+V programu se nastavuje posun letni a zimni casove zony proti GMT pasmu (UT) 
+Pro CR je nastaveni nasledujici:
+
+Nastaveni letni casove zony (treti znak je male 'L'):
+pozadavek: @Gl 2 
+odpoved:
+  Casovy posun zima/leto: 1 / 2 
+
+Nastaveni zimni casove zony:
+pozadavek: @Gz 1 
+odpoved:
+  Casovy posun zima/leto: 1 / 2 
+
+Casove zony vubec nemusi byt jen SEC a SELC. Program si poradi i s mimoevropskymi zonami.
+ Napriklad -6 pro americky CST, nebo +9 pro japonsky JST.
+
+Povoleny jsou ale jen celociselne posuny (Nepal, Indie nebo Afghanistan maji smulu.)
+
+Do programu jsem pridal i moznost nastavit popisky casovych zon.
+Kazdy popisek musi obsahovat presne 4 znaky (mohou to byt i mezery).
+Vsech 8 znaku se zadava najednou v jednom prikazu. Za prikazem @Gp musi nasledovat jedna mezera a pak hned 8 libovolnych ASCII znaku.
+Prvni 4 pro popis "zimni" zony, zbyle 4 pro popis "letni" zony.
+
+Priklad prikazu: @Gp SEC SELC 
+odpoved:
+  SEC 
+  SELC 
+
+Klidne ale muze byt popisek treba:
+@Gp ZimaLeto 
+odpoved:
+  Zima
+  Leto
+
+
+
+Poznamka: Do EEPROM se k zaznamum neukladaji textove popisky.
+Je tam jen bitova znacka ('0' / '1').
+Textove popisky se pouzivaji jen pri vypisech (do terminalu, nebo na kartu). 
+

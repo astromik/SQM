@@ -1,0 +1,16 @@
+Zobrazeni textove hlavicky tabulky zaznamu
+=============================================================
+
+Prikaz: h
+
+Jedna se o pozustatek z dob, kdy se zaznamy do terminalu vypisovaly bez hlavicky.
+Pred vypisem zaznamu se musel rucne spustit prikaz 'h', ktery do terminalu odeslal hlavicku tabulky zaznamu. 
+
+Pozdeji se zacala hlavicka pridavat ke kazdemu vypisu, ale prikaz 'h' uz zustal zachovan.
+
+Ukazka serioveho vystupu po zadani prikazu 'h':
+  pol. ; EEPROM ;  sek_1970  ;    datum   ;    cas   ; dvt; zona ;  jas  ;   jas  ;adr.;cid.; pozn. ; stab_jas ; infra ;  full ; [ms]; citl. ;teplota; tep.'C ;vlhkost; vlh. % ;  tlak  ;   GEO_lat  ;   GEO_long  ;  ALT  ; naklon ; azm ; S_el ; M_el ; M_sv
+
+
+Oddelovace polozek v hlavicce se nastavuji podle prikazu "#Oo;", "#Oot", "#Oo,", nebo "#Oo_".
+

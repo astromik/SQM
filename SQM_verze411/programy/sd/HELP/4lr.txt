@@ -1,0 +1,50 @@
+Vypis jednoho zvoleneho zaznamu v uspornem datovem formatu
+=============================================================
+
+Prikaz: *r nnn
+
+Prvni znaky odpovedi jsou sice citelne znaky "DATA:".
+Pak ale nasleduje blok dat v necitelnem INT formatu.
+
+Priklad vypisu (znaky v zavorkach jsou hexadecimalni cisla):
+{44}{41}{54}{41}{3A}{02}{38}{83}{1C}{66}{76}{91}{1F}{07}{E8}{00}{06}{00}{16}{00}{08}{00}{35}{00}{33}{27}{C0}{2B}{3B}{59}{2F}{00}{25}{1E}{28}{14}{C1}{8B}{2D}{1F}{FF}{FF}{FF}{FF}{FF}{FF}{FF}{FF}{FF}{27}{05}{01}{21}{00}{7D}{00}{35}{00}{64}{FF}{FF}{FF}{FF}{FF}{FF}{FF}{FF}{20}{0D}{0A}
+
+
+Vyznam datovych polozek je podobny jako pri komunikaci pres MODBUS:
+{44}{41}{54}{41}{3A}   ... text "DATA:"
+{02}{38}               ... index zaznamu (568)
+{83}{1C}               ... typ zaznamu (svetlo, stopky, casove razitko, kalibrace) a specialni znacky k zaznamu (leto/zima, zpusob spusteni, cidlo, stabilta, slave adresa) 					
+{66}{76}{91}{1F}       ... pocet sekund zaznamu od 1.1.1970 (1719046431)
+{07}{E8}               ... rok (2024)
+{00}{06}               ... mesic (6)
+{00}{16}               ... den (22)
+{00}{08}               ... hodina (8)
+{00}{35}               ... minuta (53)
+{00}{33}               ... sekunda (51)
+{27}{C0}               ... svetlo (10176 = 10.176 mag/arcsec2)
+{2B}{3B}               ... infra (11067)
+{59}{2F}               ... full (22831)
+{00}{25}               ... konfigurace cidla svetla (AGAIN, ATIME)
+{1E}{28}               ... teplota (7720 = 27.2'C)
+{14}{C1}               ... vlhkost (5313 = 53.13%)
+{8B}{2D}               ... tlak (35629 = 95629 Pa)
+{1F}{FF}{FF}{FF}       ... GPS lat (nezaznamenano)
+{FF}{FF}{FF}{FF}       ... GPS long (nezaznamenano)
+{FF}{FF}               ... GPS alt (nezaznamenano)
+{27}{05}               ... naklon (9989 = -1.1 stupne)
+{01}{21}               ... azimut (289 stupnu)
+{00}{7D}               ... elevace Slunce (125 = +35 stupnu)
+{00}{35}               ... elevace Mesice (53 = -37 stupnu)
+{00}{64}               ... osvetleni Mesice (100% = uplnek)
+{FF}{FF}               ... rezerva
+{FF}{FF}               ... rezerva 
+{FF}{FF}               ... rezerva
+{FF}{FF}               ... rezerva
+{20}{0D}{0A}           ... zaverecna mezera a odradkovani
+
+
+
+Textovy vypis pro predchozi datovy vypis by vypadal takto:
+  pol. ; EEPROM ;  sek_1970  ;    datum   ;    cas   ; dvt; zona ;  jas  ;   jas  ;adr.;cid.; pozn. ; stab_jas ; infra ;  full ; [ms]; citl. ;teplota; tep.'C ;vlhkost; vlh. % ;  tlak  ;   GEO_lat  ;   GEO_long  ;  ALT  ; naklon ; azm ; S_el ; M_el ; M_sv ;
+ 00568 ; 021112 ; 1719046431 ; 22.06.2024 ; 08:53:51 ; So ; SELC ; 10176 ; 10,176 ; 01 ; 01 ; komun ;  STABIL  ; 11067 ; 22831 ; 600 ;  428x ; 07720 ; +27,20 ; 05313 ; 053,13 ; 095629 ; ---------- ; ----------- ; ----- ; -001,1 ; 289 ;  +35 ;  -37 ;  99  ;
+ 

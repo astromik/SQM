@@ -1,0 +1,10 @@
+Rezim 30S: Pozastavit mereni 
+=============================================================
+
+Prikaz %P pozastavi zaznam (Pause).
+
+Do seriove linky se vrati informace o zmene stavu:
+  Mereni pozastaveno
+
+Zaznam hodnot je mozne spustit a zastavit i pres menu polozkou " SPEC".
+ 

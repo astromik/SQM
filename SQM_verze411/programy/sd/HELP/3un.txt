@@ -1,0 +1,14 @@
+Rezim 30S: Nastaveni zaznamu na pozici
+=============================================================
+
+Prikaz %N je rychla nahrada prikazu pro formatovani.
+Dojde pri ni ale pouze ke smazani prvniho zaznamu v EEPROM 
+  (na adrese 10) a prepsani zachytneho bodu pro hledani 
+  volneho mista v pameti.
+
+Dalsi zaznamy se budou ukladat od teto pozice a prepisovat starsi zaznamy. 
+
+Pri pokusu o vypis dat z EEPROM se vypisou i starsi (zatim neprepsane) zaznamy.
+
+Tento prikaz neovlivnuje ani drive nastaveny interval mereni.
+

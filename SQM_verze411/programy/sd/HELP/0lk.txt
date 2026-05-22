@@ -1,0 +1,35 @@
+Kalibracni mereni jasu a teploty
+=============================================================
+
+------------------------------
+Kalibrace jasu
+
+Prikaz pro kalibracni mereni jasu: kj
+
+Po spusteni prikazu se provede 10 mereni jasu bez prepoctu podle kalibracni tabulky.
+Kazde z 10 mereni se uklada do EEPROM.
+V seriove lince se prubezne zobrazuje bargraf a po skonceni mereni se zobrazi i zprumerovana hodnota jasu bez korekci.    
+
+odpoved:
+  Plosny jas bez kalibracni korekce: 
+  |----------|
+  |##########|
+  17.125 mag/arcsec2 
+
+
+
+
+
+------------------------------
+Kalibrace teploty
+
+Prikaz pro kalibracni mereni teploty: kt
+
+odpoved:
+  Teplota bez kalibracni korekce: 7303  =  23.03'C
+
+
+V tomto pripade se neporovadi zadne prumerovani, ani se vysledek neuklada do EEPROM.
+Prvni cislo je hodnota teploty v setinach stupne Celsia zvysena o 50 stupnu, ktera by se pouzila pri zapisu do kalibracni tabulky.
+Druhe cislo je citelna teplota ve stupnich Celsia. 
+ 

@@ -1,0 +1,123 @@
+Napoveda pro funkci vypisu souboru do seriove linky
+=============================================================
+
+Zakladni kod funkce je: @>
+
+Funkce ma nasledujici parametry
+    @> [t][,par2][,par3]
+
+t ... typ souboru 
+                          A  "/LOGS/SYS_LOG.TXT" 
+                          B  "/yyyy/########.csv"
+                          C  "/R30S/r_30s_##.csv"
+                          D  "/LOGS/RTC_set.csv"
+                          E  "/LOGS/SYS_MEM.TXT"
+                          F  "/LOGS/logafd.txt"
+                          G  "/LOGS/logjas.txt"
+                          H  "/TRCK/trck####.gpx"
+                          I  "/CALB/seznam.txt"
+                             "/CALB/nnn-mmdd.csv"
+                          ?  "/HELP/2_[.txt"        (tato napoveda - bez zadani typu je to default)
+
+par2 ...  maximalni pocet zaznamu (radek) pro vypis
+            (minimum je 1; bez parametru = 50) radky se pocitaji od konce souboru
+             Pro typ '?' se vypisuje cela napoveda, nezavisle na zadanem poctu radek.
+             Pro typ 'H' se take vypisuje cely soubor
+             Pro typ 'I' se take vypisuje cely soubor
+
+
+par3 ...  pro typ A   volba vypisovane adresy 
+               (bez parametru = vsechno)
+          pro typ B   datum v CSV souboru 
+               (bez parametru = datum posledniho zaznamu)
+          pro typ C   poradove cislo ## ve jmene "r_30s_##.csv"
+               (bez parametru = posledni pouzite cislo)
+          pro typ H   poradove cislo #### ve jmene "trck####.gpx"
+               (bez parametru = posledni pouzite cislo)
+          pro typ I   jak stary soubor se ma zobrazit ( 1 = posledni soubor;  2 = predposledni soubor; ...  50 = padesaty soubor od konce)
+                              funguji i zaporna cisla (-1 = posledni soubor; -2 = predposledni soubor; ... -50 = padesaty soubor od konce)) 
+               (bez parametru, nebo 0 = vypise seznam souboru podle poradi ukladani)
+          pro ostatni typy souboru je parametr 3 vypusten.                                            
+
+    
+Pri spatne zadanem poctu radek (vysoky pocet nebo nesmyslny parametr)
+   se vypise jen to, co je v souboru.
+
+Pri prebyvajicim parametru 3 ve funkcich, ktere ho nepouzivaji, se parametr ignoruje.
+
+Pri spatne zadanem datumu nebo indexu souboru se zobrazi chybove hlaseni.
+Stejne tak se vypise chyba pri pokusu o cteni neexistujiciho souboru.
+
+Protoze se u vypisu trasovaciho soubru (typ 'H') nebere ohled na zadany pocet radek ve vypisu, muze mit prikaz pro vypis souboru i jednodussi format, 
+  kdy se vynechava pocet radek a zadava se jen cislo v nazvu souboru.
+       napriklad:     "@> H,8" vypise cely obsah souboru "/TRCK/trck0008.gpx"
+
+Podobne je to i pri vypisu kalibracnich CSV souboru (typ 'I'). I tam se vzdycky vypisuje cely soubor, takze na zadanem poctu radek nezalezi a prikaz tak
+       muze mit i jednodussi format. Misto "@> I,9999,3" je mozne zadat jen "@> I,3".
+
+
+-------
+
+Na podobnem principu funguji i vypisy napoved pro jednotlive prikazy, ktere jsou zadavane pres seriovou linku.
+Soubory s napovedami jsou ulozene v adresari \HELP\ a oteviraji se prikazem '?', za kterym nasleduje znak typu funkce (#@%) a prvni znak funkce ("?#P").
+Pro funkce u kterych typovy znak neexistuje se po otazniku zapise jen prvni znak funkce ("?t").
+Kdyz prvni znak funkce chybi, vypise se jen seznam polozek menu pro prislusny typ funkci ("?#").
+
+====================================================
+
+Priklady:
+============
+@> A,100             vypise poslednich 100 radek se souboru  "/LOGS/SYS_LOG.TXT"
+
+@> A,5,11            vypise poslednich 5 radek s informacemi o zmenach poctu prumerovani (adresa 11 v EEPROM)
+                         ze souboru "/LOGS/SYS_LOG.TXT" 
+                         V tomto typu pozadavku pocet radek neznamena poslednich 5 radek v souboru, ale 
+                         poslednich 5 vyskytu zadane adresy (nebo specialniho kodu) v celem souboru.
+
+@> A,20,994          vypise poslednich 20 mereni napeti hlavniho zdroje (baterie) - specialni kod 994
+
+@> B,50,20240420     vypise poslednich 50 radek ze souboru "/2024/20240420.csv" se zaznamy z mereni
+
+@> B,99999,20240420  vypise cely soubor "/2024/20240420.csv" se zaznamy z mereni.
+                           Predpoklada se, ze v souboru nebude 99999 zaznamu, 
+                            takze se vypise jen to, co je k dispozici.
+
+@> B                 vypise cely posledni soubor se zaznamy  
+
+@> C,10,15           vypise poslednich 10 zaznamu ze souboru "/R30S/r_30s_15.csv"  
+
+@> C,60              vypise poslednich 60 radek v poslednim souboru "/R30S/r_30s_##.csv"
+
+@> D                 vypise cely soubor "/LOGS/RTC_set.csv"
+
+@> D,45              vypise jen poslednich 45 radek ze souboru "/LOGS/RTC_set.csv"
+
+@> E                 vypise vsech 700 radek se zalohovanymi systemovymi parametry (soubor "/LOGS/SYS_MEM.TXT")
+
+@> E,100             vypise jen poslednich 100 radek (adresy 599 az 699) se zalohovanymi systemovymi parametry
+                             (soubor "/LOGS/SYS_MEM.TXT")
+
+@> H,50,123          vypise trasovaci soubor "/TRCK/trck0123.gpx". Zadany pocet radek (50) ve vypisu se ignoruje, vypise se vzdycky cely soubor.
+
+@> H,123             zjednoduseny zapis predchoziho prikladu bez zadaneho poctu radek            
+
+
+@> I                 vypise seznam kalibracnich CSV souboru ve slozce "/CALB/"
+
+@> I,60,2            vypise cely obsah predposledniho ulozeneho CSV souboru ve slozce "/CALB/". Parametr 60 (pocet radek) se ignoruje
+
+@> I,1               vypise cely obsah posledniho ulozeneho CSV souboru ve slozce "/CALB/"
+@> I,-2              vypise cely obsah predposledniho ulozeneho CSV souboru ve slozce "/CALB/"
+
+
+@> ?                 vypise cely textovy soubor "/HELP/2_[.TXT"  (tato napoveda)
+@>                       Znak '?' je mozne i vynechat (je to defaultni funkce) 
+
+
+
+?@m                  vypise detailni napovedu k funkci zapinani a vypinani modbusu
+?#T                  vypise detailni napovedu k nastaveni casu
+?r                   vypise detailni napovedu k funkcim pro vypisy zaznamu do seriove linky
+%?                   vypise seznam funkci, ktere zacinaji znakem '%'
+??                   vypise seznam vsech funkci - nezavisle na tom, jakym znakem zacinaji
+ 

@@ -1,0 +1,127 @@
+Simulace planet slunecni soustavy
+=============================================================
+
+Prikaz: *s p c d.m.r 
+
+*s je zakladni kod funkce.
+
+Seznam dalsich parametru:
+   p ... cislo planety 1 az 8   (Zeme se preskakuje) 
+              1 - Merkur
+              2 - Venuse
+              3 - Mars
+              4 - Jupiter
+              5 - Saturn
+              6 - Uran
+              7 - Neptun
+              8 - Pluto
+
+              0 - Slunce a Mesic (specialni typ vypisu)
+
+  c ... pocet cyklu pro simulaci. Jeden cyklus = 1 den. (Povoleny rozsah 0 az 20000 - to je asi 55 let)            
+             Pri zadani hodnoty 0 se provede vypis jednoho dne ve zjednodusenem formatu (bez hlavicky)
+             s teckou jako desetinnym oddelovacem, pouzitelnem pro PC program.
+
+  d.m.r ... datum prvniho dne simulace den, mesic a rok    (Povoleny rozsah 1.1.2000 - 31.12.2080)
+                Provadi se test na korektne zadane datum (spravny pocet dni v mesici, spravny pocet mesicu)
+
+
+Pri spatne zadanem parametru probehne upozorneni "Vstup mimo rozsah ..." a k simulaci nedojde.
+
+Kdyz jsou vsechny parametry ve spravnych rozsazich, vypise se do seriove linky tabulka s vypoctenymi astronomickymi udaji
+  pro zvolenou planetu a prislusny rozsah datumu.
+
+Vypocty pro planety se provadeji vzdycky pro poledne zadaneho dne v nulte casove zone (12:00 UT).
+V techto vypoctech nezalezi na domacich souradnicich, ani na nastavene casove zone.
+
+Pri vypoctech Slunce a Mesice (parametr 'p' = 0) se pocitaji i casy vychodu a zapadu a proto na domacich souradnicich a casove zone zalezi.
+I tady zacina simulace od poledne zadaneho dne v nulte casove zone (12:00 UT).
+Simuluje se po minutach pro interval 24 hodin (1440 minut). Tato simulace je vyrazne pomalejsi nez simulace planet (parametr 'p' = 1 az 8).
+Vystupni casy (vychody, zapady, maximalni elevace ...) jsou ale ve vysledku prevedene do mistni casove zony.
+
+Jednotlive hodnoty ve vysledne tabulce jsou oddelene strednikem.
+
+Desetinny oddelovac cisel se prebira z aktualniho nastaveni, takze muze byt podle potreby tecka nebo carka.
+Funkce pro zmenu desetinnych oddelovacu ve vystupech:
+    #O,1 ... desetinny oddelovac: carka
+    #O,0 ... desetinny oddelovac: tecka
+
+Hodnoty ve vypisu je mozne nechat uzavirat do uvozovek:
+    #O"1 ... uzavirat do uvozovek
+    #O"0 ... neuzavirat do uvozovek
+
+
+
+
+Popis nekterych sloupcu pri vypisu planet (parametr 'p' v rozsahu 1 az 8):
+  index         ... index planety (zadany parametr 'p')
+  elongace      ... uhlova vzdalenost mezi Sluncem a planetou pri pohledu ze Zeme ve stupnich
+  E/W           ... vychodni nebo zapadni elongace (plati jen pro Merkur a Venusi, u ostatnich planet se zobrazuje '?')
+  vzdalenost_PZ ... vzdalenost planeta - Zeme v astronomickych jednotkach
+  vzdalenost_SP ... vzdalenost Slunce - planeta v astronomickych jednotkach
+  vzdalenost_ZS ... vzdalenost Zeme - Slunce v astronomickych jednotkach
+  fazovy uhel   ... uhel mezi Zemi, Sluncem a planetou s vrcholem v planete (ve stupnich)
+  osvetleni     ... osvetlena cast planety pri pohledu ze Zeme. Vyznam ma jen pro Merkur a Venusi. Pro ostatni planety se blizi hodnote 1 (to je 100%).
+  mag. prstencu ... odhaduje se jen pro Saturn. Vypocet neni uplne presny.
+ 
+
+Popis nekterych sloupcu pri vypisu Slunce a Mesice (parametr 'p' = 0):
+  zapad Sl.       ... cas zapadu Slunce v mistnim case (je nutne mit nastavene spravne domaci souradnice a casovou zonu)
+      azimut      ... na jakem azimutu dojde k zapadu Slunce
+  AS konec        ... cas konce astronomickeho soumraku (zacina astronomicka noc) - Slunce kleslo 18 stupnu pod horizont.  
+  DS zacatek      ... zacatek volitelneho vecerniho soumraku (Slunce kleslo pod elevaci nastavenou prikazem @N)
+  DS konec        ... konec volitelneho ranniho usvitu (Slunce vyslo nad elevaci nastavenou prikazem @N)
+  AS zacatek      ... cas ranniho zacatku astronomickeho soumraku (konci astronomicka noc) - Slunce vyslo nad -18 stupnu (pod horizontem).  
+  vychod Sl.      ... cas vychodu Slunce v mistnim case (je nutne mit nastavene spravne domaci souradnice a casovou zonu)
+      azimut      ... na jakem azimutu dojde k vychodu Slunce
+  max elevace Sl  ... mistni cas, pri kterem bude Slunce nejvyse nad horizontem (prave poledne)
+      elevace     ... maximalni elevace Slunce v case z predchoziho sloupce
+  vychod Mes.     ... mistni cas vychodu Mesice
+      azimut      ... na jakem azimutu dojde k vychodu Mesice
+  zapad Mes.      ... mistni cas zapadu Mesice
+      azimut      ... na jakem azimutu dojde k zapadu Mesice
+  max elevace Mes.... mistni cas, kdy bude Mesic nejvyse nad horizontem
+     elevace      ... maximalni elevace Mesice v case z predchoziho sloupce
+  vzdalenost Mes. ... vzdalenost Mesice od stredu Zeme v km
+  faze Mes.       ... osvetlena cast Mesice v procentech. (50 = prvni nebo posledni ctvrt, 100 = uplnek) 
+
+
+Dlouho trvajici vypis je mozne predcasne prerusit stiskem tlacitka [OK], nebo odeslanim libovolneho znaku do seriove linky.
+Vypis se prerusi a pod nim se zobrazi napis " ... break"
+
+----------------------------------------------------------------
+Priklad:
+   *s 2 3 15.6.2027
+
+
+    datum   ; planeta ; index ;  elongace  ; E/W ; RA_planety ; DEC_planety ; RA_Slunce  ; DEC_Slunce ; vzdalenost_PZ ; vzdalenost_SP ; vzdalenost_ZS ; fazovy_uhel ;   osvetleni  ; mag. samotne planety ; mag. prstencu ; mag prstence + planety ;
+ 15.06.2027 ; Venuse  ;   2   ; 016,084696 ;  W  ; 066,504585 ; +20,900503  ; 083,680725 ; +23,308563 ;   01,646593   ;   00,727275   ;    1,015735   ;  022,764709 ;   0,961051   ;     -03,871898       ;  ----------   ;     -03,871898         ;
+ 16.06.2027 ; Venuse  ;   2   ; 015,818022 ;  W  ; 067,789894 ; +21,126089  ; 084,720039 ; +23,346949 ;   01,649647   ;   00,727078   ;    1,015827   ;  022,385445 ;   0,962321   ;     -03,872520       ;  ----------   ;     -03,872520         ;
+ 17.06.2027 ; Venuse  ;   2   ; 015,550998 ;  W  ; 069,079254 ; +21,342060  ; 085,759712 ; +23,378466 ;   01,652648   ;   00,726880   ;    1,015915   ;  022,005823 ;   0,963573   ;     -03,873167       ;  ----------   ;     -03,873167         ;
+
+Pro Saturn bylo obtizne vypocitat magnitudu samotnych prstencu, proto je pouzity jen jeji odhad.
+U ostatnich planet se zobrazuje pouze magnituda samotne planety. 
+
+
+
+Priklad vystupu pro PC program pro Neptun pri zadani poctu cyklu '0' (hlavicka se netiskne, uvozovky se nikdy nepouzivaji a desetinny oddelovac je vzdycky tecka):
+   *s 7 0 26.3.2048
+
+ 26.03.2048 ; Neptun  ;   7   ; 042.536140 ;  ?  ; 047.065178 ; +15.828691  ; 005.990315 ; +02.589848 ;   30.530088   ;   29.802629   ;    0.997610   ;  001.296725 ;   0.999872   ;     +07.924913       ;  ----------   ;     +07.924913         ;
+
+
+
+
+Priklad specialniho vypisu pro Slunce a Mesic (parametr 'p' = 0)
+*s 0 5 30.7.2024
+
+    datum   ;  zapad Sl. ; azimut ; AS konec ; DS zacatek ; DS konec ; AS zacatek ; vychod Sl. ; azimut ; max elevace Sl ; elevace ; vzdalenost Sl. [AU] ; vychod Mes. ; azimut ; zapad Mes. ; azimut ; max elevace Mes. ; elevace ; vzdalenost Mes. [km] ; faze Mes. ;
+ 30.07.2024 ;    20:47   ;   300  ;  23:20   ;   21:17    ;   5:03   ;    3:00    ;    5:33    ;  060   ;      13:09     ;    59   ;       1,015153      ;     0:44    ;   044  ;   17:36    ;   315  ;       9:41       ;    68   ;        381603        ;    020    ;
+ 31.07.2024 ;    20:45   ;   300  ;  23:17   ;   21:16    ;   5:04   ;    3:03    ;    5:35    ;  061   ;      13:09     ;    58   ;       1,015031      ;     1:32    ;   041  ;   18:47    ;   319  ;      10:38       ;    69   ;        384955        ;    013    ;
+ 01.08.2024 ;    20:44   ;   299  ;  23:14   ;   21:14    ;   5:06   ;    3:06    ;    5:36    ;  061   ;      13:09     ;    58   ;       1,014906      ;     2:34    ;   042  ;   19:44    ;   318  ;      11:34       ;    68   ;        388324        ;    006    ;
+ 02.08.2024 ;    20:42   ;   299  ;  23:11   ;   21:12    ;   5:07   ;    3:09    ;    5:37    ;  061   ;      13:09     ;    58   ;       1,014776      ;     3:46    ;   047  ;   20:25    ;   315  ;      12:00       ;    67   ;        391690        ;    002    ;
+ 03.08.2024 ;    20:41   ;   298  ;  23:08   ;   21:11    ;   5:09   ;    3:12    ;    5:39    ;  062   ;      13:09     ;    58   ;       1,014642      ;     5:02    ;   053  ;   20:55    ;   309  ;      12:27       ;    65   ;        395010        ;    000    ;
+
+
+
+

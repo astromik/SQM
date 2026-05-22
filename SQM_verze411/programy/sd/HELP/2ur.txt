@@ -1,0 +1,66 @@
+Funkce primeho cteni z EEPROM 
+=============================================================
+
+Zakladni kod funkce je: @R aaa
+
+Parametr 'aaa' je adresa v EEPROM v rozsahu 0 az 131071 (to je 17-bitova adresa).
+   Pri zadani vyssiho cisla se prebytecne vysoke bity v adrese osekaji:
+     aaa &= 0x1FFFF;
+
+Po spusteni funkce vypise jednobajtovy obsah EEPROM na zadane adrese (v osmibitovem binarnim a desitkovem formatu)
+Zaroven jeste vypise obsah EEPROM slouceny s nasledujici adresou jako 16-bitove bezznamenkove cislo.
+      Vlozena adresa (parametr 'aaa') se predpoklada jako MSB a nasledujici adresa ('aaa + 1') jako LSB
+ 
+  hodnota = EEPROM[aaa] * 256 + EEPROM[aaa + 1]
+
+Priklad:
+  @R 485
+
+EEPROM[485] = 0b00000001 = 1
+MSB[485] + LSB[486] = (unsigned int) 495
+
+
+
+
+// definice adres v systemove casti EEPROM (verze 1)
+#define eeaddr_RTC_set                0UL    // (4 bajty)   adresa v EEPROM pro cas posledniho serizeni RTC v sekundach od 1.1.1970
+#define eeaddr_RTC_korekce            4UL    // (4 bajty)   adresa v EEPROM s informaci, za jak dlouho se ma pridavat autokalibracni sekunda  
+#define eeaddr_leto_zima              8UL    // (1 bit)     adresa v EEPROM se znackou aktualni casove zony (0=zima; 1=leto)
+#define eeaddr_oddelovace             9UL    // (5 bitu)    adresa v EEPROM s informacemi o oddelovacich v CSV souborech
+#define eeaddr_automat               10UL    // (1 bajt)    adresa v EEPROM s intervalem automatickeho spousteni mereni v minutach
+#define eeaddr_prumerovani           11UL    // (5 bitu)    adresa v EEPROM s poctem prumerovani mereni svetla
+#define eeaddr_modbus_LED            12UL    // (2 bity)    adresa v EEPROM s informacemi o zapnuti a vypnuti modbusu a LED nebo displejovem menu
+#define eeaddr_LED                   13UL    // (1 bajt)    adresa v EEPROM s informacemi o vypinani jednotlivych LED funkci
+#define eeaddr_SLAVE_baud            14UL    // (6 bitu)    adresa v EEPROM s informacemi o adrese a rychlosti komunikace
+#define eeaddr_CRC_tset_lock         15UL    // (5 bitu)    adresa v EEPROM s informacemi o testovani CRC, blokovani debug zapisu o serizeni casu a blokovani bocniho tlacitka
+#define eeaddr_stab                  16UL    // (1 bajt)    adresa v EEPROM s urovni pro urceni nestabilniho jasu
+#define eeaddr_pocet_cidel           17UL    // (3 bity)    adresa v EEPROM s poctem cidel svetla na pridavne desce
+#define eeaddr_10kB_znacka           18UL    // (1 bajt)    adresa v EEPROM se znackou zaplneni pameti pro zaznamy (zvysuje se po kazdych 10kB zaplneni)
+#define eeaddr_uroven_EEPROM         19UL    // (1 bajt)    adresa v EEPROM s urovni svetla pod kterou se uklada zaznam do EEPROM (pri vetsi tme, nez je nastaveno)
+#define eeaddr_teplotni_kalibrace    20UL    // (28 bajtu)  adresa v EEPROM s kalibracni tabulkou pro teplotu (2 sloupce * 7 dvojbajtovych hodnot)
+#define eeaddr_TS_stanoviste         48UL    // (2 bajty)   adresa v EEPROM se znackou pro nulovani poradi v zaznamech casovych razitek a aktualnim prednastavenym stanovistem
+#define eeaddr_svetelna_kalibrace    50UL    // (420 bajtu) adresa v EEPROM s kalibracnimi tabulkami pro svetlo (7 cidel * 2 sloupce * 15 dvojbajtovych hodnot)
+#define eeaddr_TS_aktual            470UL    // (1 bajt)    adresa v EEPROM s aktualnim cislem casove znacky 
+#define eeaddr_kompas_offset        471UL    // (1 bajt)    adresa v EEPROM s ulozenou hodnotou dokalibrovani kompasu
+#define eeaddr_perif_bity           472UL    // (2 bajty)   adresa v EEPROM s informacemi o deaktivovanych periferiich
+#define eeaddr_beep_bity            474UL    // (2 bajty)   adresa v EEPROM s nastavenim funkci, ktere jsou signalizovany pipanim
+#define eeaddr_rezerva_1            476UL    // (9 bajtu)   rezerva v EEPROM
+#define eeaddr_GEO_lat              485UL    // (2 bajty)   adresa v EEPROM se zemepisnou sirkou pro astronomicke vypocty
+#define eeaddr_GEO_lon              487UL    // (2 bajty)   adresa v EEPROM se zemepisnou delkou pro astronomicke vypocty
+#define eeaddr_zima_hod             489UL    // (1 bajt)    adresa v EEPROM s casovym posunem proti UTC pri zimnim case
+#define eeaddr_leto_hod             490UL    // (1 bajt)    adresa v EEPROM s casovym posunem proti UTC pri letnim case
+#define eeaddr_menu_bity            491UL    // (4 bajty)   adresa v EEPROM s povolenymi nebo zakazanymi polozkami v menu
+#define eeaddr_posledni_den         495UL    // (4 bajty)   posledni den, kdy probihal nejaky zaznam. Pouziva se pro vypis posledniho souboru se zaznamy do seriove linky.
+#define eeaddr_AfD                  499UL    // (1 bajt)    adresa v EEPROM s hodnotou jasu pro Alarm for Darkness
+#define eeaddr_stanoviste           500UL    // (75 bajtu)  adresa v EEPROM s 5 prednastavenymi pozorovacimi stanovisti (10 znaku pro nazev a 5 bajtu pro displejovou grafiku)
+#define eeaddr_txt_zony             575UL    // (8 bajtu)   adresa v EEPROM s oznacenim casovych zon v textovem formatu (napr: "SEC " a "SELC")
+#define eeaddr_luxmetr              583UL    // (6 bajtu)   adresa v EEPROM s kalibracnimi konstantami pro luxmetr
+#define eeaddr_rezerva_2            589UL    // (10 bajtu)  rezerva v EEPROM
+#define eeaddr_test_write           599UL    // (1 bajt)    testovaci zapis na kontrolu, ze EEPROM funguje
+#define eeaddr_kompas               600UL    // (12 bajtu)  adresa v EEPROM s kalibracnimi konstantami pro kompas
+#define eeaddr_naklon_horiz         612UL    // (6 bajtu)   adresa v EEPROM s kalibracnimi konstantami pro naklonomer (horizontalni poloha)
+#define eeaddr_naklon_vert          618UL    // (6 bajtu)   adresa v EEPROM s kalibracnimi konstantami pro naklonomer (vertikalni poloha)
+#define eeaddr_alarmy               624UL    // (12 bajtu)  adresa v EEPROM s casy 6 alarmu pro DS3231 (posledni dvojbajt je pro funkci "odpocet").
+#define eeaddr_TEST_alarm           636UL    // (1 bajt)    adresa v EEPROM se znackou pro testovaci alarm.
+#define eeaddr_rezerva_3            637UL    // (63 bajtu)  rezerva v EEPROM
+

@@ -1,0 +1,27 @@
+Informace o nastaveni vnitrnich hodin
+=============================================================
+
+Prikaz: #I
+
+Vypise detailni informace i nastaveni vnitrnich hodin (RTC) v procesoru.
+
+Priklad vypisu:
+----------------------------------
+Informace o RTC
+---------------
+Aktualne je SELC
+Cas v RTC bez korekci (UTC): 1.6.2024 17:41:57 So 
+Cas posledniho serizeni RTC (data z EEPROM) (UTC): 
+ ... v sekundach od 1.1.1970: 1716727644
+ ... v citelnem tvaru: 26.5.2024 12:47:24 Ne 
+Interval od posledniho nastaveni casu: 536073 [s] (= 6.20 [d])
+Korekce casu (data z EEPROM): 
+ ... ulozene cislo v HEX formatu : 7FFFFFFF
+ ... sekunda se pricita kazdych 2147483647 sekund od posledniho serizeni.
+           (to je asi 68.0 roku)
+Zatim se takto melo pridat/ubrat: +0 extra sekund.
+Takze zkorigovany cas pro zobrazeni je: 1.6.2024 19:41:58 So SELC
+Cas v DS3231: 1.6.2034 19:41:57
+
+----------------------------------
+

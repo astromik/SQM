@@ -1,0 +1,18 @@
+Obnoveni nastaveni z SD karty
+=============================================================
+
+Soubor "LOGS/SYS_MEM.TXT" se zazalohovanym obsahem EEPROM, ktery byl vytvoreny prikazem @Z,
+  je mozne zapsat zpatky do EEPROM prikazem @O.
+
+Pred obnovenim se zkontroluje, jestli odpovida verze zalohovaciho souboru aktualnimu rozlozeni dat v EEPROM.
+Verze rozlozeni EEPROM je ulozena na prvni radce souboru (napriklad: "ver:001").
+
+Pokud verze souboru neodpovida aktualnimu rozlozeni dat, zobrazi se varovne hlaseni a data se neobnovi:
+    "Verze zalohovaneho souboru se neshoduje s verzi pozadovanou v tomto programu."
+
+
+Pri obnoveni dat se zamerne preskakuji udaje o kalibraci casu a zachytna adresa prazdneho mista v EEPROM.
+
+Zachytna adresa se nastavi vzdycky na prvni zaznam, takze nalezeni prvni volne pozice v EEPROM pro ukladani dalsiho
+ zaznamu muze po provedeni teto funkce trvat delsi dobu.
+

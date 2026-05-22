@@ -1,0 +1,21 @@
+Zmena verze SQM (displej / LED)
+=============================================================
+
+SQM bylo vyvijeno pro dva zpusoby pouziti:
+ 1) rucni verze s displejem
+ 2) trvale nainstalovana verze se signalizacni LED
+
+Jeden z rozdilu mezi temito verzemi je ve zpusobu prace s menu.
+
+Verze s displejem zobrazuje rozsirene menu na petiznakovem displeji s moznosti listovani pomoci tlacitek.
+Verze s LED ma menu omezene jen na nekolik zakladnich servisnich polozek, ktere jsou signalizovany blikanim LED.
+
+Program je spolecny pro obe verze.
+
+Displejova verze menu se prepina prikazem:  @Vd
+      odpoved:  "Displejova verze SQM"
+
+
+Pro prepnuti na LED verzi slouzi prikaz:    @Vl              (treti znak je male 'L' jako LED)
+      odpoved:  "LED verze SQM"
+ 

@@ -1,0 +1,27 @@
+Nastaveni adresy pro komunikaci
+=============================================================
+
+Pri komunikaci pres RS485 je mozne na linku pripojit nekolik SQM paralelne.
+Je ale nutne, aby kazde melo vlastni unikatni adresu.
+
+Adresa se nastavuje prikazem:  #A nn
+
+Parametr 'nn' je nova adresa a muze byt v rozsahu 1 az 15.
+
+priklad:
+  #A 3
+
+odpoved:
+  SLAVE adresa: 3
+
+
+Nastavena adresa se pridava ke kazdemu zaznamu do EEPROM i do citelneho souboru CSV.
+
+              |||
+              VVV
+.....   jas  ;adr.;cid.; pozn. ; .....
+..... 14,956 ; 03 ; 01 ; tl_UP ; .....
+
+
+Aktualne nastavena adresa se vypisuje v systemovych informacich (prikaz 'i').
+

@@ -1,0 +1,13 @@
+Mereni teploty 
+=============================================================
+
+Prikaz: t
+
+Jen zmeri aktualni teplotu.
+Neprovadi zadne prumerovani ani ukladani do EEPROM.
+Do seriove linky vypise hodnotu teploty z cidla i hodnotu s korekci, ktera je prepoctena podle kalibracni tabulky.
+
+Priklad vypisu:
+Teplota bez korekce: 23.82 'C
+Teplota s korekci podle tabulky: 22.65 'C
+

@@ -1,0 +1,10 @@
+Spusteni mereni pres seriovou linku
+=============================================================
+
+Prikaz: *m
+
+Spusteni mereni, ale bez vystupu do seriove linky. 
+Behem mereni blika na druhe sedmisegmentovce zleva tecka.
+
+Do pameti se takto vytvoreny zaznam ulozi se znackou "komun" (spusteni pres komunikacni linku).
+ 

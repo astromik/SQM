@@ -1,0 +1,11 @@
+Mereni vlhkosti 
+=============================================================
+
+Prikaz: v
+
+Jen zmeri aktualni relativni vlhkost (RH) a vypise ji do seriove linky.
+Zadne ukladani do EEPROM.
+
+Priklad vypisu:
+Vlhkost: 57.29 %
+

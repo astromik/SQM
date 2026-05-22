@@ -1,0 +1,33 @@
+Kalibrace luxmetru
+=============================================================
+
+Kalibraci je mozne provest jen porovnanim s jinym luxmetrem.
+Pro hrube nastaveni prevodni krivky je mozne pouzit kvadratickou funkci
+    y = (C * x * x) + (A * x) + B 
+
+  kde 'y' je hodnota, ktera se ma zobrazit
+    a 'x' je hodnota ziskana primo z cidla. 
+
+
+Konstanty 'A', 'B', a 'C' se zadavaji do seriove linky prikazy:
+  #Xa n.n 
+  #Xb n.n
+  #Xc n.n
+
+(n.n je desetinne cislo s desetinnou teckou jako oddelovacem)
+Pro konstanty 'A' a 'B' se zadava normalni pozadovana hodnota.
+Rozsah zadavanych cisel je +/-  655,35 (nejnizsi rozliseni je tedy 1 setina).
+
+Pro kvadratickou konstantu 'C', ktera linearni prevodni primku muze "ohnout", se zadava cislo ve stotisicinach.
+Rozsah takto zadaneho cisla je asi +/- 65.54 a nejmensi rozliseni je tedy v desetimiliontinach.
+Priklad: pri zadani "#Xc 2.159"  bude konstanta C = 0.0000216
+
+Vzhledem k pouziti float formatu cisel, muze dochazet k nepresnemu zaokrouhlovani zadavanych cisel.
+
+Po kazdem zadani se konstanta uklada do EEPROM a pro kontrolu se hned vypise do terminalu:
+  lux_kal_a = 2.50
+  lux_kal_b = 0.00
+  lux_kal_c = 0.0000216
+ 
+Prikazem "#X" bez dalsich parametru se pouze vypisi ulozene hodnoty.
+ 

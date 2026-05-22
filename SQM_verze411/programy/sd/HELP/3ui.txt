@@ -1,0 +1,14 @@
+Rezim 30S: Detailni informace o aktualnim nastaveni 
+=============================================================
+
+Format prikazu je:  %I
+
+Priklad vypisu:
+------------------------------------------
+Stav mereni: Pozastaveno
+Interval mezi merenim: 20 [s]
+Zachytny bod pro hledani volneho mista: 7 (x1300 [B])
+Adresa pro ulozeni dalsiho zaznamu: 10163
+Velikost pridavne EEPROM: 65504
+------------------------------------------
+

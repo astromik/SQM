@@ -1,0 +1,113 @@
+Rezim 30S: Vypisove funkce 
+=============================================================
+
+Vypis zaznamu za poslednich 24 hodin
+--------------------------------------
+
+Prikaz:  %L
+
+Vypis zobrazuje na prvni radce textovou hlavicku.
+Pak nasleduji jednotlive zaznamy od nejstarsiho k nejnovejsimu.
+Predcasne preruseni vypisu je mozne stiskem tlacitka [OK].
+Pri vypisovych funkcich se na displeji zobrazuje odpocet se znackou "rd.__":
+
+Priklad vypisu:
+
+index ;  sek 1970  ;   datum  ;   cas  ; DvT ; teplota[C]; vlhkost[%]; tlak[Pa] ; osvetleni [lx] ;
+00000 ; 1680975805 ;08.04.2023;17:43:25;  So ;   +20,96  ;   064,04  ;  096317  ;   000189,84    ;
+00001 ; 1680975820 ;08.04.2023;17:43:40;  So ;   +20,97  ;   064,53  ;  096319  ;   000182,68    ;
+00002 ; 1680975835 ;08.04.2023;17:43:55;  So ;   +20,98  ;   064,30  ;  096318  ;   000193,03    ;
+00003 ; 1680975850 ;08.04.2023;17:44:10;  So ;   +20,98  ;   063,79  ;  096315  ;   000186,91    ;
+00004 ; 1680975866 ;08.04.2023;17:44:26;  So ;   +20,99  ;   063,11  ;  096313  ;   000191,71    ;
+00005 ; 1680975881 ;08.04.2023;17:44:41;  So ;   +20,98  ;   062,94  ;  096315  ;   000253,28    ;
+Konec vypisu
+
+
+=========================================================================
+Vypis zaznamu za poslednich 'n' hodin
+--------------------------------------
+
+Prikaz: %Lh n 
+
+Parametr 'n' udava pocet hodin (cele cislo).
+Podobny vypis jako predchozi priklad.
+Pokud se nezada zadne cislo, vypis se neprovede.
+
+
+=========================================================================
+Vypis vsech zaznamu z cele EEPROM
+--------------------------------------
+
+Prikaz: %La
+
+Opet podobny vypis - tentokrat casove neomezeny.
+
+
+=========================================================================
+Vypis poslednich 'n' zaznamu
+--------------------------------------
+
+Prikaz: %Lz n
+
+Parametr 'n' udava, kolik zaznamu se ma vypsat.
+Pokud neni  cislo 'n' zadane, nebo pokud je 0, vypise se jen jeden posledni zaznam.
+V tomto pripade se vypisuji zaznamy v opacnem poradi - nejnovejsi zaznam  je vypsany jako prvni a pod nim jsou starsi zaznamy
+
+Priklad vypisu po spusteni prizazu "%Lz 4":
+
+index ;  sek 1970  ;   datum  ;   cas  ; DvT ; teplota[C]; vlhkost[%]; tlak[Pa] ; osvetleni [lx] ;
+00780 ; 1713614115 ;20.04.2024;11:55:15;  So ;   +23,27  ;   047,56  ;  095223  ;   000041,65    ;
+00779 ; 1713614095 ;20.04.2024;11:54:55;  So ;   +23,26  ;   047,27  ;  095220  ;   000044,48    ;
+00778 ; 1713614075 ;20.04.2024;11:54:35;  So ;   +23,26  ;   047,69  ;  095221  ;   000044,48    ;
+00777 ; 1713614055 ;20.04.2024;11:54:15;  So ;   +23,26  ;   047,96  ;  095223  ;   000044,48    ;
+Konec vypisu
+
+
+=========================================================================
+Vypis cele EEPROM v bajtech
+--------------------------------------
+
+Prikaz: %Lb
+
+Specialni bajtovy vypis cele EEPROM v bajtech oddelenych stredniky.
+
+Na zacatku vypisu je blok 10 systemovych bajtu.
+Nasleduje vypis po 13 bajtech oddelenych stredniky na radku.
+Kazda radka predstavuje jeden zaznam a na jejim zacatku je adresa prvniho bajtu zaznamu v EEPROM.
+
+Priklad vypisu:
+---------------------------------------
+  adr. ; typ ;inter; blok;PAUZA;  kapacita ; inx ;     REZERVA     ;
+     0 ; 100 ;  20 ;   7 ;   1 ; 255 ; 224 ;   5 ; 255 ; 255 ; 255 ;  
+
+  adr. ;        sek 1970       ;  teplota  ;  vlhkost  ;    tlak   ;    osvetleni    ;
+    10 ; 102 ;  19 ;  41 ; 178 ;  29 ;  77 ;  14 ;  92 ; 140 ;  27 ;   0 ;   0 ;   6 ;  
+    23 ; 102 ;  19 ;  41 ; 208 ;  29 ;  86 ;  14 ; 192 ; 140 ;  31 ;   0 ;   0 ;   6 ;  
+    36 ; 102 ;  19 ;  41 ; 239 ;  29 ;  67 ;  14 ; 239 ; 140 ;  27 ;   0 ;   0 ;   6 ;  
+    49 ; 102 ;  19 ;  42 ;  13 ;  29 ;  49 ;  15 ; 118 ; 140 ;  29 ;   0 ;   0 ;   6 ;  
+    62 ; 102 ;  19 ;  42 ;  43 ;  29 ;  18 ;  14 ; 235 ; 140 ;  28 ;   0 ;   0 ;   6 ;  
+    75 ; 102 ;  19 ;  42 ;  73 ;  28 ; 247 ;  15 ; 174 ; 140 ;  28 ;   0 ;   0 ;   6 ;  
+    88 ; 102 ;  19 ;  42 ; 103 ;  28 ; 215 ;  15 ;  72 ; 140 ;  31 ;   0 ;   0 ;   6 ;  
+   101 ; 102 ;  19 ;  42 ; 133 ;  28 ; 191 ;  16 ;  26 ; 140 ;  29 ;   0 ;   0 ;   6 ;  
+   114 ; 102 ;  19 ;  42 ; 164 ;  28 ; 165 ;  16 ;  68 ; 140 ;  32 ;   0 ;   0 ;   6 ;  
+   127 ; 102 ;  19 ;  42 ; 194 ;  28 ; 131 ;  15 ; 110 ; 140 ;  30 ;   0 ;   0 ;   6 ;  
+   140 ; 102 ;  19 ;  42 ; 224 ;  28 ; 100 ;  15 ; 167 ; 140 ;  27 ;   0 ;   0 ;   6 ;  
+   153 ; 102 ;  19 ;  42 ; 254 ;  28 ;  73 ;  15 ; 203 ; 140 ;  27 ;   0 ;   0 ;   6 ;  
+....
+---------------------------------------
+ 
+
+adr.:       adresa prvniho cisla na radce vypisu
+typ:        funkce pameti (pro "R30s" je to vzdycky 100)
+inter :     interval mezi merenimi v sekundach (251 az 255 jsou specialni hodnoty 5, 7, 10, 20, 30 minut)
+blok:       kazdych 100 zaznamu se zvetsi o +1 pro rychlejsi hledani volneho mista
+PAUZA:      0= zaznam je spusteny, 1= zaznam je pozastaveny
+kapacita:   kapacita EEPROM (adresa posledniho mozneho zaznamu)
+inx:        Index posledniho ukladaneho souboru. Vyuziva se ve funkci "@>C", ktera vypisuje posledni soubor ulozeny v rezimu 30s. 
+rezerva:    nevyuzito (nastaveno na 0xFF FFFF)
+sek1970:    cas zaznamu v sekundach od 1.1.1970
+teplota:    teplota ve formatu beznem u zaznamu v SQM    (v setinach stupne Celsia zvysenych o 50 stupnu Celsia)
+vlhkost:    vlhkost ve formatu beznem u zaznamu v SQM    (v setinach %)
+tlak:       tlak ve formatu beznem u zaznamu v SQM       (v Pa, ale snizenych o 60000Pa)
+osvetleni:  osvetleni v setinach luxu
+ 

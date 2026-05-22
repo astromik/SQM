@@ -1,0 +1,23 @@
+Nastaveni poctu pouzitych cidel na expanzni desce
+=============================================================
+
+Prikaz: @X n
+
+Parametr 'n' udava pocet cidel na expanzni desce v rozsahu 1 az 7.
+
+Funguje pouze v pripade pouziti rozsirujici desky s vice cidly svetla.
+Pokud neni rozsirujici deska pouzita, je pocet cidel nastaven na 1.
+
+Priklad pozadavku: @X 3
+
+Odpoved:
+  Zadany pocet vstupu pro cidla na expanzni desce: 3
+
+
+Cislo prave pouziteho cidla se uklada ke kazdemu zaznamu do EEPROM i do CSV souboru:
+
+                   |||
+                   VVV
+... ;   jas  ;adr.;cid.; pozn. ; stab_jas ; ...
+... ; 08,742 ; 01 ; 01 ; komun ;  STABIL  ; ...
+ 

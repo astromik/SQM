@@ -1,0 +1,29 @@
+Spusteni mereni osvetleni (luxmetr) 
+=============================================================
+
+Prikaz: x
+
+Vypise hodnotu svetla v luxech.
+Pro spravnou funkci je nutne rucne luxmetr zkalibrovat porovnanim s jinym presnym luxmetrem v nekolika bodech.
+
+Po porovnani se pomoci prevodni krivky popsane funkci: 
+
+        y = (C * x * x) + (A * x) + B
+
+nastavi parametry 'A', 'B' a 'C' tak, aby se v celem rozsahu zobrazovala spravna hodnota.
+(x=zmerena hodnota z cidla, y=zobrazovana hodnota).
+
+
+Parametry 'A', 'B' a 'C' se nastavuji pres prikazy:
+  #Xa n.n 
+  #Xb n.n
+  #Xc n.n
+(detailni informace v napovede k prislusnym prikazum)
+
+Nastavenim parametru A=1, B=0 a C=0 se pouze zkopiruje zmerena hodnota z cidla na vystup.
+
+------------------------------
+Priklad vypisu po spusteni prikazu 'x':
+
+29986.20[lx]
+ 

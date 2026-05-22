@@ -1,0 +1,29 @@
+Funkce pro vypisy zaznamu 
+=============================================================
+
+Vypisove funkce zacinaji znakem 'r'.
+Dalsi znak a pripadny parametr urcuje typ vypisu:
+
+  r      ... Vypise hlavicku a poslednich 100 zaznamu v textovem formatu.
+
+  rp     ... Vypise posledni zaznam v textovem formatu vcetne hlavicky.
+
+  ra     ... Vypise vsechny zaznamy v EEPROM v textovem formatu.
+
+  rz nnn ... Vypise hlavicku a pod ni jeden konkretni zvoleny zaznam v textovem formatu - stejne jako v predchozich pripadech.
+               Pokud se zvoli zaznam, ktery neexistuje, nezpusobi to chybu, ale program se pokusi zrekonstruovat obsah EEPROM.
+               To se muze hodit v pripade SOFT formatu, kdy se z EEPROM maze jen informace o obsazene bunce, ale data ve skutecnosti v EEPROM zustavaji.
+               Signalizace takto smazaneho zaznamu je videt na vypisu castecne smazanym oznacenim casove zony (_ELC nebo _EC), ktera
+               se ale i presto da rozeznat (SELC, nebo SEC).
+
+  rh nnn ... Vypise vsechny zaznamy za poslednich 'nnn' hodin. Pokud cislo neni zadane (nebo pokud je zadana 0),
+                     nastavi se automaticky na posledni den (24 hodin).
+
+  rd nnn ... Vypise jeden zaznam s indexem 'nnn' v uspornem datovem formatu (68 bajtu zakoncenych znaky <CR>+<LF>).
+                Pokud neni zadany zadny parametr (nebo je jako parametr zadana 0), odesle se posledni zaznam.
+                Presny popis datovych polozek je uveden v navodu pro PC program.
+
+
+
+ Protoze nektere vypisy mohou trvat delsi dobu, je mozne je prerusit stiskem tlacitka [OK].
+ 

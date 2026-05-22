@@ -1,0 +1,12 @@
+Mereni tlaku 
+=============================================================
+
+Prikaz: p
+
+Jen zmeri aktualni, absolutni (bez prepoctu na hladinu more) atmosfericky tlak.
+Neprovadi zadne prumerovani ani ukladani do EEPROM.
+Do seriove linky vypise hodnotu tlaku v [Pa].
+
+Priklad vypisu:
+Absolutni tlak (bez prepoctu na hladinu more): 95610 Pa
+

@@ -1,0 +1,42 @@
+Prepnuti do rezimu testovani HW
+=============================================================
+
+V programu jsou obsazeny i funkce pro otestovani HW.
+Prvni spusteni probehne automaticky pri prvnim zapnuti napajeni, kdyz jeste nejsou v EEPROM zadna data.
+
+Pozdeji je mozne spustit testovaci podprogram prikazem "@T" pres USB seriovou linku.
+
+Behem testovani prestavaji fungovat vsechny ostatni funkce (alarmy, seriova komunikace pres RS485, casovane spousteni mereni, testovani baterie ...)
+Po spusteni se zobrazi na displeji zobrazi napis: "tESt" 
+
+Do serioveho terminalu se vypise menu:
+
+     =============== M E N U ===================
+     a .... sken I2C
+     b .... test A/D
+     c .... test EEPROM 128k
+     d .... test extra EEPROM (r30s)
+     e .... test piskak
+     f .... test BME280
+     g .... test TSL2591
+     h .... test displej
+     i .... test EXT kontaktu a zasunute karty
+     j .... test tlacitek
+     k .... test LED
+     l .... test SD karty
+     m .... test linky RS485
+     n .... test GPS
+     o .... test kompasu a naklonomeru LSM303
+     p .... odposlech GPS
+     r .... test RTC v STM32F411
+     s .... nastaveni nejakeho casu do RTC v STM32F411
+     t .... bocni vystup na LOW
+     T .... bocni vystup na HIGH
+     u .... test casu v RTC DS3231
+     U .... test probuzeni za 30s
+     x .... navrat z testu HW do normalniho rezimu
+     ===========================================
+
+Odeslanim prislusneho znaku se spusti konkretni test.
+Typ testu je zobrazen i na displeji SQM.
+ 

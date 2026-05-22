@@ -1,0 +1,36 @@
+Rezim 30S: Nastaveni intervalu mezi merenim 
+=============================================================
+
+Prikaz: %C n
+
+Parametr 'n' urcuje pocet sekund mezi merenim.
+
+Interval mereni a ukladani zaznamu je mozne nastavit v rozsahu 10 az 250 sekund. 
+Mimo to je mozne zadat jeste specialni intervaly pro cas v minutach:
+  zadane cislo 251 odpovida  5 minutam
+  zadane cislo 252 odpovida  7 minutam
+  zadane cislo 253 odpovida 10 minutam
+  zadane cislo 254 odpovida 20 minutam
+  zadane cislo 255 odpovida 30 minutam
+
+Priklady:
+prikaz: 
+   		%C 15
+
+odpoved:
+   		puvodni casovani: 30 [s]
+   		nove casovani: 15 [s]
+
+
+prikaz: 
+   		%C 253
+
+odpoved:
+   		puvodni casovani: 15 [s]
+   		nove casovani: 10 [min]
+
+
+Nastaveni intervalu  sekundach je mozne i pres menu - polozka "  int" . 
+Pri prekroceni 250 sekund se na displeji zobrazuji udaje v minutach
+(5M, 7M, 10M, 20M, nebo 30M).
+ 

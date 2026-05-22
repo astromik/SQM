@@ -1,0 +1,8 @@
+Zadost o index posledniho zaznamu
+=============================================================
+
+Prikaz: *n
+
+Zadost o index posledniho zaznamu. Vraci se jen cislo v textovem formatu zakoncene znaky <CR>+<LF>, zadne jine znaky.
+Priklad odpovedi:    401 
+
