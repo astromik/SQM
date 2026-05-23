@@ -1,0 +1,46 @@
+Před osazením SQM-BAS:
+--------------------------
+
+ 1) Na přesnosti odporů a kondenzátorů nezáleží. Bez problémů bude stačit tolerance 5% u odporů a 10% u kondenzátorů.
+       Jediné místo, na které má vliv přesnost odporů, je dělič pro měření napětí hlavní baterie (R7 + R8). 
+       V tomto případě je ale možné korigovat nepřesnost v programu (odkazy do kódů "#doc#11" a "#doc#14"). 
+    
+
+ 2) Procesorová deska (MOD1) a čidla (MOD2, MOD3, MOD4) se osazují až po otestování napájecí části.
+       Před kontrolou se neosazují ani žádná tlačítka a napájecí konektory (9V, JACK)
+       Nezasouvat ani SD kartu a 3V baterii.
+
+
+ 3) Při osazování čidla BME280 je nutné dopropojit komunikační piny SDA a SCL pomocí cínových kapek tak, aby zapojení odpovídalo použitému typu čidla.
+        Některá čidla mají SDA a SCL prohozené.
+
+
+ 4) 4-pinové dutinkové lišty JP3-F, JP4-F a JP7F je možné nakoupit samostatně, nebo je nařezat z delší lišty.
+
+
+ 5) Hlavní vypínač (SW1) je mezi dutinkovými lištami (JP10-F a JP11-F) umístěný hodně těsně.
+       Je lepší zasunout všechny tři části do desky najednou a vzájemně je porovnat ještě před zapájením.
+
+
+ 6) Dutinková lišta JP7-F by se měla také upravit tak, aby dobře pasovala mezi JP10-F a JP11-F.
+
+
+ 7) Izolační podložka pod 12MHz krystalem je nepovinná.
+
+
+ 8) Drátové propojky C,D,E a R vést tak, aby nepřekážely prostoru kolem upevňovacích šroubů.
+
+
+ 9) Pozor na osazení pojistky F1. Její levý okraj je dost blízko prokovu "PIN_DIS_DIO" 
+         (v případné další verzi plošného spoje bude tato oblast upravena).
+
+
+10) Odmaskovaná plocha pod AP1501 je dost těsně vůči hornímu okraji chladiče.
+      Chladič ale stačí připájet jen na bočním okraji. Žádné velké teplo, které by se muselo odvádět, tam nevzniká
+         a připájení slouží jen pro mechanické zafixování obvodu.  
+          
+11) Sice není plánováno, že by měla být RGB LED osazena v ruční verzi, ale pokud bude tato kombinace použita, 
+      musí se RGB LED vyvést na drátech do nějaké pozice, kde nebude překážet bočnímu tlačítku.
+      Ve vývojové verzi SQM jsem ji nalepil nad USB konektor a v boku krabičky jsem vyvrtal díru.
+
+

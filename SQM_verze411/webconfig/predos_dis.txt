@@ -1,0 +1,23 @@
+Před osazením SQM-DIS:
+--------------------------
+
+ 1) Věnovat pozornost přesnému zarovnání zobrazovacích jednotek.
+       Pokud by byly poskládané nepřesně, nemusely by se vejít do otvoru v krabičce. Je tam vůle jen pár desetin mm.
+
+
+ 2) Deska SQM-DIS je univerzální i pro jiné projekty a pro SQM se LED neozazují.
+       Nepropojují se ani pájecí propojky.
+       Tlačítka nejsou přímo na desce, ale jsou vyvedena na krabičku pomocí vodičů.
+         Pro testování funkcí bez krabičky je možné tlačítka typu 6x6 na desku osadit, ale do plánované krabičky se pak nevejdou.
+
+
+ 3) Kondenzátor C1 se pokládá na desku, aby nepřekážel při zasunutí SQM-DIS do SQM-BAS
+ 
+ 
+ 4) Spojovací konektory JP1 a JP2 zatím nepájet. Jejich výška se nastaví až po přišroubování desky na sloupky k SQM-BAS.
+     Při šroubování dojde k částečnému vytlačení kolíků přes plastové díly konektorů a tím se přesně nastaví jejich délka.
+     Po zaštípnutí pinů, které budou přečnívat nad desku SQM-DIS, je možné je připájet.
+
+
+
+

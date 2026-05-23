@@ -1,0 +1,31 @@
+Před osazením SQM-GPS:
+--------------------------
+
+ 1) LED na boku desky se osazují asi 3mm nad hranu desky.
+      Při výrobě pomohlo nasadit na jeden vývod každé LED 3mm dlouhou bužírku a podle ní pak provést zarovnání.
+
+
+ 2) Procesor je sice v rozpiskách označený jako "ATMEGA328P-AU" ale mám vyzkoušeno, že funguje i "ATMEGA328PB-AU".
+      Pravděpodobně budou fungovat i další ATmega328 ve stejném pouzdře.
+
+
+ 3) Pájecí plošky "S" se na obou stranách desky ocínují, aby bylo snazší jejich propojení pinzetou
+
+
+ 4) Provizorní programovací piny se po nahrání programu do procesoru odstraní. Ve finále by mohly překážet tlačítkům na horní části krabičky.
+
+
+ 5) Nepovinný pin "GPS-OUT" pro odposlech komunikace z GPS má neprůchozí díru (z druhé strany desky je procesor)
+        Osazuje se proto až úplně nakonec, aby se dal SMD procesor bez omezení položit na plošňák.
+        Pájí se z BOT strany (ze strany kolíku).
+
+
+ 6) Propojovací kolíková lišta JPx-M musí být připájena tak, aby desky SQM-GPS a SQM-BAS byly přesně kolmo,
+       jinak by neseděl otvor pro přepínač v horní části krabičky a otvory na boku krabičky pro LED.
+     Pro správné zarovnání lišty je dobré před připájením lišty do desky SQM-GPS sestavit obě desky k sobě.
+     Před zapájením nezapomenout vytáhnout dva piny z lišty.  
+         (obrázek v dokumentaci) 
+
+
+
+

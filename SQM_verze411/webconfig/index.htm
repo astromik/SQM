@@ -1,0 +1,473 @@
+<HTML>
+<HEAD>
+<TITLE></TITLE>
+<base target="_self">
+<meta charset="UTF-8"> </head>
+
+<BODY>
+
+
+
+
+<center><H1>Generátor dokumentů pro SQM</H1>
+<H2>Konkrétní osazovačky, rozpisky, propojovací schémata a úpravy kódu pro zvolenou variantu SQM</H2>
+</center>
+
+<center>
+  <table border="0" width="800">
+    <tr>
+      <td align="left">
+          Zaškrtnutím příslušných políček zvolte požadovaná rozšíření.<br>
+          Na konci stránky pak stiskněte tlačítko [Generovat dokumenty].<br>
+          Otevře se stránka s vygenerovanými dokumenty.<br>
+          Dokumenty je pak možné stáhnout v jednom ZIP archivu (odkaz na konci stránky).<br>
+          Archiv obsahuje navíc i zjednodušenou rozpisku - optimalizovanou pro tisk. 
+      </td>
+    </tr>
+  </table>
+</center>
+<br> <br>
+
+<hr width="80%">
+
+<form action="gen_doc.php" method="POST">
+
+  <center>
+  <table border="0" width="800">
+    <tr>
+      <td align="center" bgcolor='YELLOW' colspan="2"><big>Způsob zálohování vnitřních hodin (RTC)</big></td>
+    </tr>
+
+    <tr>
+      <td align="left">
+        Baterie udrží vnitřní hodiny v chodu delší dobu i při vypnutém napájení. Jednou za čas (za rok) je ale nutná výměna.<br><br>
+        Superkapacitor je vhodnější pro vykrývání krátkodobých (několikahodinových) výpadků napájení, ale při dostupném hlavním napájení pak pracuje trvale bez nutnosti výměny. Hlavní napájení se stará o jeho udržování v nabitém stavu.<br><br>
+      </td>
+      <td align="left" rowspan="2">
+        <img src="batkap_iko.jpg">
+      </td>
+    </tr>
+
+    <tr>
+      <td align "left">
+          <input type="radio" name="IN_BCKUP" value="BAT" checked> 3V baterie<br>
+          <input type="radio" name="IN_BCKUP" value="SUPCAP"> Superkapacitor
+     </td>
+    </tr>
+   </table>
+<br> 
+<hr width="80%">
+
+  <center>
+  <table border="0" width="800">
+    <tr>
+      <td align="center" bgcolor='YELLOW' colspan="2"><big>Povinný displej pro ruční verzi</big></td>
+    </tr>
+
+    <tr>
+      <td align="left">
+         U ruční verze je displej povinný. Jedná se o samostatnou destičku (SQM-DIS-3) s pěti sedmisegmentovými zobrazovacími jednotkami a vlastním řadičem TM1637.
+         U pevně nainstalované verze je displej zbytečný a jeho funkci ve velmi omezené míře zastává RGB LED. 
+      </td>
+      <td align="left" rowspan="2">
+        <img src="dis_iko.jpg">
+      </td>
+    </tr>
+
+    <tr>
+      <td align "left">
+          <br>&nbsp;<br>
+          <input type="checkbox" name="IN_DIS" checked> Displej<br>
+     </td>
+    </tr>
+   </table>
+
+
+
+
+<br> 
+<hr width="80%">
+
+
+  <center>
+  <table border="0" width="800">
+    <tr>
+      <td align="center" bgcolor='YELLOW' colspan="2"><big>Rozšíření o SD kartu</big></td>
+    </tr>
+
+    <tr>
+      <td align="left">
+        Na SD kartu se ukládají záznamy v čitelném textovém formátu (CSV) a je tak zajištěn jejich jednoduchý přenos do PC k dalšímu zpracování.
+        Mimo to se na SD kartu mohou ukládat i další informace - například o změnách nastavení parametrů, časové odchylky při seřizování času ...<br>
+      </td>
+      <td align="left" rowspan="2">
+        <img src="sd_iko.jpg">
+      </td>
+      
+    </tr>
+
+    <tr>
+      <td align "left">
+          <br>&nbsp;<br>
+          <input type="checkbox" name="IN_SD" checked> Rozšířit o SD kartu.<br>
+     </td>
+    </tr>
+   </table>
+
+
+<br> 
+<hr width="80%">
+
+
+  <center>
+  <table border="0" width="800">
+    <tr>
+      <td align="center" bgcolor='YELLOW' colspan="2"><big>Rozšíření o měření teploty, tlaku a vlhkosti</big></td>
+    </tr>
+
+    <tr>
+      <td align="left">
+        Využívá přídavného modulu s čidlem BME280. Ke každému záznamu pak přidá i aktuální teplotu tlak a vlhkost.<br>
+        Pokud není toto čidlo povoleno a osazeno, není možné využít speciální režim "r30s" (detaily níže).
+      </td>
+      <td align="left" rowspan="2">
+        <img src="bme_iko.jpg">
+      </td>
+      
+    </tr>
+
+    <tr>
+      <td align "left">
+          <br>&nbsp;<br>
+          <input type="checkbox" name="IN_BME" checked> Rozšířit o čidlo BME280.<br>
+     </td>
+    </tr>
+   </table>
+
+
+
+
+
+<br> 
+<hr width="80%">
+
+
+  <center>
+  <table border="0" width="800">
+    <tr>
+      <td align="center" bgcolor='YELLOW' colspan="2"><big>Rozšíření o akustickou signalizaci</big></td>
+    </tr>
+
+    <tr>
+      <td align="left">
+        Jedná se o zvukovou signalizaci různých provozních stavů (měření, alarmy, varování při chybách ...).<br>
+        Osazenou signalizaci je možné později vypnout jednoduchým přenastavením parametrů.
+      </td>
+      <td align="left" rowspan="2">
+        <img src="bzuk_iko.jpg">
+      </td>
+    </tr>
+
+    <tr>
+      <td align "left">
+          <br>&nbsp;<br>
+          <input type="checkbox" name="IN_BZUK" checked> Rozšířit o akustickou signalizaci.<br>
+     </td>
+    </tr>
+   </table>
+
+
+<br> 
+<hr width="80%">
+
+
+  <center>
+  <table border="0" width="800">
+    <tr>
+      <td align="center" bgcolor='YELLOW' colspan="2"><big>Rozšíření o RGB LED signalizaci</big></td>
+    </tr>
+
+    <tr>
+      <td align="left">
+        Využívá NEOpixelovou LED.
+        U ruční verze se provádí signalizace na displeji, proto je LED signalizace zbytečná.<br>
+        Pro pevně nainstalovanou verzi SQM je to ale jediný způsob, jak provozní stavy přímo v místě instalace signalizovat.<br>
+        Osazenou LED signalizaci je možné později vypnout jednoduchým přenastavením parametrů.
+      </td>
+      <td align="left" rowspan="2">
+        <img src="led_iko.jpg">
+      </td>      
+    </tr>
+
+    <tr>
+      <td align "left">
+          <br>&nbsp;<br>
+          <input type="checkbox" name="IN_LED"> Rozšířit o LED signalizaci.<br>
+     </td>
+    </tr>
+   </table>
+
+
+
+
+
+
+
+<br> 
+<hr width="80%">
+
+
+  <center>
+  <table border="0" width="800">
+    <tr>
+      <td align="center" bgcolor='YELLOW' colspan="2"><big>Rozšíření o náklonoměr a kompas</big></td>
+    </tr>
+
+    <tr>
+      <td align="left">
+        Využívá modul s čidlem náklonu a magnetického pole LSM303DLHC.<br>
+        Ke každému záznamu pak může přidávat i informaci o směru měření.<br>
+        Pro pevně nainstalovanou verzi je zbytečný (pořád stejný azimut a náklon). 
+      </td>
+      <td align="left" rowspan="2">
+        <img src="lsm303_iko.jpg">
+      </td>
+    </tr>
+
+    <tr>
+      <td align "left">
+          <br>&nbsp;<br>
+          <input type="checkbox" name="IN_LSM303" checked> Rozšířit o náklonoměr a kompas.<br>
+     </td>
+    </tr>
+   </table>
+
+
+
+<br> 
+<hr width="80%">
+
+
+  <center>
+  <table border="0" width="800">
+    <tr>
+      <td align="center" bgcolor='YELLOW' colspan="2"><big>Rozšíření o režim "r30s"</big></td>
+    </tr>
+
+    <tr>
+      <td align="left">
+        Rychlý záznam teploty, tlaku, vlhkosti a osvětlení v [lx] do extra paměti.<br>
+        Pro správnou funkci je nutné mít povolené a osazené rozšíření o měření teploty, tlaku a vlhkosti (modul BME280)
+      </td>
+      <td align="left" width="205" rowspan="2">
+        &nbsp;
+      </td>
+    </tr>
+
+    <tr>
+      <td align "left">
+          <br>&nbsp;<br>
+          <input type="checkbox" name="IN_R30S" checked> Rozšířit o rychlý záznam počasí.<br>
+     </td>
+    </tr>
+   </table>
+
+
+
+
+<br> 
+<hr width="80%">
+
+
+  <center>
+  <table border="0" width="800">
+    <tr>
+      <td align="center" bgcolor='YELLOW' colspan="2"><big>Rozšíření o budík i při vypnutém hlavním vypínači.</big></td>
+    </tr>
+
+    <tr>
+      <td align="left">
+        Využívá RTC obvod DS3231, který umožňuje probudit SQM v nastavený čas i při vypnutém hlavním vypínači.<br>
+        V pevně nainstalované verzi nemá toto rozšíření smysl.
+      </td>
+      <td align="left" width="205" rowspan="2">
+        &nbsp;
+      </td>
+    </tr>
+
+    <tr>
+      <td align "left">
+          <br>&nbsp;<br>
+          <input type="checkbox" name="IN_DS3231" checked> Rozšířit o budík.<br>
+     </td>
+    </tr>
+   </table>
+
+
+
+
+
+
+<br> 
+<hr width="80%">
+
+
+  <center>
+  <table border="0" width="800">
+    <tr>
+      <td align="center" bgcolor='YELLOW' colspan="2"><big>Konektor pro možnost připojení přídavných periférií</big></td>
+    </tr>
+
+    <tr>
+      <td align="left">
+        Jedná se jen o konektor 3x2 piny na boku krabičky, kam by bylo možné připojit další periférie (přes expander třeba více čidel jasu - každé nasměrované do jiné části oblohy).<br>
+        Další periferie zatím nejsou vyvinuty, ale v plánu bylo například čidlo UV záření, čidlo sněhu, nebo čidlo větru.<br> 
+        Na konektoru je dostupné napájení 3,3V, komunikační sběrnice I<sup>2</sup>C, jeden vstupní a jeden výstupní signál.<br>
+        Krabička pro ruční verzi má připraven otvor pro konektor, bylo by tedy vhodné ho osadit.<br>
+        U pevné verze se předpokládá, bude přímo do dírek místo konektoru připojen kablík s čidly vyvedenými mimo krabičku.
+      </td>
+      <td align="left" rowspan="2">
+        <img src="ext_iko.jpg">
+      </td>
+    </tr>
+
+    <tr>
+      <td align "left">
+          <br>&nbsp;<br>
+          <input type="checkbox" name="IN_EXT" checked> Přidat rozšiřující boční konektor.<br>
+     </td>
+    </tr>
+   </table>
+
+
+
+<br> 
+<hr width="80%">
+
+
+  <center>
+  <table border="0" width="800">
+    <tr>
+      <td align="center" bgcolor='YELLOW' colspan="2"><big>Rozšíření pro měření napětí zdroje</big></td>
+    </tr>
+
+    <tr>
+      <td align="left">
+        Pevně umístěná verze je napájená po kabelu, takže se nepředpokládá, že by bylo třeba měřit napájecí napětí.<br>
+        U ruční verze pak může na displeji signalizovat stav baterie pomocí blikajících teček, nebo přímo na displeji zobrazit napětí baterie.
+      </td>
+      <td align="left" width="205" rowspan="2">
+        &nbsp;
+      </td>
+    </tr>
+
+    <tr>
+      <td align "left">
+          <br>&nbsp;<br>
+          <input type="checkbox" name="IN_UREF" checked> Rozšířit o měření napětí baterie.<br>
+     </td>
+    </tr>
+   </table>
+
+
+
+
+<br> 
+<hr width="80%">
+
+
+  <center>
+  <table border="0" width="800">
+    <tr>
+      <td align="center" bgcolor='YELLOW' colspan="2"><big>Rozšíření pro záznam GPS souřadnic a automatické seřízení času podle GPS signálu</big></td>
+    </tr>
+
+    <tr>
+      <td align="left">
+        Vyžaduje desku SQM-GPS-6, která na vlastním procesoru ATmega328 zpracovává NMEA zprávy z modulu NEO-6M (nebo podobného).<br> <br> 
+        Ke každému záznamu se pak mohou přidávat i zeměpisné souřadnice.<br> <br>
+        Zároveň je možné automaticky seřizovat vnitřní čas podle GPS signálu (pokud bude informace o času v signálu k dispozici).<br>  
+        U pevně umístěné verze se nepředpokládá, že by bylo nutné zaznamenávat souřadnice. Seřízení času je možné přes komunikaci RS485.<br>
+        Při tomto rozšíření není možné osadit svorkovnice K1 a K2 (pro RS485). Signály A a B pro RS485 jsou ale v případě potřeby dostupné na desce SQM-GPS-6.
+      </td>
+      <td align="left" rowspan="2">
+        <img src="gps1_iko.jpg"><br><img src="gps2_iko.jpg">
+      </td>      
+    </tr>
+
+    <tr>
+      <td align "left">
+          <br>&nbsp;<br>
+          <input type="checkbox" name="IN_GPS" checked> Rozšířit o GPS.<br>
+     </td>
+    </tr>
+   </table>
+
+
+<br> 
+<hr width="80%">
+
+
+  <center>
+  <table border="0" width="800">
+    <tr>
+      <td align="center" bgcolor='YELLOW' colspan="2"><big>Rozšíření o komunikaci RS485</big></td>
+    </tr>
+
+    <tr>
+      <td align="left">
+        U pevně umístěné verze je předpoklad, že bude komunikovat dálkově přes RS485.<br>
+        U ruční verze se s komunikací RS485 nepočítá. Osadit ji je ale možné v obou verzích.
+      </td>
+      <td align="left" width="205" rowspan="2">
+        &nbsp;
+      </td>
+    </tr>
+
+    <tr>
+      <td align "left">
+          <br>&nbsp;<br>
+          <input type="checkbox" name="IN_RS485"> Rozšířit o komunikaci RS485.<br>
+     </td>
+    </tr>
+   </table>
+
+
+
+
+
+
+
+<br>
+<br>
+<br>
+<hr>
+<br>
+  <table border="0" width="300">
+    <tr>
+      <td align="center" bgcolor='red'>
+          &nbsp; <br>
+          <input type="submit" style="height:80px; width:200px" value="Generovat dokumenty">
+         <br> &nbsp; 
+      </td>
+    </tr>
+
+   </table>
+
+<br>
+<br>
+<br>
+<br>
+
+
+
+
+  </center>
+</form>
+
+
+
+
+
+</BODY>
+</HTML>
