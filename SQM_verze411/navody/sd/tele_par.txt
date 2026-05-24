@@ -1,0 +1,44 @@
+﻿
+Konfiguracni soubor "tele_par.txt" pro zmenu parametru dalekohledu a okularu pro funkci vypoctu viditelnosti DSO objektu.
+Soubor umistete primo do korenoveho adresare SD karty.
+
+Program si po zadani prikazu "@> T" natahne parametry dalekohledu z tohoto textoveho souboru a ulozi je do EEPROM.
+Po automatickem resetu uz budou tyto nastavene parametry dostupne pres menu.
+
+V tomto souboru je mozne nize upravovat pouze cisla za rovnitky. Zadavaji se cela cisla v milimetrech.
+Hodnota nesmi byt vynechana ani nastavena na 0 (minimalni vstup je 1).
+Program neni odolny proti nesmyslnym vstupum. Jedine, co se kontroluje, je spravny rozsah zadaneho cisla a celkovy pocet zadavanych parametru.
+Kdyz program objevi nejaky problem v datech (chybejici cisla, cisla mimo povolene meze), upozorni na to a nastavi defaultni hodnoty.
+
+
+----------
+Prumery dalekohledu - maximalne 500 [mm] 
+(Telescope diameters - max. 500 [mm])
+
+telescope diameter 1 = 200
+telescope diameter 2 = 50
+telescope diameter 3 = 150
+
+----------
+
+Hlavni ohniska dalekohledu - maximalne 5000 [mm]
+(Main focal lenghts of telescopes - max. 5000 [mm]) 
+
+main focal lenght 1 = 1000
+main focal lenght 2 = 400
+main focal lenght 3 = 700
+
+----------
+
+Ohniska oklularu - maximalne 255 [mm] - okular 1 bude zvolen defaultne po kazdem resetu 
+(Eyepieces focal lenght - max 255 [mm] - eyepiece no.1 is default choice after every reset)
+
+eyepiece 1 focal lenght = 24
+eyepiece 2 focal lenght = 100
+eyepiece 3 focal lenght = 16
+eyepiece 4 focal lenght = 8
+eyepiece 5 focal lenght = 5
+
+
+
+
