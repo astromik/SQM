@@ -411,7 +411,7 @@ void alarm_3231(void)
 
                     if (indexbudiku == 6)                                               // pro funkci "odpocet" ...
                       {
-                        zobraz_text(92);                                                //    ... se rozsviti napis "odPoc"
+                        zobraz_text(130);                                               //    ... se rozsviti napis "odPoc"
                       }
                     else                                                                // pro funkci "alarm"  ...
                       {

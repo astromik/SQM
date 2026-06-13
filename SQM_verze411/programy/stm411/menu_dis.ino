@@ -231,7 +231,7 @@ void podmenu(uint8_t polozka)
 
 
 
-    if (polozka == 2)                                                        // SEC/SELC
+    if (polozka == 2 and astro_simulace == false)                            // nastaveni casove zony se zapisem do RTC (SEC/SELC)
       {
         zadano = plusminus('S', leto,0,1);
         EEPROM_update(eeaddr_leto_zima,zadano & 255);
@@ -240,6 +240,15 @@ void podmenu(uint8_t polozka)
         else                     leto = true;
         STM_DS(false);                                                       // serizeni casu v DS3231 podle casu v STM        
       }
+
+    if (polozka == 2 and astro_simulace == true)                            // nastaveni casove zony bez zapisu do RTC (pouziva se jen pro astro simulaci)
+      {
+        zadano = plusminus('S', SIM_leto,0,1);
+        if ((zadano & 255) == 0) SIM_leto = false;
+        else                     SIM_leto = true;
+         
+      }
+
 
 
     if (polozka == 3)                                                        // svetlo bez korekce pro kalibraci
@@ -290,7 +299,7 @@ void podmenu(uint8_t polozka)
 
 
 
-    if (polozka == 4)                                                        // datum
+    if (polozka == 4 and astro_simulace == false)                            // normalni nastaveni datumu pres menu
       {
         bool pomprom_save = false;
         zobraz_RTC(false);                                                   // cas z RTC rozlozi do promennych "LOC_xxx" (vcetne korekci)
@@ -306,12 +315,10 @@ void podmenu(uint8_t polozka)
       
         uint8_t zadany_rok = plusminus('r', LOC_rok - 2000,0,99);
         if (bude_save == true) pomprom_save = true;
-
                                                                              // v promennych 'zadany_den' (/ mesic / rok) jsou upravene hodnoty
 
         if (pomprom_save == true)
           {
-
             mtt.year     = zadany_rok + 2000 - 1970;                         // knihovna je napsana tak, ze se cas pocita od 1.1.1970
             mtt.month    = zadany_mesic;
             mtt.day      = zadany_den;
@@ -331,14 +338,43 @@ void podmenu(uint8_t polozka)
 
             cas_minuleho_nastaveni = 0;                                        // zruseni automatickych korekci casu
             korekce = 0x7FFFFFFFUL;
-            EEPROM_write_long(eeaddr_RTC_set,cas_minuleho_nastaveni);                       // do EEPROM se ulozi cas posledniho nastaveni (aktualni cas) a vypoctena korekce
+            EEPROM_write_long(eeaddr_RTC_set,cas_minuleho_nastaveni);          // do EEPROM se ulozi cas posledniho nastaveni (aktualni cas) a vypoctena korekce
             EEPROM_write_long(eeaddr_RTC_korekce,korekce);            
           }
          
       }
 
+    if (polozka == 4 and astro_simulace == true)                               // nastaveni datumu pres menu v ripade, ze je zapnuta simulace (nezapisuje se do RTC, nepocita se casova korekce)
+      {
+        bool pomprom_save = false;
+        
+        // uprava promennych pomoci tlacitek       
+        uint8_t zadany_den = plusminus('d', SIM_start_den,1,31);
+        if (bude_save == true) pomprom_save = true;
 
-    if (polozka == 5)                                                        // cas
+        uint8_t zadany_mesic = plusminus('M', SIM_start_mes,1,12);
+        if (bude_save == true) pomprom_save = true;
+
+        if (SIM_start_rok < 2000) SIM_start_rok = 2000;                        // kdyz jeste neni nastaveny cas v RTC, tak je rok nesmyslny, proto se upravi na '2000'
+      
+        uint8_t zadany_rok = plusminus('r', SIM_start_rok - 2000,0,99);
+        if (bude_save == true) pomprom_save = true;
+                                                                               // v promennych 'zadany_den' (/ mesic / rok) jsou upravene hodnoty
+
+        if (pomprom_save == true)
+          {
+            SIM_start_rok     = zadany_rok + 2000;
+            SIM_start_mes     = zadany_mesic;
+            SIM_start_den     = zadany_den;
+          }
+         
+      }
+
+
+
+
+
+    if (polozka == 5 and astro_simulace == false)                            // zadavani casu v normalnim rezimu (pri vypnute simulaci) 
       {
         bool pomprom_save = false;
         zobraz_RTC(false);                                                   // cas z RTC rozlozi do promennych "LOC_xxx" (vcetne korekci)
@@ -374,6 +410,26 @@ void podmenu(uint8_t polozka)
             EEPROM_write_long(eeaddr_RTC_korekce,korekce);  
           }
       }
+
+    if (polozka == 5 and astro_simulace == true)                            // zadavani casu v rezimu simulace
+      {
+        bool pomprom_save = false;
+        
+        uint8_t zadane_hodiny = plusminus('H', SIM_start_hod,0,23);
+        if (bude_save == true) pomprom_save = true;
+        
+
+        uint8_t zadane_minuty = plusminus('M', SIM_start_min,0,59);
+        if (bude_save == true) pomprom_save = true;
+
+        if (pomprom_save == true)
+          {
+            SIM_start_hod   = zadane_hodiny;
+            SIM_start_min   = zadane_minuty;
+          }
+      }
+
+
 
 
     if (polozka == 6)                                                        // teplota
@@ -907,11 +963,11 @@ void podmenu(uint8_t polozka)
                               
         bool k_zobrazeni[] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};          // pro ruzne typy objektu se zobrazuji ruzne vysledky (napriklad astronomicka noc nema vzdalenost)
         int16_t typ_zobrazeni = 0;
-        uint32_t odpocet_autovypadnuti = millis();                      // po minute necinnosti se vypadne ze zobrazeni vypoctenych hodnot
+        uint32_t odpocet_autovypadnuti = millis();                           // po minute necinnosti se vypadne ze zobrazeni vypoctenych hodnot
         bool vypadnout_z_planet = false;                                     // specialni polozka menu, ktera se chova tak, ze po potvrzeni dlouhym stiskem [OK] 
         while(vypadnout_z_planet == false)                                   //             NEVYPADNE o uroven vys do hlavniho menu
           {
-            index_planety = plusminus('p', index_planety , 1 , 12);
+            index_planety = plusminus('p', index_planety , 1 , 13);          // 1 az 12 jsou planety, Slunce, mesic, soumraky. 13=zapnuti/vypnuti simulace pro nastaveny cas
             if (bude_save == true)                                           // potvrzeni nalistovane planety dlouhym siskem [OK] provede vypocty zvolene planety
               {
                 vypadnout_z_planet = false;
@@ -1008,59 +1064,84 @@ void podmenu(uint8_t polozka)
                     k_zobrazeni[12] = true;                                  // zobrazuje se konec intervalu astronomicke noci (cas rano)          
                   }
 
-
-
-                typ_zobrazeni = 0;
-                zobraz_vyzapla(typ_zobrazeni);                               // hned po nekolikasekundovem vypoctu se zobrazi cas vychodu / zapadu ve formatu HH.MM
-                odpocet_autovypadnuti = millis();
-                while (digitalRead(pin_tl_ok) == HIGH and millis()-odpocet_autovypadnuti < 60000)    // listovani mezi jednotlivymi typy zobrazeni vypoctenych parametru zvolene planety
+                if (index_planety == 13)                                     // zapnuti/vypnuti simulace
                   {
+                    int astro_simlist = 0;
+                    if (astro_simulace == true)     astro_simlist = 1;
                     
-                    if (digitalRead(pin_tl_up) == LOW)                       // tlacitko nahoru
+                    zadano = plusminus('i', astro_simlist,0,1);
+                    if (bude_save == true)                                   // potvrzeni nalistovane planety dlouhym siskem [OK] provede vypocty zvolene planety
                       {
-                        odpocet_autovypadnuti = millis();                    // stisk tlacitka oddali automaticke vypadnuti o dalsi minutu
-                        typ_zobrazeni ++;
-                        if (typ_zobrazeni > 17) typ_zobrazeni = 0;
-                        while (k_zobrazeni[typ_zobrazeni] == false)          // zobrazeni, ktera nejsou pro 'index_planety' dostupna, se preskoci
+                        if ((zadano & 255) == 0) astro_simulace = false;
+                        else                     astro_simulace = true;
+
+                        if (astro_simulace == true)                          // pri zapnuti simulace se startovni cas pro simulaci zkopiruje z lokalnich casovych promennych
                           {
+                            zobraz_RTC(false);                               // aktualizace promennych s lokalnim casem 'LOC_...'
+                            SIM_start_den = LOC_den;                         // nastaveni casu simulace na aktualni cas
+                            SIM_start_mes = LOC_mes;
+                            SIM_start_rok = LOC_rok;
+                            SIM_start_hod = LOC_hod;
+                            SIM_start_min = LOC_min;
+                            SIM_leto = leto;                       
+                          }
+                      }
+                  }
+
+
+                if (index_planety != 13)                                     // po zapnuti simulace se nic nepocita, zustava se v AstroMenu (polozka "SiMuL")
+                  {                                                          //    vsechny ostatni polozky krome simulace provedou matematicke astro vypocty
+                    typ_zobrazeni = 0;
+                    zobraz_vyzapla(typ_zobrazeni);                           // hned po nekolikasekundovem vypoctu se zobrazi cas vychodu / zapadu ve formatu HH.MM
+                    odpocet_autovypadnuti = millis();
+                    while (digitalRead(pin_tl_ok) == HIGH and millis()-odpocet_autovypadnuti < 60000)    // listovani mezi jednotlivymi typy zobrazeni vypoctenych parametru zvolene planety
+                      {
+                        
+                        if (digitalRead(pin_tl_up) == LOW)                   // tlacitko nahoru
+                          {
+                            odpocet_autovypadnuti = millis();                // stisk tlacitka oddali automaticke vypadnuti o dalsi minutu
                             typ_zobrazeni ++;
                             if (typ_zobrazeni > 17) typ_zobrazeni = 0;
+                            while (k_zobrazeni[typ_zobrazeni] == false)      // zobrazeni, ktera nejsou pro 'index_planety' dostupna, se preskoci
+                              {
+                                typ_zobrazeni ++;
+                                if (typ_zobrazeni > 17) typ_zobrazeni = 0;
+                              }
+                            zobraz_vyzapla(typ_zobrazeni);
+                            delay(100);
+                            while (digitalRead(pin_tl_up) == LOW) delay(100);
+                            delay(100);
                           }
-                        zobraz_vyzapla(typ_zobrazeni);
-                        delay(100);
-                        while (digitalRead(pin_tl_up) == LOW) delay(100);
-                        delay(100);
-                      }
-                    if (digitalRead(pin_tl_dn) == LOW)                       // tlacitko dolu
-                      {
-                        odpocet_autovypadnuti = millis();                    // stisk tlacitka oddali automaticke vypadnuti o dalsi minutu
-                        typ_zobrazeni --;
-                        if (typ_zobrazeni < 0) typ_zobrazeni = 17;
-                        while (k_zobrazeni[typ_zobrazeni] == false)          // zobrazeni, ktera nejsou pro 'index_planety' dostupna, se preskoci
+                        if (digitalRead(pin_tl_dn) == LOW)                   // tlacitko dolu
                           {
+                            odpocet_autovypadnuti = millis();                // stisk tlacitka oddali automaticke vypadnuti o dalsi minutu
                             typ_zobrazeni --;
                             if (typ_zobrazeni < 0) typ_zobrazeni = 17;
+                            while (k_zobrazeni[typ_zobrazeni] == false)      // zobrazeni, ktera nejsou pro 'index_planety' dostupna, se preskoci
+                              {
+                                typ_zobrazeni --;
+                                if (typ_zobrazeni < 0) typ_zobrazeni = 17;
+                              }
+                            
+                            zobraz_vyzapla(typ_zobrazeni);
+                            delay(100);
+                            while (digitalRead(pin_tl_dn) == LOW) delay(100);
+                            delay(100);
                           }
-                        
-                        zobraz_vyzapla(typ_zobrazeni);
-                        delay(100);
-                        while (digitalRead(pin_tl_dn) == LOW) delay(100);
-                        delay(100);
+    
+                        interrupty();                                        // odskoceni na test, jestli neni nejaky pozadavek o komunikaci, nebo jestli neni cas spustit automaticke mereni    
+                        delay(300);
                       }
-
-                    interrupty();                                            // odskoceni na test, jestli neni nejaky pozadavek o komunikaci, nebo jestli neni cas spustit automaticke mereni    
-                    delay(300);
+                    while (digitalRead(pin_tl_ok) == LOW) delay(50);         // cekani na uvolneni tlacitka OK, ktere vrati zobrazeni na posledni zvolenou planetu
+                    delay(50);                                               //   vcetne odruseni                    
                   }
-                while (digitalRead(pin_tl_ok) == LOW) delay(50);             // cekani na uvolneni tlacitka OK, ktere vrati zobrazeni na posledni zvolenou planetu
-                delay(50);                                                   //   vcetne odruseni
               }
             else                                                             // kratky stisk umozni vypadnuti z podmenu "planety" do hlavniho menu
               {
                 vypadnout_z_planet = true;
                 odpocet_autovypadnuti = millis(); 
               }            
-          }
-        
+          }        
       }
 
 
@@ -1077,8 +1158,8 @@ void podmenu(uint8_t polozka)
             
             uint8_t kompas_fce = 0;
             velikost_pole_azimutu = 5;
-            bool zacni_prumerobvat = true;                                            // prvnich 5 vzorku se neprumeruje (pole klouzaku pro hodnoty azimutu jeste neni naplnene)
-            uint8_t ukazatel_azimpole = 0;                                          // kvuli prumerovani azimutu se pouziva klouzave pole 5 poslednich hodnot
+            bool zacni_prumerobvat = true;                                       // prvnich 5 vzorku se neprumeruje (pole klouzaku pro hodnoty azimutu jeste neni naplnene)
+            uint8_t ukazatel_azimpole = 0;                                       // kvuli prumerovani azimutu se pouziva klouzave pole 5 poslednich hodnot
             while (digitalRead(pin_tl_ok) == HIGH)                               // Dokud neni stisknuto tlacitko OK
               {
                 interrupty();                                                    // odskoceni na test, jestli neni nejaky pozadavek o komunikaci, nebo jestli neni cas spustit automaticke mereni
@@ -1153,7 +1234,7 @@ void podmenu(uint8_t polozka)
             zadana_rektascenze = plusminus('R', zadana_rektascenze,0,239);
             if (bude_save == true) pomprom_save = true;
             
-            while (digitalRead(pin_tl_ok) == LOW)    delay(50);              // cekani na uvolneni tlacitka OK s odrusenim zakmitu
+            while (digitalRead(pin_tl_ok) == LOW)    delay(50);                  // cekani na uvolneni tlacitka OK s odrusenim zakmitu
             delay(100);
     
             zadana_deklinace = plusminus('D', zadana_deklinace,-90,90);
@@ -1324,45 +1405,45 @@ void podmenu(uint8_t polozka)
             cti_napajeni();
 
 
-            if (typ_vstupu == 0)                                                 // zobrazeni hlavniho napajeciho napeti (9V)
+            if (typ_vstupu == 0)                                             // zobrazeni hlavniho napajeciho napeti (9V)
               {
-                pozice_tecky = 1;                                                // tecka na druhe sedmisegmentovce zprava
-                D_pamet[4] = 190;                                                // znak "V." (hlavni napajeci napeti)
+                pozice_tecky = 1;                                            // tecka na druhe sedmisegmentovce zprava
+                D_pamet[4] = 190;                                            // znak "V." (hlavni napajeci napeti)
                 if (osazeno_uref == true)
                   {
                     zobraz_cislo((long)napeti_9V, 1);
                   }
-                else                                                             // kdyz neni osazena reference, napeti se nezobrazi
+                else                                                         // kdyz neni osazena reference, napeti se nezobrazi
                   {
-                    zobraz_text(93);                                             // "U. ---"
+                    zobraz_text(93);                                         // "U. ---"
                   }
               }
 
-            if (typ_vstupu == 1)                                                 // zobrazeni procent zalohovaci baterie [0 az 99%]
+            if (typ_vstupu == 1)                                             // zobrazeni procent zalohovaci baterie [0 az 99%]
               {
-                pozice_tecky = 0;                                                //  tecka se v zobrazeni procent nezobrazuje
-                D_pamet[4] = 252;                                                // znak "b." (napeti zalozni baterie v %) - parametr 20 prepisue posledni segmentovku procentama
-                zobraz_cislo((long)bat_proc * 10, 20);                           //                                             (proto se hodnota jeste nasobi 10)
+                pozice_tecky = 0;                                            //  tecka se v zobrazeni procent nezobrazuje
+                D_pamet[4] = 252;                                            // znak "b." (napeti zalozni baterie v %) - parametr 20 prepisue posledni segmentovku procentama
+                zobraz_cislo((long)bat_proc * 10, 20);                       //                                             (proto se hodnota jeste nasobi 10)
               }
             
-            if (typ_vstupu == 2)                                                 // zobrazeni reference (1,80V)
+            if (typ_vstupu == 2)                                             // zobrazeni reference (1,80V)
               {
-                pozice_tecky = 2;                                                //  tecka na treti sedmisegmentovce zprava
-                D_pamet[4] = 208;                                                // znak "r." (reference)
+                pozice_tecky = 2;                                            //  tecka na treti sedmisegmentovce zprava
+                D_pamet[4] = 208;                                            // znak "r." (reference)
                 if (osazeno_uref == true)
                   {
                     zobraz_cislo((long)(ref_in * 100.0), 1);
                   }
-                else                                                             // kdyz neni osazena reference, napeti se nezobrazi
+                else                                                         // kdyz neni osazena reference, napeti se nezobrazi
                   {
-                    zobraz_text(94);                                             // "r. ---"
+                    zobraz_text(94);                                         // "r. ---"
                   }
               }
 
-            if (typ_vstupu == 3)                                                 // zobrazeni napajeni procesoru (3,30V)
+            if (typ_vstupu == 3)                                             // zobrazeni napajeni procesoru (3,30V)
               {
-                pozice_tecky = 2;                                                //  tecka na treti sedmisegmentovce zprava
-                D_pamet[4] = 243;                                                // znak "P." (napajeni procesoru)
+                pozice_tecky = 2;                                            //  tecka na treti sedmisegmentovce zprava
+                D_pamet[4] = 243;                                            // znak "P." (napajeni procesoru)
                 zobraz_cislo((long)(Vcc * 100.0), 1);                
               }            
             delay(300);
@@ -1708,6 +1789,12 @@ int16_t plusminus(char znak1, int16_t start_hodnota, int16_t minimalni_hodnota, 
           zobraz_text(vystup + 57);                               //  "2iMA" / "LEto"
           break;
 
+        case 'i':                                                 // (astro simulace)
+          zobraz_text(vystup + 131);                               //  "Si.oFF" / "Si. on"
+          break;
+
+
+
         case 'T':                                                 // (trasovani)
           zobraz_text(vystup + 96);                               //  "tr.oFF" / "tr. on"
           break;
@@ -2009,6 +2096,7 @@ int16_t plusminus(char znak1, int16_t start_hodnota, int16_t minimalni_hodnota, 
                     case 'r':                                    // (rok)
                     case 'H':                                    // (hodina)
                     case 'S':                                    // (casova zona)
+                    case 'i':                                    // (astro simulace)
                     case 'T':                                    // (trasovani)
                     case 'R':                                    // (rektascenze)
                     case 'D':                                    // (deklinace)
@@ -2201,6 +2289,13 @@ int16_t plus_hodnota(char typ_pricitani , int16_t hodnota, int16_t minimum , int
           if (hodnota > maximum) hodnota = maximum;              // maximum nelze prekrocit
           zobraz_text(hodnota + 57);
           break;
+
+        case 'i':                                                // (astro simulace)
+          hodnota ++;
+          if (hodnota > maximum) hodnota = maximum;              // maximum nelze prekrocit
+          zobraz_text(hodnota + 131);
+          break;
+
 
         case 'T':                                                // (trasovani)
           hodnota ++;
@@ -2399,6 +2494,13 @@ int16_t minus_hodnota(char typ_odecitani , int16_t hodnota, int16_t minimum, int
           if (hodnota < minimum) hodnota = minimum;              // minimum nelze podlezt
           zobraz_text(hodnota + 57);
           break;
+
+        case 'i':                                                // (astro simulace)
+          hodnota --;
+          if (hodnota < minimum) hodnota = minimum;              // minimum nelze podlezt
+          zobraz_text(hodnota + 131);
+          break;
+
 
         case 'T':                                                // (trasovani)
           hodnota --;

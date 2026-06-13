@@ -871,8 +871,8 @@ uint8_t dis_popisy[140][5] =            // graficke definice 5-znakovych textu n
       {   0, 109,  56,  28,   0} , // " SLu "                 [89] Slunce 
       {   0,  84,  92,  88,   0} , // " noc "                 [90] Astronomicka noc
       { 109,  92,  28,  55,  80} , // "SouMr"                 [91] uzivatelsky nastavitelny soumrak
+      { 109,   4,  55,  28,  56} , // "2iMuL"                 [92] Simulace
 
-      {  92,  94, 115,  92,  88} , // "odPoc"                 [92] Odpocet / casovac
       { 190,   0,  64,  64,  64} , // "U. ---"                [93] zobrazeni hlavniho napajeni pri neosazene referenci
       { 208,   0,  64,  64,  64} , // "r. ---"                [94] zobrazeni referencniho napeti pri neosazene referenci
       {   0,   0,   0,   0,   0} , // "     "                 [95] zruseno (rezerva)
@@ -917,7 +917,12 @@ uint8_t dis_popisy[140][5] =            // graficke definice 5-znakovych textu n
       { 125,  56,   0,  88,  56} , // "6L cL"                [126] kulova hvezdokupa
       {  88, 184,  84, 121, 124} , // "cL.nEb"               [127] hvezdokupa s mlhovinou 
       { 109, 120, 119,  80,   0} , // "5tAr "                [128] (dvoj)hvezda
-      { 121,  56, 121,  64,  63}   // "ELE-0"                [129] objekt neni videt, protoze je pod horizontem
+      { 121,  56, 121,  64,  63} , // "ELE-0"                [129] objekt neni videt, protoze je pod horizontem
+      {  92,  94, 115,  92,  88} , // "odPoc"                [130] Odpocet / casovac
+
+      { 109, 132,  92, 113, 113} , // "Si.oFF"               [131] Astronomicke simulace vypnute
+      { 109, 132,   0,  92,  84}   // "Si. on"               [132] Astronomicke simulace zapnute
+      
        
     };
 
@@ -1888,7 +1893,8 @@ uint8_t dis_popisy[120][5] =            // definition of 5-characters for displa
       {   0, 109,  28,  84,   0} , // " Sun "                 [89] Sun 
       {  84,   4, 111, 116, 120} , // "ni9ht"                 [90] Astronomical night
       {  94, 119,  62,  62,  84} ,  // "dAVVn"                [91] user defined dusk (dawn)
-      {  88,  92,  28,  84, 120} , // "count"                 [92] countdown
+      { 109,   4,  55,  28,  56} , // "2iMuL"                 [92] Simulation
+
       { 190,   0,  64,  64,  64} , // "U. ---"                [93] battery voltage unknown
       { 208,   0,  64,  64,  64} , // "r. ---"                [94] ref voltage unknown
       {   0,   0,   0,   0,   0} , // "     "                 [95] rezerva
@@ -1932,7 +1938,13 @@ uint8_t dis_popisy[120][5] =            // definition of 5-characters for displa
       { 125,  56,   0,  88,  56} , // "6L cL"                [126] globular cluster
       {  88, 184,  84, 121, 124} , // "cL.nEb"               [127] cluster + nebula
       { 109, 120, 119,  80,   0} , // "5tAr "                [128] (double) star
-      { 121,  56, 121,  64,  63}   // "ELE-0"                [129] object below the horizon (visibility = 0)
+      { 121,  56, 121,  64,  63} , // "ELE-0"                [129] object below the horizon (visibility = 0)
+      {  88,  92,  28,  84, 120}   // "count"                [130] countdown
+
+      { 109, 132,  92, 113, 113} , // "Si.oFF"               [131] Astro simulation Off
+      { 109, 132,   0,  92,  84}   // "Si. on"               [132] Astro simulation On
+
+
     };
 
 uint8_t test_popisy[30][5] =                                // definition of 5-characters for display for testing subrutines

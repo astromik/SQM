@@ -15,12 +15,23 @@ void z_LOC_na_Astro_UTC(int16_t offset)
   
     if ((LOC_rok % 4) == 0)     pomdny_d[2] = 29;             // pri prestupnem roku se nastavuje unor na 29 dni
     if (LOC_rok == 2100)        pomdny_d[2] = 28;             // rok 2100 bude specialita. I kdyz je deliteny 4, tak NEBUDE prestupny.
-    
-    astro_UTC_min = LOC_min;                                  // na zacatku se UTC promenne nastavi na stejnou hodnotu jako mistni cas
-    astro_UTC_rok = LOC_rok;
-    astro_UTC_mes = LOC_mes;
-    astro_UTC_den = LOC_den;
-    astro_UTC_hod = LOC_hod - offset;                         // ... akorat od hodin se odecte casovy posun (1 hodina pro SEC, 2 hodiny pro SELC ...)
+
+    if (astro_simulace == false)                              // kdyz je simulace v menu "AStro" vypnuta, prebira se lokalni cas z RTC
+      {
+        astro_UTC_min = LOC_min;                              // na zacatku se UTC promenne nastavi na stejnou hodnotu jako mistni cas
+        astro_UTC_rok = LOC_rok;
+        astro_UTC_mes = LOC_mes;
+        astro_UTC_den = LOC_den;
+        astro_UTC_hod = LOC_hod - offset;                     // ... akorat od hodin se odecte casovy posun (1 hodina pro SEC, 2 hodiny pro SELC ...)
+      }
+    else                                                      // kdyz je simulace v menu "AStro" zapnuta, prebira se cas podle zadanych hodnot z menu "Datum", "Cas" a "Zona"
+      {
+        astro_UTC_min = SIM_min;                              // na zacatku se UTC promenne nastavi na stejnou hodnotu jako simulacni datum a cas
+        astro_UTC_rok = SIM_rok;
+        astro_UTC_mes = SIM_mes;
+        astro_UTC_den = SIM_den;
+        astro_UTC_hod = SIM_hod - offset;                     // ... akorat od hodin se odecte casovy posun (1 hodina pro SEC, 2 hodiny pro SELC ...)        
+      }
   
     if (astro_UTC_hod < 0)                                    // kontrola, jestli po odecteni casove zony, nedoslo k podteceni casu do predchozicho dne
       {
@@ -48,10 +59,19 @@ void z_LOC_na_Astro_UTC(int16_t offset)
 //  vypocty pro polohy Mesice a Slunce (opsano nekde z internetu)
 void astro_vypocty(void)
   {
-    if (leto == true) casova_zona = letni_posun;
-    else              casova_zona = zimni_posun;
+    if (astro_simulace == false)                              // kdyz je simulace v menu "AStro" vypnuta, prebira se lokalni cas z RTC
+      {
+        if (leto == true) casova_zona = letni_posun;
+        else              casova_zona = zimni_posun;
+      }
+    else                                                     // kdyz je simulace v menu "AStro" zapnuta, prebiraji se hodnoty nastavene v menu datum a cas
+      {
+        if (SIM_leto == true) casova_zona = letni_posun;
+        else                  casova_zona = zimni_posun;
+      }
+      
     
-    z_LOC_na_Astro_UTC(casova_zona);                          // z globalnich promennych pro casove udaje v mistni casove zone (LOC_xxx) vypocte UTC datum a cas
+    z_LOC_na_Astro_UTC(casova_zona);                          // z globalnich promennych pro casove udaje v mistni casove zone (LOC_xxx nebo SIM_xxx) vypocte UTC datum a cas
  
     double days = day2000(astro_UTC_rok, astro_UTC_mes, astro_UTC_den, astro_UTC_hod + astro_UTC_min/60.0);  
     double t = days / 36525.0;
@@ -506,17 +526,32 @@ void simulace_planet(uint8_t sim_planeta)
     
     bool start_elevace = false;
     int16_t plusmin;
-    if (leto == true) casova_zona = letni_posun;
-    else              casova_zona = zimni_posun;
     double korekce_horizontu = 0;                                    // pro planety se pocita vychod/zapad v okamziku kdy stred planety prechazi pres elevaci 0 stupnu
                                                                      // pro Slunce a Mesic se pro vychod/zapad pocita okamzik, kdy je videt horni okraj (0,83 stupnu pod horizontem)
                                                                      // pro astronomickou noc je Slunce 18 stupnu pod horizontem 
 
-    SIM_rok = LOC_rok;                                               // prekopirovani aktualniho mistniho datumu a casu do simulacnich promennych
-    SIM_mes = LOC_mes;
-    SIM_den = LOC_den;
-    SIM_hod = LOC_hod;
-    SIM_min = LOC_min;
+    if (astro_simulace == false)                                     // kdyz se nejedna o simulaci, ale o obycejne vypocty pro aktualni cas
+      {
+        if (leto == true) casova_zona = letni_posun;
+        else              casova_zona = zimni_posun;
+        SIM_rok = LOC_rok;                                           // prekopirovani aktualniho mistniho datumu a casu do simulacnich promennych
+        SIM_mes = LOC_mes;
+        SIM_den = LOC_den;
+        SIM_hod = LOC_hod;
+        SIM_min = LOC_min;
+      }                                                              
+    else                                                             //  pri simulaci jineho datumu a casu se promenne 'SIM_start_xxx' nastavuji v menu "Datum" a "Cas")
+      {
+        if (SIM_leto == true) casova_zona = letni_posun;
+        else                  casova_zona = zimni_posun;
+        SIM_rok = SIM_start_rok;
+        SIM_mes = SIM_start_mes;
+        SIM_den = SIM_start_den;
+        SIM_hod = SIM_start_hod;
+        SIM_min = SIM_start_min;
+        
+      }
+
 
     double pladen2000 = xday2000(SIM_rok, SIM_mes, SIM_den, SIM_hod, SIM_min);  // pocet dni od 1.1.2000 vcetne desetinne casove casti
 
@@ -700,7 +735,14 @@ void simulace_planet(uint8_t sim_planeta)
 
     if (sim_planeta > 0 and sim_planeta < 9)                         // pro Merkur a Venusi se pocita elongace, pro ostatni planety jen magnituda
       {
-        vypocty_elongace(LOC_rok, LOC_mes, LOC_den, LOC_hod, LOC_min, sim_planeta); // do globalnich promennych P_faze a P_elongace ulozi vypoctene hodnoty pro aktualni cas
+        if (astro_simulace == false)                                 // kdyz se nejedna o simulaci, ale o obycejne vypocty pro aktualni cas
+          {
+            vypocty_elongace(LOC_rok, LOC_mes, LOC_den, LOC_hod, LOC_min, sim_planeta); // do globalnich promennych P_faze a P_elongace ulozi vypoctene hodnoty pro aktualni cas
+          }
+        else                                                         // kdyz se jedna o simulaci pro jiny cas, nez je aktualni, prebiraji se promenne 'SIM_xxx'
+          {
+            vypocty_elongace(SIM_rok, SIM_mes, SIM_den, SIM_hod, SIM_min, sim_planeta); // do globalnich promennych P_faze a P_elongace ulozi vypoctene hodnoty pro aktualni cas            
+          }
       }
 
     if (sim_planeta == 11)           
@@ -728,16 +770,28 @@ void simulace_planet(uint8_t sim_planeta)
 void astro_noc(uint8_t hranicni_elevace)
   {
     zobraz_RTC(false);
+      
+    if (astro_simulace == false)                                                 // pri vypoctech pro aktualni datum a cas
+      {        
+        if (leto == true) casova_zona = letni_posun;
+        else              casova_zona = zimni_posun;
+        SIM_rok = LOC_rok;                                                       // prekopirovani aktualniho mistniho datumu a casu do simulacnich promennych
+        SIM_mes = LOC_mes;
+        SIM_den = LOC_den;
+        SIM_hod = LOC_hod;
+        SIM_min = LOC_min;
+      } 
+    else
+      {
+        if (SIM_leto == true) casova_zona = letni_posun;
+        else                  casova_zona = zimni_posun;
+        SIM_rok = SIM_start_rok;
+        SIM_mes = SIM_start_mes;
+        SIM_den = SIM_start_den;
+        SIM_hod = SIM_start_hod;
+        SIM_min = SIM_start_min;
+      }
 
-    if (leto == true) casova_zona = letni_posun;
-    else              casova_zona = zimni_posun;
-    
-
-    SIM_rok = LOC_rok;                                                           // prekopirovani aktualniho mistniho datumu a casu do simulacnich promennych
-    SIM_mes = LOC_mes;
-    SIM_den = LOC_den;
-    SIM_hod = LOC_hod;
-    SIM_min = LOC_min;
 
     double days = day2000(SIM_rok, SIM_mes, SIM_den, SIM_hod + SIM_min/60.0);    // v prvnim kroku se zjisti, jestli v aktualnim case je nebo neni astronomicka noc
     double t = days / 36525.0;
@@ -894,11 +948,23 @@ void SIM_plus_minuta(void)
 //   Vysledky necha v globalnich double promennych P_faze a P_elongace
 void vypocty_elongace(int16_t plarok, int16_t plamesic, int16_t pladen, int16_t plahodina, int16_t plaminuta, uint8_t plaindex)
   {
-    SIM_rok = plarok; 
-    SIM_mes = plamesic;
-    SIM_den = pladen;
-    SIM_hod = plahodina;
-    SIM_min = plaminuta;
+    if (astro_simulace == false)                // pri vypoctech pro aktualni datum a cas se naplni promenne 'SIM_xxx'
+      {
+        SIM_rok = plarok; 
+        SIM_mes = plamesic;
+        SIM_den = pladen;
+        SIM_hod = plahodina;
+        SIM_min = plaminuta;
+      }
+    else                                        // pri simulaci pro jiny cas se nastavi hodnoty zadane v menu "Cas" a "Datum"
+      {
+        SIM_rok = SIM_start_rok;
+        SIM_mes = SIM_start_mes;
+        SIM_den = SIM_start_den;
+        SIM_hod = SIM_start_hod;
+        SIM_min = SIM_start_min;        
+      }
+    
     P_mag_SAT = 99.99;
     R_mag     = 99.99;
 

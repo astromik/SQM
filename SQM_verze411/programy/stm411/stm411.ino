@@ -5,7 +5,7 @@
 // Detaily (schema, plosnak, navod, fotky):
 //           http://sqm.astromik.org
 //
-#define verzeSW "2026-05-18 (STM32F4x1CEU)"
+#define verzeSW "2026-06-13 (STM32F4x1CEU)"
 //        V desce SQM-GPS je nutna verze programu alespon "2026-05-17..INT" (doplneni nezprumerovanych souradnic v I2C registrech 20 az 29)
 //============================================================================
 // Odladeno pro Board Manager:
@@ -600,8 +600,12 @@ int16_t index_planety = 1;                              // po zapnuti se index p
 uint8_t elevace_soumrak;                                // jak hluboko musi byt Slunce pod horizontem (ve stupnich), aby se hlasil uzivatelsky nastavitelny soumrak
 
 
+bool astro_simulace;                                    // pri zapnuti astro simulace v menu "AStro" se pri nastaveni datumu a casu pres menu nezapisuji zadane udaje do RTC
 int16_t SIM_hod, SIM_den, SIM_mes, SIM_min;             // Casove promenne pro simulaci vychodu a zapadu planet
 uint16_t SIM_rok ;                                    
+int16_t SIM_start_hod, SIM_start_den, SIM_start_mes, SIM_start_min;       // Casove promenne pro zadani startu simulace
+uint16_t SIM_start_rok ;                                    
+bool SIM_leto;                                          // prepinani letni a zimni zony v menu pri zapnute simulaci
                                                         // promenne pouzivane pro simulaci slunecni soustavy a pro zobrazeni udaju pres menu "AStro"
 int16_t SIM_azim;                                       // na jakem azimutu dojde k nasledujicimu vychodu / zapadu planety
 uint8_t SIM_vyza;                                       //   0=planeta behem pristich 24 hodin nevyjde ani nezapadne, 1=pristi bude vychod, 2=pristi bude zapad
@@ -1824,6 +1828,7 @@ void setup(void)
 #endif
 
     tone_X(pin_bzuk, 300, 30, 8);                                        // pokud je povolene pipnuti pri zapnuti napajeni, tak se pipne pri dokonceni "setup" bloku
+    astro_simulace = false;                                              // po resetu je vzdycky astro simulace vypnuta (menu datum a cas zapisuji hodnoty do RTC)
   }
 //======================================================================================================================
 

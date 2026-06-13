@@ -761,7 +761,7 @@ void zobraz_odpocmi(uint16_t pocet_minut_od_pulnoci)
 //                                                  4=aktualni elevace       ; 5=aktualni vzdalenost v AU ;  6=aktualni vzdalenost Mesice ;  7=% vzdalenosti Mesice  ;
 //                                                  8=%vzdalenosti Slunce    ; 9=% osvitu Mesice          ; 10=trvani astronomicke noci   ; 11=zacatek astronomicke noci
 //                                                 12=konec astronomicke noci;13=elongace Venuse          ; 14=%osvetleni Venuse          ; 15=osvetleni Mesice
-//                                                 16=colongitudo Mesice)
+//                                                 16=colongitudo Mesice     ; 17=terminator)
 void zobraz_vyzapla(uint8_t typ)
   {
     if (typ == 0)                                            // zobrazeni v hodinach a minutach
