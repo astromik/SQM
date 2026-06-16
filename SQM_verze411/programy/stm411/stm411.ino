@@ -188,7 +188,7 @@ char EEPROM_verze[] = "ver:009\r\n";         //  PRI  KAZDE  ZMENE  ROZLOZENI  D
 #define eeaddr_DSO_setup            637UL    // (2 bajty)   adresa v EEPROM pro uchovani nastavenych parametru pro vypocet viditelnosti DSO (schopnosti, prumer, ohnisko dalekohledu) - 3x4 bity
 #define eeaddr_DSO_prumery          639UL    // (6 bajtu)   adresa v EEPROM pro tabulku prednastavenych prumeru dalekohledu           (3x 2 bajty v [mm])
 #define eeaddr_DSO_ohniska          645UL    // (6 bajtu)   adresa v EEPROM pro tabulku prednastavenych ohniskovych delek dalekohledu (3x 2 bajty v [mm])
-#define eeaddr_DSO_okulary          651UL    // (5 bajtu)   adresa v EEPROM pro tabulku prednastavenych ohniskovych delek okularu    (5x 1 bajt  v [mm])
+#define eeaddr_DSO_okulary          651UL    // (5 bajtu)   adresa v EEPROM pro tabulku prednastavenych ohniskovych delek okularu     (5x 1 bajt  v [mm])
 #define eeaddr_DSO_normal_MSA       656UL    // (1 bajt)    normalovy jas oblohy pro urcovani viditelnosti otevrenych hvezdokup v desetinach mag/arcsec2
 #define eeaddr_rezerva_3            657UL    // (33 bajtu)  rezerva v EEPROM
 #define eeaddr_MIN_EEPROM           700UL    // Na jake adrese v EEPROM zacina oblast pro namerena data
@@ -624,7 +624,7 @@ bool SIM_break;                                         // pro moznost predcasne
 
 uint32_t si_blik_timer;                                 // na casovani problikavani polozek "Datum", "Cas" a "Zona" jako signalizace zapnute simulace, pri ktere se nastavene hodnoty neukladaji do RTC
 bool si_blik_stav;                                      // posledni zobrazena hodnota pri stridavem problikavani ("Si. on" nebo polozka v menu "dAtuM", "CAS", "ZonA")
-
+uint16_t si_blik_cekej;                                 // dynamicka zmena casovani mezi problikavanim napisu "Si. on" a puvodnim nazvem polozky v menu "dAtuM", "CAS", "ZonA"
 
 int16_t astro_noc_konec;                                // pro hledani casu, kdy nastane astronomicka noc (Slunce -18 stupnu pod horizontem)
 int16_t astro_noc_zacatek;

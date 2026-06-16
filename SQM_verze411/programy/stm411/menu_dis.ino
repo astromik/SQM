@@ -1862,7 +1862,8 @@ int16_t plusminus(char znak1, int16_t start_hodnota, int16_t minimalni_hodnota, 
           if (nova_hodnota == 13 and pole_zobr_menu[13] == false ) nova_hodnota = 14;  // okamzita aktualizace napisu pro pripad, ze dojde k vytazeni nebo zasunuti GPS modulu
           if (nova_hodnota == 14 and pole_zobr_menu[14] == false ) nova_hodnota = 13;
           zobraz_text(nova_hodnota);                                                   // polozky menu jsou seskladany na indexech  [0] az [27]
-          si_blik_stav = true;                                   // pri prepnuti na polozku v menu je prvni zobrazeny text zvolene polozky a az po 0,5 sekunde se pripadne prepne na napis "Si. on"
+          si_blik_stav = false;                                   // pri prepnuti na polozku v menu je prvni zobrazeny text zvolene polozky a az po 0,6 sekunde se pripadne prepne na napis "Si. on"
+          si_blik_timer = millis();
           break;
 
         case 'p':                                                // listovani v planetach
@@ -1971,20 +1972,23 @@ int16_t plusminus(char znak1, int16_t start_hodnota, int16_t minimalni_hodnota, 
           {
             if (nova_hodnota == 2 or nova_hodnota == 4 or nova_hodnota == 5)                      // ... tak pri zadavani datumu, casu a zony ...
               {  
-                 if (millis() - si_blik_timer > 500)
-                   {
-                     si_blik_timer = millis();
-                     if (si_blik_stav == false)
-                       {
-                         si_blik_stav = true;
-                         zobraz_text(132);                                                        // ... problikava napis "Si. on" jako informace, ze se nastaveny cas nezapisuje do vnitrniho casovace
-                       }
-                     else
-                       {
-                         si_blik_stav = false;
-                         zobraz_text(nova_hodnota);                                               // zpatky na zobrazeni zvolene polozky menu (datum / cas / zona)
-                       }
-                   }
+                if (si_blik_stav == true) si_blik_cekej = 300;                                    // nastaveni casovani stridani napisu "Si. on" a puvodniho napisu pro polozku menu
+                else                      si_blik_cekej = 600;
+
+                if (millis() - si_blik_timer > si_blik_cekej)
+                  {
+                    si_blik_timer = millis();
+                    if (si_blik_stav == false)
+                      {
+                        si_blik_stav = true;
+                        zobraz_text(132);                                                         // ... problikava napis "Si. on" jako informace, ze se nastaveny cas nezapisuje do vnitrniho casovace
+                      }
+                    else
+                      {
+                        si_blik_stav = false;
+                        zobraz_text(nova_hodnota);                                                // zpatky na zobrazeni zvolene polozky menu (datum / cas / zona)
+                      }
+                  }
               }
           }
 
@@ -2376,6 +2380,8 @@ int16_t plus_hodnota(char typ_pricitani , int16_t hodnota, int16_t minimum , int
               hodnota ++;                                        // postupnym zvysovanim indexu se hleda nejnizsi povolena polozka
             }          
           zobraz_text(hodnota);                                  // polozky menu jsou seskladany na indexech  [0] az [27]
+          si_blik_stav = false;                                  // pri prepnuti na polozku v menu je prvni zobrazeny text zvolene polozky a az po 0,6 sekunde se pripadne prepne na napis "Si. on"
+          si_blik_timer = millis();
           break;                                                 // tenhle break ukoncuje case '#'
 
 
@@ -2581,6 +2587,8 @@ int16_t minus_hodnota(char typ_odecitani , int16_t hodnota, int16_t minimum, int
             }                    
           
           zobraz_text(hodnota);                                  // polozky menu jsou seskladany na indexech  [0] az [27]
+          si_blik_stav = false;                                  // pri prepnuti na polozku v menu je prvni zobrazeny text zvolene polozky a az po 0,6 sekunde se pripadne prepne na napis "Si. on"
+          si_blik_timer = millis();
           break;                                                 // tenhle brak ukoncuje case '@'
 
         case '@':                                                // (editace viditelnych polozek menu) - pohyb k nizsim indexum polozek (tlacitko nahoru)
