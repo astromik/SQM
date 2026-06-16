@@ -1733,16 +1733,38 @@ void pocitej_viditelnost(void)
 void spolecne_DSO_vypocty(void)
   {
     // -----  prepocet rovnikovych souradnic na azimut a elevaci ------------
-    if (leto == true) casova_zona = letni_posun;
-    else              casova_zona = zimni_posun;
+    if (astro_simulace == false)                                                               // kdyz je simulace v menu "AStro" vypnuta, prebira se lokalni cas z RTC
+      {
+        if (leto == true) casova_zona = letni_posun;
+        else              casova_zona = zimni_posun;
+      }
+    else                                                                                       // kdyz je simulace v menu "AStro" zapnuta, prebiraji se hodnoty nastavene v menu datum a cas
+      {
+        if (SIM_leto == true) casova_zona = letni_posun;
+        else                  casova_zona = zimni_posun;
+      }
+      
 
-    float RaHod = vybrany_DSO.RA_dso / 1500.0;                                      // databazove RA v setinach stupne prepocitat na hodiny
-    float DecStup = vybrany_DSO.Dec_dso - 90;                                       // databazove Dec prepocitat na +/- 90 stupnu
+
+    float RaHod = vybrany_DSO.RA_dso / 1500.0;                                                 // databazove RA v setinach stupne prepocitat na hodiny
+    float DecStup = vybrany_DSO.Dec_dso - 90;                                                  // databazove Dec prepocitat na +/- 90 stupnu
     
     zobraz_RTC(false);                                                                         // aktualizace promennych s lokalnim casem 'LOC_...'
     z_LOC_na_Astro_UTC(casova_zona);                                                           // z globalnich promennych pro casove udaje v mistni casove zone (LOC_xxx) vypocte UTC datum a cas
-    RaToAzim ( 3 ,    RaHod   ,  DecStup , LOC_rok , LOC_mes , LOC_den , LOC_hod , LOC_min , casova_zona , GeoLon , GeoLat );       // obecne teleso
 
+    if (astro_simulace == false)                                                               // kdyz je simulace v menu "AStro" vypnuta, prebira se lokalni cas z RTC
+      {
+        RaToAzim ( 3 ,    RaHod   ,  DecStup , LOC_rok , LOC_mes , LOC_den , LOC_hod , LOC_min , casova_zona , GeoLon , GeoLat );       // obecne teleso
+      }
+    else
+      {
+        SIM_rok = SIM_start_rok;
+        SIM_mes = SIM_start_mes;
+        SIM_den = SIM_start_den;
+        SIM_hod = SIM_start_hod;
+        SIM_min = SIM_start_min;
+        RaToAzim ( 3 ,    RaHod   ,  DecStup , SIM_rok , SIM_mes , SIM_den , SIM_hod , SIM_min , casova_zona , GeoLon , GeoLat );       // obecne teleso
+      }
     obecny_azimut  = round(obecny_azimut);                                                     // zaokrouhleni azimutu na cele stupne
     if (obecny_azimut == 360) obecny_azimut = 0;                                               // osetreni zaokrouhleni tesne pred severem (napriklad 359.7 stupne by se zaokrouhlilo na nesmyslnych 360)
    

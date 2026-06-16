@@ -5,7 +5,7 @@
 // Detaily (schema, plosnak, navod, fotky):
 //           http://sqm.astromik.org
 //
-#define verzeSW "2026-06-13 (STM32F4x1CEU)"
+#define verzeSW "2026-06-16 (STM32F4x1CEU)"
 //        V desce SQM-GPS je nutna verze programu alespon "2026-05-17..INT" (doplneni nezprumerovanych souradnic v I2C registrech 20 az 29)
 //============================================================================
 // Odladeno pro Board Manager:
@@ -99,9 +99,9 @@ uint16_t velikost_hlavicky;                              // podle skrytych rezer
 #define pocet_polozek_v_menu    29                       // pocet polozek v menu -1  (index nejvyssi polozky) polozky se pocitaji od indexu 0
 #define pocet_periferii          4                       // pocet periferii -1 , ktere se daji vypnout v terenu pres specialni hmat OK+TS+PWRon (5 polozek se zadava jako pocet 4)
 
-// #doc#19
-#define pouzivat_kalibrator                              // Experimentalni funkce pro pridavny kalibrator ktere umozni pri zapnuti napajeni automaticky zmerit smerove charakteristiky cidla a odezvu na ruzne kombinace jasu dvou LED.
-bool zrychlena_kalibrace = false;                        //     Pridavny kalibrator se sklada z procesoru STM32F103 na desce BluePill a serva (pozdeji mozna krokoveho motoru) a komunikuje s SQM pres bocni konektor I2C.
+// #doc#19 - ZRUSENO - Nove se funkce zapina zmenou hodnoty v EEPROM  na adrese 'eeaddr_autokalibrator'
+uint8_t pouzivat_kalibrator;                             // Experimentalni funkce pro pridavny kalibrator ktere umozni pri zapnuti napajeni automaticky zmerit smerove charakteristiky cidla a odezvu na ruzne kombinace jasu dvou LED.
+bool zrychlena_kalibrace;                                //     Pridavny kalibrator se sklada z procesoru STM32F103 na desce BluePill a serva (pozdeji mozna krokoveho motoru) a komunikuje s SQM pres bocni konektor I2C.
 int16_t cyk_uhel;                                        //     Dale obsahuje dve LED (infra a bilou) vzdelene asi 2m od serva, na kterych se da nezavisle nastavit jas.
                                                          //     Kalibracni pripravek ma i displej a ovladaci joystick, pomoci kterych se da smer a jas LED nastavovat rucne.
                                                          //     Rucne nastaveny jas se pak muze snimat originalnim SQM od Unihedronu a porovnavat zmerene hodnoty obou zarizeni
@@ -136,7 +136,7 @@ uint32_t max_zaznam_EEPROM;                              // adresa, na ktere je 
 
 // #doc#10
 // definice adres v systemove casti EEPROM
-char EEPROM_verze[] = "ver:008\r\n";         //  PRI  KAZDE  ZMENE  ROZLOZENI  DAT  V  EEPROM  ZMENIT  VERZI ! nutno dodrzet pocet znaku vcetne CRLF
+char EEPROM_verze[] = "ver:009\r\n";         //  PRI  KAZDE  ZMENE  ROZLOZENI  DAT  V  EEPROM  ZMENIT  VERZI ! nutno dodrzet pocet znaku vcetne CRLF
 #define eeaddr_RTC_set                0UL    // (4 bajty)   adresa v EEPROM pro cas posledniho serizeni RTC v sekundach od 1.1.1970
 #define eeaddr_RTC_korekce            4UL    // (4 bajty)   adresa v EEPROM s informaci, za jak dlouho se ma pridavat autokalibracni sekunda  
 #define eeaddr_leto_zima              8UL    // (1 bit)     adresa v EEPROM se znackou aktualni casove zony (0=zima; 1=leto)
@@ -177,7 +177,8 @@ char EEPROM_verze[] = "ver:008\r\n";         //  PRI  KAZDE  ZMENE  ROZLOZENI  D
 #define eeaddr_txt_zony             575UL    // (8 bajtu)   adresa v EEPROM s oznacenim casovych zon v textovem formatu (napr: "SEC " a "SELC")
 #define eeaddr_luxmetr              583UL    // (6 bajtu)   adresa v EEPROM s kalibracnimi konstantami pro luxmetr
 #define eeaddr_AFD_styl             589UL    // (1 bajt)    adresa v EEPROM s nastavenim chovani AFD
-#define eeaddr_rezerva_2            590UL    // (9 bajtu)   rezerva v EEPROM
+#define eeaddr_autokalibrator       590UL    // (1 bajt)    adresa v EEPROM s moznosti zapinani a vypinani autokalibracnich funkci
+#define eeaddr_rezerva_2            591UL    // (8 bajtu)   rezerva v EEPROM
 #define eeaddr_test_write           599UL    // (1 bajt)    testovaci zapis na kontrolu, ze EEPROM funguje
 #define eeaddr_kompas               600UL    // (12 bajtu)  adresa v EEPROM s kalibracnimi konstantami pro kompas
 #define eeaddr_naklon_horiz         612UL    // (6 bajtu)   adresa v EEPROM s kalibracnimi konstantami pro naklonomer (horizontalni poloha)
@@ -620,6 +621,9 @@ int16_t SIM_osvit;                                      // aktualni osvetleni Me
 double R_mag;                                           // magnituda saturnova prstence (nepresny vypocet)
 double P_mag_SAT;                                       // magnituda samotne platety Saturn bez prstencu
 bool SIM_break;                                         // pro moznost predcasne ukoncit simulaci Slunce a Mesice
+
+uint32_t si_blik_timer;                                 // na casovani problikavani polozek "Datum", "Cas" a "Zona" jako signalizace zapnute simulace, pri ktere se nastavene hodnoty neukladaji do RTC
+bool si_blik_stav;                                      // posledni zobrazena hodnota pri stridavem problikavani ("Si. on" nebo polozka v menu "dAtuM", "CAS", "ZonA")
 
 
 int16_t astro_noc_konec;                                // pro hledani casu, kdy nastane astronomicka noc (Slunce -18 stupnu pod horizontem)
@@ -1820,12 +1824,16 @@ void setup(void)
     SD_volno = SDfree(sd)>>20;                           // Zjisteni volneho prostoru na SD karte (prevod z bajtu na MB)
 
 
-#ifdef pouzivat_kalibrator
-    if (KAL_test() == true)                                              // kdyz je pripojeny kalibrator ...
+
+    pouzivat_kalibrator = EEPROM_read(eeaddr_autokalibrator);            // 0=vypnuto; 1=zrychleny test; 2=kompletni test
+    if (pouzivat_kalibrator > 0)                                         // pokud je povoleno zjistovani pripojeni kalibratoru ...
+    if (KAL_test() == true)                                              // ... a kdyz je kalibrator pripojeny ...
       {
+        if (pouzivat_kalibrator == 1)   zrychlena_kalibrace = true;      // jen rychle overeni smerove charakterisiky
+        else                            zrychlena_kalibrace = false;     // kompletni smerova charakteristika ve vice urovnich jasu
+        
         kal_postupy();                                                   // ... spusti se kalibracni postupy (na konci kalibracnich podprogramu se zastavi v nekonecne smycce)            
       }
-#endif
 
     tone_X(pin_bzuk, 300, 30, 8);                                        // pokud je povolene pipnuti pri zapnuti napajeni, tak se pipne pri dokonceni "setup" bloku
     astro_simulace = false;                                              // po resetu je vzdycky astro simulace vypnuta (menu datum a cas zapisuji hodnoty do RTC)
@@ -2677,8 +2685,11 @@ void default_parametry(void)
     EEPROM_write_int(     eeaddr_DSO_setup     ,       0x0003);                 // nastaveni paramnetru funkce pro urcovani viditelnosti DSO (schopnosti=3, ostatni parametry 0, 0)
     EEPROM_write(         eeaddr_DSO_normal_MSA,          210);                 // normalovy jas oblohy pro urcovani viditelnosti otevrenych hvezdokup
     EEPROM_write(         eeaddr_AFD_styl      ,            0);                 // AFD po zapnuti napajeni nebude signalizovat, ale bude logovat
+    EEPROM_write(         eeaddr_autokalibrator,            0);                 // Testovani pridavneho kalibratoru je defaultne vypnute, aby nezdrzovalo start
 
     EEPROM_write(         eeaddr_servis        ,            0);                 // adresa pro vyvoj (testovani novych funkci je ve verejnych verzich programu vypnute)
+
+
 
     
 // #doc#21

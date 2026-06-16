@@ -146,8 +146,6 @@ void menu_1(void)
     prvni_vstup_do_menu = false;
     zobraz_text(pozice_menu1);
 
-
-
     while (digitalRead(pin_tl_ok) == LOW)                                    // do hlavniho menu se vstoupilo dlouhym stiskem tlacitka OK
       {                                                                      //  ted je nutne pockat na jeho uvolneni
         delay(20);
@@ -1864,6 +1862,7 @@ int16_t plusminus(char znak1, int16_t start_hodnota, int16_t minimalni_hodnota, 
           if (nova_hodnota == 13 and pole_zobr_menu[13] == false ) nova_hodnota = 14;  // okamzita aktualizace napisu pro pripad, ze dojde k vytazeni nebo zasunuti GPS modulu
           if (nova_hodnota == 14 and pole_zobr_menu[14] == false ) nova_hodnota = 13;
           zobraz_text(nova_hodnota);                                                   // polozky menu jsou seskladany na indexech  [0] az [27]
+          si_blik_stav = true;                                   // pri prepnuti na polozku v menu je prvni zobrazeny text zvolene polozky a az po 0,5 sekunde se pripadne prepne na napis "Si. on"
           break;
 
         case 'p':                                                // listovani v planetach
@@ -1965,6 +1964,28 @@ int16_t plusminus(char znak1, int16_t start_hodnota, int16_t minimalni_hodnota, 
             pole_zobr_menu[14] = false; 
             nova_hodnota = 13;
             zobraz_text(nova_hodnota);
+          }
+
+
+        if (znak1 == '#' and astro_simulace == true)                                              // kdyz je zapnuta simulace astro vypoctu
+          {
+            if (nova_hodnota == 2 or nova_hodnota == 4 or nova_hodnota == 5)                      // ... tak pri zadavani datumu, casu a zony ...
+              {  
+                 if (millis() - si_blik_timer > 500)
+                   {
+                     si_blik_timer = millis();
+                     if (si_blik_stav == false)
+                       {
+                         si_blik_stav = true;
+                         zobraz_text(132);                                                        // ... problikava napis "Si. on" jako informace, ze se nastaveny cas nezapisuje do vnitrniho casovace
+                       }
+                     else
+                       {
+                         si_blik_stav = false;
+                         zobraz_text(nova_hodnota);                                               // zpatky na zobrazeni zvolene polozky menu (datum / cas / zona)
+                       }
+                   }
+              }
           }
 
 
@@ -2071,6 +2092,14 @@ int16_t plusminus(char znak1, int16_t start_hodnota, int16_t minimalni_hodnota, 
 
     if (digitalRead(pin_tl_ok) == LOW)                           // potvrzovaci tlacitko v polozce
       {
+        if (znak1 == '#' and astro_simulace == true)             // kdyz je zapnuta simulace astro vypoctu ...
+          {
+            if (nova_hodnota == 2 or nova_hodnota == 4 or nova_hodnota == 5)    // ... tak se na polozkach pro zadavani datumu, casu a zony ...
+              {  
+                 zobraz_text(nova_hodnota);                      // ... zobrazi zvolena polozka menu (datum / cas / zona) (pro pripad, ze by zrovna svitil napis "Si. on")
+              }
+          }
+        
         auto_exit_casovani = millis();                           // kazdy stisk tlacitka ok spousti casovac automatickeho vypadnuti z menu
         delay(50);                                               // odruseni zakmitu
         vystup = nova_hodnota;
