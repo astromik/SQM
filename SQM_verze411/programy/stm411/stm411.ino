@@ -5,7 +5,7 @@
 // Detaily (schema, plosnak, navod, fotky):
 //           http://sqm.astromik.org
 //
-#define verzeSW "2026-06-16 (STM32F4x1CEU)"
+#define verzeSW "2026-07-18 (STM32F4x1CEU)"
 //        V desce SQM-GPS je nutna verze programu alespon "2026-05-17..INT" (doplneni nezprumerovanych souradnic v I2C registrech 20 az 29)
 //============================================================================
 // Odladeno pro Board Manager:
@@ -666,9 +666,17 @@ float obecny_azimut;
 
 float offset_kompasu;                                   // kvuli spatne nalepenemu kompasu je mozne v urcitem pasmu poopravit sever (-12,8 az 12,7 stupnu)
 
-int16_t pole_azimutu[20];                               // pole, do ktereho se budou ukladat azimuty k prumerovani
-uint8_t velikost_pole_azimutu;                          // pocet zaznamu v poli azimutu, ktere se budou pouzivat k prumerovani (pri beznem mereni to bude stejna hodnota jako 'prumery')
+
+uint8_t velikost_pole_prumeru;                          // pocet zaznamu v poli azimutu, ktere se budou pouzivat k prumerovani (pri beznem mereni to bude stejna hodnota jako 'prumery')
+uint16_t pole_teplot[20];                                // pole, do ktereho se budou ukladat teploty k prumerovani
+uint16_t pole_azimutu[20];                               // pole, do ktereho se budou ukladat azimuty k prumerovani
+uint16_t pole_naklonu[20];                               // pole, do ktereho se budou ukladat naklony k prumerovani
+uint16_t pole_tlaku[20];                                 // pole, do ktereho se budou ukladat atmosfericke tlaky k prumerovani
+uint16_t pole_vlhkosti[20];                              // pole, do ktereho se budou ukladat relativni vzdusne vlhkosti k prumerovani
+
+
 int16_t povoleny_rozptyl_azimutu = 10;                  // hodnota ve stupnich. Konstanta pro vyhodnoceni stabilniho / nestabilniho mereni azimutu
+int16_t povoleny_rozptyl_naklonu = 10;                  // hodnota v desetinach stupne. Konstanta pro vyhodnoceni stabilniho / nestabilniho mereni naklonu
 bool problem_azimutu;                                   // pri mereni pres menu se v pripade nestabilnich hodnot signalizuje problem
 
 
@@ -703,9 +711,9 @@ char helpfile_name[] = "HELP/#_#.txt";                  // pro jmena souboru na 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(1, pin_NEO, NEO_RGB + NEO_KHZ800);            // moznost prohozeni barev na RGB LED ()
 
 
-#define SD_CONFIG SdSpiConfig(pin_SD_CS, DEDICATED_SPI, SD_SCK_MHZ(4))
+#define SD_CONFIG SdSpiConfig(pin_SD_CS, DEDICATED_SPI, SD_SCK_MHZ(1))
 #include "SdFat.h"                                      // nova knihovna pro praci s SD kartou
-#include "sdios.h"
+//#include "sdios.h"
 SdFat sd;                                               // pro SD kartu
 SdFile soubor;
 SdFile log_soubor;
@@ -1001,7 +1009,11 @@ void     priprav_radku(uint16_t adr_eeprom);                                    
 void     priprava_EEPROM_stopky(uint8_t fce, uint32_t cas_data);                                                                       // "stopky.ino"
 void     priprava_pole_EEPROM(void);                                                                                                   // "stm411.ino"
 void     priprava_rotujiciho_retezce(uint32_t souradnice, uint8_t smer_osy);                                                           // "gps.ino"
-uint16_t prumeruj_azimuty(void) ;                                                                                                      // "kompas.ino"
+uint16_t prumeruj_azimuty(void);                                                                                                       // "kompas.ino"
+uint16_t prumeruj_naklony(void);                                                                                                       // "kompas.ino"
+uint16_t prumeruj_teploty(void);                                                                                                       // "kompas.ino"
+uint16_t prumeruj_tlaky(void);                                                                                                         // "kompas.ino"
+uint16_t prumeruj_vlhkosti(void);                                                                                                      // "kompas.ino"
 void     ra_dec_slunce(double t);                                                                                                      // "astro.ino"
 double   range2pi(double pla_X);                                                                                                       // "astro.ino"
 void     reset_AF(void);                                                                                                               // "ds3231.ino"
@@ -1015,7 +1027,6 @@ uint16_t rezervni_cidlo_4(void);                                                
 uint16_t rezervni_cidlo_4(void);                                                                                                       // "rezervy.ino"
 void     rezim30s(void);                                                                                                               // "rezim30s.ino"
 uint16_t rozdil_jasu(uint16_t jas_A, uint16_t jas_B);                                                                                  // "svetlo.ino"
-bool     rozdily_v_poli(void);                                                                                                         // "kompas.ino"
 double   rozsah(double x);                                                                                                             // "astro.ino"
 uint32_t rtc_korekce(void);                                                                                                            // "rtc.ino"
 uint16_t rychly_naklon(void);                                                                                                          // "kompas.ino"
@@ -1184,6 +1195,8 @@ void setup(void)
 
     rtclock.setClockSource(STM32RTC::LSE_CLOCK);
     rtclock.begin();
+
+    SdFile::dateTimeCallback(dateTime);
 
     pocet_bzuku = 5;
     jas_displeje = 3;

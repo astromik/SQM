@@ -785,7 +785,6 @@ void SD_save30(bool autozaloha , bool ser_print)
 
             EEPROM_write30(6,   posledni_index_souboru);                                  // odlozi si do EEPROM index posledniho vytvoreneho souboru na SD karte                                                                                        
                                                                                           //          vyuziva se pri zobrazeni obsahu posledniho souboru pres seriovou linku
-            SdFile::dateTimeCallback(dateTime);
             open_OK1 = soubor.open(jmeno_souboru30, O_WRITE| O_APPEND  | O_CREAT);
     
             if (autozaloha == false)

@@ -425,7 +425,7 @@ void priprav_1_zaznam(uint32_t adresa)
         formatuj_string("    "    , 243,  4);
         formatuj_string("    "    , 250,  4);
 
-        int16_t pom_elevace;                                                                   // elevace Slunce (muze byt kladna i zaporna)
+        int16_t pom_elevace;                                                               // elevace Slunce (muze byt kladna i zaporna)
         if (adresa > 0) pom_elevace = EEPROM_read(indexpole) - 90;
         else            pom_elevace = pole_EEPROM[indexpole] - 90;
         formatuj_int(pom_elevace , 237 ,true);

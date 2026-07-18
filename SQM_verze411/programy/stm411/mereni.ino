@@ -176,7 +176,7 @@ void mereni(uint8_t param)
             znacka_stability = test_stability(true,9);                                                // pred hlavnim merenim se provadi test stability mereni (2 az 5 pokusu) - neblika zadna tecka [9] (blika odpocet), pipa
             if (znacka_stability == true)   bitSet (znacka,3);                                        // kdyz je hodnota stabilni, provede se zaznam do poznamkoveho bajtu
     
-            uint32_t suma_svetla = 0;                                                            // prumerovani mereni svetla
+            uint32_t suma_svetla = 0;                                                                 // prumerovani mereni svetla
             uint16_t posledni_jas = 0;
             for (uint8_t vzorek = 1; vzorek <= prumery ; vzorek ++ )
               {
@@ -208,10 +208,22 @@ void mereni(uint8_t param)
    
                 suma_svetla = suma_svetla + int_svetlo;
 
-                if (modul_LSM303DLHC == true)                                                         // azimut se prumeruje
+                if (senzor_BME == true)                                                               // kdyz je zapnuty senzor BME280
                   {
-                    int_azimut  = zjisti_azimut();                                                    // kdyz je zapnuty kompas, zmeri se azimut
-                    pole_azimutu[vzorek - 1] = int_azimut;                
+                    int_tlak    = tlak();                                                             // zmeri se tlak
+                    pole_tlaku[vzorek - 1] = int_tlak;                                                //  a ulozi se do pole pro vypocet prumeru
+                    int_vlhkost = vlhkost();                                                          // to same s vlhkosti
+                    pole_vlhkosti[vzorek - 1] = int_vlhkost;                                          
+                    int_teplota = teplota(true);                                                      // a s teplotou (meri se s korekci podle tabulky)
+                    pole_teplot[vzorek - 1] = int_teplota;                                          
+                  }
+
+                if (modul_LSM303DLHC == true)                                                         // kdyz je zapnuty kompas,
+                  {
+                    int_azimut  = zjisti_azimut();                                                    //  zmeri se azimut
+                    pole_azimutu[vzorek - 1] = int_azimut;                                            //     a ulozi se do pole pro vypocet prumeru
+                    int_naklon  = uhel();                                                             //   To same s naklonem
+                    pole_naklonu[vzorek - 1] = int_naklon;                
                   }
               }
             if (znacka_stability == true)                                                             // po poslednim vzorku se pipne jinym tonem
@@ -230,20 +242,25 @@ void mereni(uint8_t param)
             int_svetlo = suma_svetla / prumery;                                                       // a vypocte se prumer v uint16_t formatu
             int_svetlo = korekce_svetla(int_svetlo);                                                  // pro tlacitkove spousteni se provadi i tabulkova korekce
             
-            int_teplota = teplota(true);                                                              // teplota s korekci podle tabulky
-            int_vlhkost = vlhkost();
-            int_tlak    = tlak();
+
+            if (senzor_BME == true)                                                                   // kdyz je zapnuty senzor BME280
+              {
+                velikost_pole_prumeru = prumery;
+                int_tlak    = prumeruj_tlaky();                                                       // zprumeruji se nasnimane tlaky
+                int_vlhkost = prumeruj_vlhkosti();                                                    //  vlhkosti
+                int_teplota = prumeruj_teploty();                                                     //   a teploty
+              }
+
 
             int_naklon  = 65535;
             int_azimut  = 65535;
-            if (modul_LSM303DLHC == true)
+
+            if (modul_LSM303DLHC == true)                                                            // na zaver se provede prumerovani azimutu a naklonu
               {
-                int_naklon  = uhel();                                                                 // kdyz je zapnute cidlo naklonu, tak zmeri i uhel nakloneni krabicky 
-                if (int_naklon > 11800 or int_naklon < 9100) chyba(8);                                // naklon se spatne precetl (vic nez 180 stupnu, nebo min nez -90 stupnu), ulozi se sice nesmyslne cislo, ale zahlasi se chyba 
-                else                                         bitClear(err_bit,4);                     // naklon je v poradku, maze se pripadny chybovy bit v promenne 'err_bit'
-                velikost_pole_azimutu = prumery;
+                velikost_pole_prumeru = prumery;
                 int_azimut = prumeruj_azimuty();
-              }              
+                int_naklon = prumeruj_naklony();
+              } 
               
             int_rezerva_1 = rezervni_cidlo_1();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_2 = rezervni_cidlo_2();                                                       // pripadne spousteni mereni z rezervnich cidel
@@ -340,12 +357,24 @@ void mereni(uint8_t param)
                   }            
                 suma_svetla = suma_svetla + int_svetlo;
 
-                if (modul_LSM303DLHC == true)                                                         // azimut se prumeruje
+                if (senzor_BME == true)                                                               // kdyz je zapnuty senzor BME280
                   {
-                    int_azimut  = zjisti_azimut();                                                    // kdyz je zapnuty kompas, zmeri se azimut
-                    pole_azimutu[vzorek - 1] = int_azimut;                
+                    int_tlak    = tlak();                                                             // zmeri se tlak
+                    pole_tlaku[vzorek - 1] = int_tlak;                                                //  a ulozi se do pole pro vypocet prumeru
+                    int_vlhkost = vlhkost();                                                          // to same s vlhkosti
+                    pole_vlhkosti[vzorek - 1] = int_vlhkost;                                          
+                    int_teplota = teplota(true);                                                      // a s teplotou (meri se s korekci podle tabulky)
+                    pole_teplot[vzorek - 1] = int_teplota;                                          
                   }
 
+
+                if (modul_LSM303DLHC == true)                                                         // kdyz je zapnuty kompas,
+                  {
+                    int_azimut  = zjisti_azimut();                                                    //  zmeri se azimut
+                    pole_azimutu[vzorek - 1] = int_azimut;                                            //     a ulozi se do pole pro vypocet prumeru
+                    int_naklon  = uhel();                                                             //   To same s naklonem
+                    pole_naklonu[vzorek - 1] = int_naklon;                
+                  }
                 
                 Serial.print('#');                                                                    // vyplni 1 pole v bargrafu
               }
@@ -355,18 +384,24 @@ void mereni(uint8_t param)
             int_svetlo = suma_svetla / prumery;                                                       // a vypocte se prumer v uint16_t formatu
             int_svetlo = korekce_svetla(int_svetlo);                                                  // pro tlacitkove spousteni se provadi i tabulkova korekce
             
-            int_teplota = teplota(true);                                                              // teplota s korekci podle tabulky
-            int_vlhkost = vlhkost();
-            int_tlak    = tlak();
-
+            if (senzor_BME == true)                                                                   // kdyz je zapnuty senzor BME280
+              {
+                velikost_pole_prumeru = prumery;
+                int_tlak    = prumeruj_tlaky();                                                       // zprumeruji se nasnimane tlaky
+                int_vlhkost = prumeruj_vlhkosti();                                                    //  vlhkosti
+                int_teplota = prumeruj_teploty();                                                     //   a teploty
+              }
+              
             int_naklon = 65535;                                                                       // pro pripad, ze se naklon nepouziva, nastavi se na 65535
             int_azimut  = 65535;
-            if (modul_LSM303DLHC == true)
+            
+            if (modul_LSM303DLHC == true)                                                             // na zaver se provede prumerovani azimutu a naklonu
               {
-                int_naklon  = uhel();                                                                 // kdyz je zapnute cidlo naklonu, tak zmeri i uhel nakloneni krabicky 
-                velikost_pole_azimutu = prumery;
+                velikost_pole_prumeru = prumery;
                 int_azimut = prumeruj_azimuty();
-              }
+                int_naklon = prumeruj_naklony();
+              } 
+              
             int_rezerva_1 = rezervni_cidlo_1();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_2 = rezervni_cidlo_2();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_3 = rezervni_cidlo_3();                                                       // pripadne spousteni mereni z rezervnich cidel
@@ -393,7 +428,7 @@ void mereni(uint8_t param)
             znacka_stability = test_stability(false, 3);                                              // pred hlavnim merenim se provadi test stability mereni (2 az 5 pokusu) - blika 2. tecka zleva
             if (znacka_stability == true)   bitSet (znacka,3);                                        // kdyz je hodnota stabilni, provede se zaznam do poznamkoveho bajtu
     
-            uint32_t suma_svetla = 0;                                                            // prumerovani mereni svetla
+            uint32_t suma_svetla = 0;                                                                 // prumerovani mereni svetla
             uint16_t posledni_jas = 0;        
             
             for (uint8_t vzorek = 1; vzorek <= prumery ; vzorek ++ )
@@ -420,11 +455,23 @@ void mereni(uint8_t param)
                     posledni_jas = korekce_svetla(int_svetlo);
                   }            
                 suma_svetla = suma_svetla + int_svetlo;
-                
-                if (modul_LSM303DLHC == true)                                                         // azimut se prumeruje
+
+                if (senzor_BME == true)                                                               // kdyz je zapnuty senzor BME280
                   {
-                    int_azimut  = zjisti_azimut();                                                    // kdyz je zapnuty kompas, zmeri se azimut
-                    pole_azimutu[vzorek - 1] = int_azimut;                
+                    int_tlak    = tlak();                                                             // zmeri se tlak
+                    pole_tlaku[vzorek - 1] = int_tlak;                                                //  a ulozi se do pole pro vypocet prumeru
+                    int_vlhkost = vlhkost();                                                          // to same s vlhkosti
+                    pole_vlhkosti[vzorek - 1] = int_vlhkost;                                          
+                    int_teplota = teplota(true);                                                      // a s teplotou (meri se s korekci podle tabulky)
+                    pole_teplot[vzorek - 1] = int_teplota;                                          
+                  }
+                
+                if (modul_LSM303DLHC == true)                                                         // kdyz je zapnuty kompas,
+                  {
+                    int_azimut  = zjisti_azimut();                                                    //  zmeri se azimut
+                    pole_azimutu[vzorek - 1] = int_azimut;                                            //     a ulozi se do pole pro vypocet prumeru
+                    int_naklon  = uhel();                                                             //   To same s naklonem
+                    pole_naklonu[vzorek - 1] = int_naklon;                
                   }
 
               }
@@ -432,19 +479,25 @@ void mereni(uint8_t param)
             
             int_svetlo = suma_svetla / prumery;                                                       // a vypocte se prumer v uint16_t formatu
             int_svetlo = korekce_svetla(int_svetlo);                                                  // pro tlacitkove spousteni se provadi i tabulkova korekce
-            
-            int_teplota = teplota(true);                                                              // teplota s korekci podle tabulky
-            int_vlhkost = vlhkost();
-            int_tlak    = tlak();
+       
+            if (senzor_BME == true)                                                                   // kdyz je zapnuty senzor BME280
+              {
+                velikost_pole_prumeru = prumery;
+                int_tlak    = prumeruj_tlaky();                                                       // zprumeruji se nasnimane tlaky
+                int_vlhkost = prumeruj_vlhkosti();                                                    //  vlhkosti
+                int_teplota = prumeruj_teploty();                                                     //   a teploty
+              }
 
             int_naklon = 65535;                                                                       // pro pripad, ze se naklon nepouziva, nastavi se na 65535
             int_azimut  = 65535;
-            if (modul_LSM303DLHC == true)
+
+            if (modul_LSM303DLHC == true)                                                             // na zaver se provede prumerovani azimutu a naklonu
               {
-                int_naklon  = uhel();                                                                 // kdyz je zapnute cidlo naklonu, tak zmeri i uhel nakloneni krabicky 
-                velikost_pole_azimutu = prumery;                                                      // z jednotlivych vzorku azimutu se spocte prumer
+                velikost_pole_prumeru = prumery;
                 int_azimut = prumeruj_azimuty();
-              }
+                int_naklon = prumeruj_naklony();
+              } 
+              
             int_rezerva_1 = rezervni_cidlo_1();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_2 = rezervni_cidlo_2();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_3 = rezervni_cidlo_3();                                                       // pripadne spousteni mereni z rezervnich cidel
@@ -470,7 +523,7 @@ void mereni(uint8_t param)
             znacka_stability = test_stability(false, 3);                                              // pred hlavnim merenim se provadi test stability mereni (2 az 5 pokusu) blika druha tecka zleva
             if (znacka_stability == true)   bitSet (znacka,3);                                        // kdyz je hodnota stabilni, provede se zaznam do poznamkoveho bajtu
     
-            uint32_t suma_svetla = 0;                                                            // prumerovani mereni svetla
+            uint32_t suma_svetla = 0;                                                                 // prumerovani mereni svetla
             uint16_t posledni_jas = 0;
             
             for (uint8_t vzorek = 1; vzorek <= prumery ; vzorek ++ )
@@ -496,10 +549,22 @@ void mereni(uint8_t param)
                   }            
                 suma_svetla = suma_svetla + int_svetlo;
 
-                if (modul_LSM303DLHC == true)                                                         // azimut se prumeruje
+                if (senzor_BME == true)                                                               // kdyz je zapnuty senzor BME280
                   {
-                    int_azimut  = zjisti_azimut();                                                    // kdyz je zapnuty kompas, zmeri se azimut
-                    pole_azimutu[vzorek - 1] = int_azimut;                
+                    int_tlak    = tlak();                                                             // zmeri se tlak
+                    pole_tlaku[vzorek - 1] = int_tlak;                                                //  a ulozi se do pole pro vypocet prumeru
+                    int_vlhkost = vlhkost();                                                          // to same s vlhkosti
+                    pole_vlhkosti[vzorek - 1] = int_vlhkost;                                          
+                    int_teplota = teplota(true);                                                      // a s teplotou (meri se s korekci podle tabulky)
+                    pole_teplot[vzorek - 1] = int_teplota;                                          
+                  }
+                  
+                if (modul_LSM303DLHC == true)                                                         // kdyz je zapnuty kompas,
+                  {
+                    int_azimut  = zjisti_azimut();                                                    //  zmeri se azimut
+                    pole_azimutu[vzorek - 1] = int_azimut;                                            //     a ulozi se do pole pro vypocet prumeru
+                    int_naklon  = uhel();                                                             //   To same s naklonem
+                    pole_naklonu[vzorek - 1] = int_naklon;                
                   }
                 
               }
@@ -507,18 +572,24 @@ void mereni(uint8_t param)
             int_svetlo = suma_svetla / prumery;                                                       // a vypocte se prumer v uint16_t formatu
             int_svetlo = korekce_svetla(int_svetlo);                                                  // pro tlacitkove spousteni se provadi i tabulkova korekce
             
-            int_teplota = teplota(true);                                                              // teplota s korekci podle tabulky
-            int_vlhkost = vlhkost();
-            int_tlak    = tlak();
+            if (senzor_BME == true)                                                                   // kdyz je zapnuty senzor BME280
+              {
+                velikost_pole_prumeru = prumery;
+                int_tlak    = prumeruj_tlaky();                                                       // zprumeruji se nasnimane tlaky
+                int_vlhkost = prumeruj_vlhkosti();                                                    //  vlhkosti
+                int_teplota = prumeruj_teploty();                                                     //   a teploty
+              }
 
             int_naklon  = 65535;                                                                      // pro pripad, ze se naklon nepouziva, nastavi se na 65535
             int_azimut  = 65535;
-            if (modul_LSM303DLHC == true)
+
+            if (modul_LSM303DLHC == true)                                                             // na zaver se provede prumerovani azimutu a naklonu
               {
-                int_naklon  = uhel();                                                                 // kdyz je zapnute cidlo naklonu, tak zmeri i uhel nakloneni krabicky 
-                velikost_pole_azimutu = prumery;                                                      // z jednotlivych vzorku azimutu se spocte prumer
+                velikost_pole_prumeru = prumery;
                 int_azimut = prumeruj_azimuty();
-              }
+                int_naklon = prumeruj_naklony();
+              } 
+
             int_rezerva_1 = rezervni_cidlo_1();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_2 = rezervni_cidlo_2();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_3 = rezervni_cidlo_3();                                                       // pripadne spousteni mereni z rezervnich cidel
@@ -585,10 +656,23 @@ void mereni(uint8_t param)
                     
                     suma_svetla = suma_svetla + int_svetlo;
 
-                    if (modul_LSM303DLHC == true)                                                     // azimut se prumeruje
+                    if (senzor_BME == true)                                                           // kdyz je zapnuty senzor BME280
                       {
-                        int_azimut  = zjisti_azimut();                                                // kdyz je zapnuty kompas, zmeri se azimut
-                        pole_azimutu[vzorek - 1] = int_azimut;                
+                        int_tlak    = tlak();                                                         // zmeri se tlak
+                        pole_tlaku[vzorek - 1] = int_tlak;                                            //  a ulozi se do pole pro vypocet prumeru
+                        int_vlhkost = vlhkost();                                                      // to same s vlhkosti
+                        pole_vlhkosti[vzorek - 1] = int_vlhkost;                                          
+                        int_teplota = teplota(true);                                                  // a s teplotou (meri se s korekci podle tabulky)
+                        pole_teplot[vzorek - 1] = int_teplota;                                          
+                      }
+
+
+                    if (modul_LSM303DLHC == true)                                                     // kdyz je zapnuty kompas,
+                      {
+                        int_azimut  = zjisti_azimut();                                                //  zmeri se azimut
+                        pole_azimutu[vzorek - 1] = int_azimut;                                        //     a ulozi se do pole pro vypocet prumeru
+                        int_naklon  = uhel();                                                         //   To same s naklonem
+                        pole_naklonu[vzorek - 1] = int_naklon;                
                       }
 
                   }
@@ -596,18 +680,24 @@ void mereni(uint8_t param)
                 int_svetlo = suma_svetla / prumery;                                                   // vypocte se prumer v uint16_t formatu
                 int_svetlo = korekce_svetla(int_svetlo);                                              // a tabulkova korekce
                 
-                int_teplota = teplota(true);                                                          // teplota s korekci podle tabulky
-                int_vlhkost = vlhkost();
-                int_tlak    = tlak();
-
+                if (senzor_BME == true)                                                               // kdyz je zapnuty senzor BME280
+                  {
+                    velikost_pole_prumeru = prumery;
+                    int_tlak    = prumeruj_tlaky();                                                   // zprumeruji se nasnimane tlaky
+                    int_vlhkost = prumeruj_vlhkosti();                                                //  vlhkosti
+                    int_teplota = prumeruj_teploty();                                                 //   a teploty
+                  }
+                  
                 int_naklon  = 65535;                                                                  // pro pripad, ze se naklon nepouziva, nastavi se na 65535
                 int_azimut  = 65535;
-                if (modul_LSM303DLHC == true)
+
+                if (modul_LSM303DLHC == true)                                                         // na zaver se provede prumerovani azimutu a naklonu
                   {
-                    int_naklon  = uhel();                                                             // kdyz je zapnute cidlo naklonu, tak zmeri i uhel nakloneni krabicky 
-                    velikost_pole_azimutu = prumery;                                                  // z jednotlivych vzorku azimutu se spocte prumer
+                    velikost_pole_prumeru = prumery;
                     int_azimut = prumeruj_azimuty();
-                  }
+                    int_naklon = prumeruj_naklony();
+                  } 
+                  
                 int_rezerva_1 = rezervni_cidlo_1();                                                   // pripadne spousteni mereni z rezervnich cidel
                 int_rezerva_2 = rezervni_cidlo_2();                                                   // pripadne spousteni mereni z rezervnich cidel
                 int_rezerva_3 = rezervni_cidlo_3();                                                   // pripadne spousteni mereni z rezervnich cidel
@@ -646,15 +736,14 @@ void mereni(uint8_t param)
             GPS_alt = 0xFFFF;
     
     
-            uint32_t suma_svetla = 0;                                                            // prumerovani mereni svetla
+            uint32_t suma_svetla = 0;                                                                 // prumerovani mereni svetla
             uint32_t suma_infra = 0;
             uint32_t suma_full = 0;
-            uint32_t suma_teploty = 0;                                                           //   (a teploty)
             uint16_t posledni_jas = 0;
             bool again_zmena = false;
             uint8_t again_hodnota = 0;
             
-            for (uint8_t vzorek = 1; vzorek < 11 ; vzorek ++ )                                           // pri kalibraci je prumerovani nastaveno na 10 vzorku
+            for (uint8_t vzorek = 1; vzorek < 11 ; vzorek ++ )                                        // pri kalibraci je prumerovani nastaveno na 10 vzorku
               {
                 prubeh_mereni = 10 - vzorek;
                 MODdata[31] = (status_afd << 8) | (err_bit << 7) | (10 - vzorek);                     // prubeh mereni do modbusu
@@ -672,7 +761,11 @@ void mereni(uint8_t param)
                   }
                 else
                   {
-                    if(again_hodnota != byte_cnf) again_zmena = true;                                 // pri zmene GAIN se neprovadi zapis prumeru FULL, IR, CNF a MS
+                    Slu_elevace = 255;                                                                // krome prvniho vzorku z 10 se astro hodnoty neukladaji
+                    Mes_elevace = 255;                                                                //   nastavi se na nesmyslne hodnoty 255
+                    Mes_osvit   = 255;                                                                //      takze do CSV se odeslou jako "-----"
+
+                    if (again_hodnota != byte_cnf) again_zmena = true;                                // pri zmene GAIN se neprovadi zapis prumeru FULL, IR, CNF a MS
     
                     if ((rozdil_jasu(posledni_jas,korekce_svetla(int_svetlo)) / (float)korekce_svetla(int_svetlo)) > (rozhod_stab / 1000.0))      // porovnani rozdilu mezi sousednimi hodnotami
                       {
@@ -686,16 +779,25 @@ void mereni(uint8_t param)
                     posledni_jas = korekce_svetla(int_svetlo);
                   }
 
-                int_teplota = teplota(false);                                                         // teplota bez tabulkove korekce (cista hodnota primo z cidla)
-
-                suma_teploty = suma_teploty + int_teplota;
-                
                 suma_svetla = suma_svetla + int_svetlo;
 
-                if (modul_LSM303DLHC == true)                                                         // azimut se prumeruje
+                if (senzor_BME == true)                                                               // kdyz je zapnuty senzor BME280
                   {
-                    int_azimut  = zjisti_azimut();                                                    // kdyz je zapnuty kompas, zmeri se azimut
-                    pole_azimutu[vzorek - 1] = int_azimut;                
+                    int_tlak    = tlak();                                                             // zmeri se tlak
+                    pole_tlaku[vzorek - 1] = int_tlak;                                                //  a ulozi se do pole pro vypocet prumeru
+                    int_vlhkost = vlhkost();                                                          // to same s vlhkosti
+                    pole_vlhkosti[vzorek - 1] = int_vlhkost;                                          
+                    int_teplota = teplota(false);                                                      // a s teplotou (meri se bez korekce podle tabulky)
+                    pole_teplot[vzorek - 1] = int_teplota;                                          
+                  }
+
+
+                if (modul_LSM303DLHC == true)                                                         // kdyz je zapnuty kompas,
+                  {
+                    int_azimut  = zjisti_azimut();                                                    //  zmeri se azimut
+                    pole_azimutu[vzorek - 1] = int_azimut;                                            //     a ulozi se do pole pro vypocet prumeru
+                    int_naklon  = uhel();                                                             //   To same s naklonem
+                    pole_naklonu[vzorek - 1] = int_naklon;                
                   }
 
                 
@@ -725,23 +827,31 @@ void mereni(uint8_t param)
             int_infra = suma_infra / 10;
             int_full = suma_full / 10;        
                                                                                                       // pred ulozenim prumerne hodnoty se zmeri i zbyle veliciny
-            int_teplota = suma_teploty / 10;                                                          // teploty bez korekci se zprumeruji
-            int_vlhkost = vlhkost();
-            int_tlak    = tlak();
-            if (modul_LSM303DLHC == true)
+            if (senzor_BME == true)                                                                   // kdyz je zapnuty senzor BME280
               {
-                int_naklon  = uhel();                                                                 // kdyz je zapnute cidlo naklonu, tak zmeri i uhel nakloneni krabicky 
-                if (int_naklon > 11800 or int_naklon < 9100) chyba(8);                                // naklon se spatne precetl (vic nez 180 stupnu, nebo min nez -90 stupnu), ulozi se sice nesmyslne cislo, ale zahlasi se chyba 
-                else                                         bitClear(err_bit,4);                     // naklon je v poradku, maze se pripadny chybovy bit v promenne 'err_bit'
-                velikost_pole_azimutu = prumery;                                                      // z jednotlivych vzorku azimutu se spocte prumer
-                int_azimut = prumeruj_azimuty();
+                velikost_pole_prumeru = 10;
+                int_tlak    = prumeruj_tlaky();                                                       // zprumeruji se nasnimane tlaky
+                int_vlhkost = prumeruj_vlhkosti();                                                    //  vlhkosti
+                int_teplota = prumeruj_teploty();                                                     //   a teploty
               }
+
+            if (modul_LSM303DLHC == true)                                                             // na zaver se provede prumerovani azimutu a naklonu
+              {
+                velikost_pole_prumeru = 10;
+                int_azimut = prumeruj_azimuty();
+                int_naklon = prumeruj_naklony();
+              } 
+
             int_rezerva_1 = rezervni_cidlo_1();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_2 = rezervni_cidlo_2();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_3 = rezervni_cidlo_3();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_4 = rezervni_cidlo_4();                                                       // pripadne spousteni mereni z rezervnich cidel
 
             gps(2);                                                                                   // pokud je cas z GPS dostupny, provede se serizeni RTC vcetne pripadnych autokorekci
+
+            zobraz_RTC(false);                                                                        // na konci kalibracniho mereni se jeste jednou spusti "astro_vypocty()" s aktualnim casem
+            astro_vypocty();                                                                          //   jejichz vysledky se zapisi do CSV souboru na posledni radku (Ka-Pr)
+            
             
             znacka = 7;                                                                               // znacka "Ka-Pr" - posledni zaznam je prumer predchozich 10 hodnot
             if (znacka_stability == true)   bitSet (znacka,3);                                        // kdyz je hodnota stabilni, provede se zaznam do poznamkoveho bajtu
@@ -785,15 +895,14 @@ void mereni(uint8_t param)
             GPS_alt = 0xFFFF;
     
     
-            uint32_t suma_svetla = 0;                                                            // prumerovani mereni svetla
+            uint32_t suma_svetla = 0;                                                                 // prumerovani mereni svetla
             uint32_t suma_infra = 0;
             uint32_t suma_full = 0;
-            uint32_t suma_teploty = 0;                                                           //   (a teploty)
             uint16_t posledni_jas = 0;
             bool again_zmena = false;
             uint8_t again_hodnota = 0;
                     
-            for (uint8_t vzorek = 1; vzorek < 11 ; vzorek ++ )                                           // pri kalibraci je prumerovani nastaveno na 10 vzorku
+            for (uint8_t vzorek = 1; vzorek < 11 ; vzorek ++ )                                        // pri kalibraci je prumerovani nastaveno na 10 vzorku
               {
                 prubeh_mereni = 10 - vzorek;
                 Serial.print('#');                                                                    // vyplni 1 pole v bargrafu
@@ -812,7 +921,11 @@ void mereni(uint8_t param)
                   }
                 else
                   {
-                    if(again_hodnota != byte_cnf) again_zmena = true;                                 // pri zmene GAIN se neprovadi zapis prumeru FULL a IR
+                    Slu_elevace = 255;                                                                // krome prvniho vzorku z 10 se astro hodnoty neukladaji
+                    Mes_elevace = 255;                                                                //   nastavi se na nesmyslne hodnoty 255
+                    Mes_osvit   = 255;                                                                //      takze do CSV se odeslou jako "-----"
+
+                    if (again_hodnota != byte_cnf) again_zmena = true;                                // pri zmene GAIN se neprovadi zapis prumeru FULL a IR
     
                     if ((rozdil_jasu(posledni_jas,korekce_svetla(int_svetlo)) / (float)korekce_svetla(int_svetlo)) > (rozhod_stab / 1000.0))      // porovnani rozdilu mezi sousednimi hodnotami
                       {
@@ -826,16 +939,24 @@ void mereni(uint8_t param)
                     posledni_jas = korekce_svetla(int_svetlo);
                   }
                  
-                int_teplota = teplota(false);                                                         // teplota bez tabulkove korekce (cista hodnota primo z cidla)
-
-                suma_teploty = suma_teploty + int_teplota;    
+                if (senzor_BME == true)                                                               // kdyz je zapnuty senzor BME280
+                  {
+                    int_tlak    = tlak();                                                             // zmeri se tlak
+                    pole_tlaku[vzorek - 1] = int_tlak;                                                //  a ulozi se do pole pro vypocet prumeru
+                    int_vlhkost = vlhkost();                                                          // to same s vlhkosti
+                    pole_vlhkosti[vzorek - 1] = int_vlhkost;                                          
+                    int_teplota = teplota(false);                                                      // a s teplotou (meri se bez korekce podle tabulky)
+                    pole_teplot[vzorek - 1] = int_teplota;                                          
+                  }
 
                 suma_svetla = suma_svetla + int_svetlo;
 
-                if (modul_LSM303DLHC == true)                                                         // azimut se prumeruje
+                if (modul_LSM303DLHC == true)                                                         // kdyz je zapnuty kompas,
                   {
-                    int_azimut  = zjisti_azimut();                                                    // kdyz je zapnuty kompas, zmeri se azimut
-                    pole_azimutu[vzorek - 1] = int_azimut;                
+                    int_azimut  = zjisti_azimut();                                                    //  zmeri se azimut
+                    pole_azimutu[vzorek - 1] = int_azimut;                                            //     a ulozi se do pole pro vypocet prumeru
+                    int_naklon  = uhel();                                                             //   To same s naklonem
+                    pole_naklonu[vzorek - 1] = int_naklon;                
                   }
                 
                 suma_infra = suma_infra + int_infra;
@@ -851,24 +972,32 @@ void mereni(uint8_t param)
             int_svetlo = suma_svetla / 10;                                                            // a vypocte se prumer v uint16_t formatu
             int_infra = suma_infra / 10;
             int_full = suma_full / 10;        
-            int_teplota = suma_teploty / 10;                                                          // teploty bez korekci se zprumeruji
 
-                                                                                                      // pred ulozenim prumerne hodnoty se zmeri i zbyle veliciny
-            int_vlhkost = vlhkost();
-            int_tlak    = tlak();
-            if (modul_LSM303DLHC == true)
+            if (senzor_BME == true)                                                                   // kdyz je zapnuty senzor BME280
               {
-                int_naklon  = uhel();                                                                 // kdyz je zapnute cidlo naklonu, tak zmeri i uhel nakloneni krabicky 
-                velikost_pole_azimutu = prumery;                                                      // z jednotlivych vzorku azimutu se spocte prumer
-                int_azimut = prumeruj_azimuty();
+                velikost_pole_prumeru = 10;
+                int_tlak    = prumeruj_tlaky();                                                       // zprumeruji se nasnimane tlaky
+                int_vlhkost = prumeruj_vlhkosti();                                                    //  vlhkosti
+                int_teplota = prumeruj_teploty();                                                     //   a teploty
               }
+                          
+            if (modul_LSM303DLHC == true)                                                             // na zaver se provede prumerovani azimutu a naklonu
+              {
+                velikost_pole_prumeru = 10;
+                int_azimut = prumeruj_azimuty();
+                int_naklon = prumeruj_naklony();
+              } 
+
             int_rezerva_1 = rezervni_cidlo_1();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_2 = rezervni_cidlo_2();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_3 = rezervni_cidlo_3();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_4 = rezervni_cidlo_4();                                                       // pripadne spousteni mereni z rezervnich cidel
 
             gps(2);                                                                                   // pokud je cas z GPS dostupny, provede se serizeni RTC vcetne pripadnych autokorekci
-            
+
+            zobraz_RTC(false);                                                                        // na konci kalibracniho mereni se jeste jednou spusti "astro_vypocty()" s aktualnim casem
+            astro_vypocty();                                                                          //   jejichz vysledky se zapisi do CSV souboru na posledni radku (Ka-Pr)
+
             znacka = 7;                                                                               // znacka "Ka-Pr" - posledni zaznam je prumer predchozich 10 hodnot
             if (znacka_stability == true)   bitSet (znacka,3);                                        // kdyz je hodnota stabilni, provede se zaznam do poznamkoveho bajtu
             if (again_zmena == true) byte_cnf = 255;                                                  // zajisti, ze ve vypisu budou pro IR, FULL, CNF a MS zobrazeny pomlcky
@@ -900,15 +1029,14 @@ void mereni(uint8_t param)
             GPS_alt = 0xFFFF;
     
     
-            uint32_t suma_svetla = 0;                                                            // prumerovani mereni svetla
+            uint32_t suma_svetla = 0;                                                                 // prumerovani mereni svetla
             uint32_t suma_infra = 0;
             uint32_t suma_full = 0;
-            uint32_t suma_teploty = 0;                                                           //   (a teploty)
             uint16_t posledni_jas = 0;
             bool again_zmena = false;
             uint8_t again_hodnota = 0;
             
-            for (uint8_t vzorek = 1; vzorek < 11 ; vzorek ++ )                                           // pri kalibraci je prumerovani nastaveno na 10 vzorku
+            for (uint8_t vzorek = 1; vzorek < 11 ; vzorek ++ )                                        // pri kalibraci je prumerovani nastaveno na 10 vzorku
               {
                 prubeh_mereni = 10 - vzorek;
                 MODdata[31] = (status_afd << 8) | (err_bit << 7) | (10 - vzorek);                     // prubeh mereni do modbusu
@@ -926,7 +1054,11 @@ void mereni(uint8_t param)
                   }
                 else
                   {
-                    if(again_hodnota != byte_cnf) again_zmena = true;                                 // pri zmene GAIN se neprovadi zapis prumeru FULL a IR
+                    Slu_elevace = 255;                                                                // krome prvniho vzorku z 10 se astro hodnoty neukladaji
+                    Mes_elevace = 255;                                                                //   nastavi se na nesmyslne hodnoty 255
+                    Mes_osvit   = 255;                                                                //      takze do CSV se odeslou jako "-----"
+
+                    if (again_hodnota != byte_cnf) again_zmena = true;                                // pri zmene GAIN se neprovadi zapis prumeru FULL a IR
     
                     if ((rozdil_jasu(posledni_jas,korekce_svetla(int_svetlo)) / (float)korekce_svetla(int_svetlo)) > (rozhod_stab / 1000.0))      // porovnani rozdilu mezi sousednimi hodnotami
                       {
@@ -940,16 +1072,25 @@ void mereni(uint8_t param)
                     posledni_jas = korekce_svetla(int_svetlo);
                   }          
 
-                int_teplota = teplota(false);                                                         // teplota bez tabulkove korekce (cista hodnota primo z cidla)
+                if (senzor_BME == true)                                                               // kdyz je zapnuty senzor BME280
+                  {
+                    int_tlak    = tlak();                                                             // zmeri se tlak
+                    pole_tlaku[vzorek - 1] = int_tlak;                                                //  a ulozi se do pole pro vypocet prumeru
+                    int_vlhkost = vlhkost();                                                          // to same s vlhkosti
+                    pole_vlhkosti[vzorek - 1] = int_vlhkost;                                          
+                    int_teplota = teplota(false);                                                      // a s teplotou (meri se bez korekce podle tabulky)
+                    pole_teplot[vzorek - 1] = int_teplota;                                          
+                  }
 
-                suma_teploty = suma_teploty + int_teplota;
                                 
                 suma_svetla = suma_svetla + int_svetlo;
 
-                if (modul_LSM303DLHC == true)                                                         // azimut se prumeruje
+                if (modul_LSM303DLHC == true)                                                         // kdyz je zapnuty kompas,
                   {
-                    int_azimut  = zjisti_azimut();                                                    // kdyz je zapnuty kompas, zmeri se azimut
-                    pole_azimutu[vzorek - 1] = int_azimut;                
+                    int_azimut  = zjisti_azimut();                                                    //  zmeri se azimut
+                    pole_azimutu[vzorek - 1] = int_azimut;                                            //     a ulozi se do pole pro vypocet prumeru
+                    int_naklon  = uhel();                                                             //   To same s naklonem
+                    pole_naklonu[vzorek - 1] = int_naklon;                
                   }
                 
                 suma_infra = suma_infra + int_infra;
@@ -964,23 +1105,32 @@ void mereni(uint8_t param)
             int_svetlo = suma_svetla / 10;                                                            // a vypocte se prumer v uint16_t formatu
             int_infra = suma_infra / 10;
             int_full = suma_full / 10;
-            int_teplota = suma_teploty / 10;                                                          // teploty bez korekci se zprumeruji
-                        
                                                                                                       // pred ulozenim prumerne hodnoty se zmeri i zbyle veliciny
-            int_vlhkost = vlhkost();
-            int_tlak    = tlak();
-            if (modul_LSM303DLHC == true)
+
+            if (senzor_BME == true)                                                                   // kdyz je zapnuty senzor BME280
               {
-                int_naklon  = uhel();                                                                 // kdyz je zapnute cidlo naklonu, tak zmeri i uhel nakloneni krabicky 
-                velikost_pole_azimutu = prumery;                                                      // z jednotlivych vzorku azimutu se spocte prumer
-                int_azimut = prumeruj_azimuty();
+                velikost_pole_prumeru = 10;
+                int_tlak    = prumeruj_tlaky();                                                       // zprumeruji se nasnimane tlaky
+                int_vlhkost = prumeruj_vlhkosti();                                                    //  vlhkosti
+                int_teplota = prumeruj_teploty();                                                     //   a teploty
               }
+                          
+            if (modul_LSM303DLHC == true)                                                             // na zaver se provede prumerovani azimutu a naklonu
+              {
+                velikost_pole_prumeru = 10;
+                int_azimut = prumeruj_azimuty();
+                int_naklon = prumeruj_naklony();
+              } 
+            
             int_rezerva_1 = rezervni_cidlo_1();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_2 = rezervni_cidlo_2();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_3 = rezervni_cidlo_3();                                                       // pripadne spousteni mereni z rezervnich cidel
             int_rezerva_4 = rezervni_cidlo_4();                                                       // pripadne spousteni mereni z rezervnich cidel
 
             gps(2);                                                                                   // pokud je cas z GPS dostupny, provede se serizeni RTC vcetne pripadnych autokorekci
+
+            zobraz_RTC(false);                                                                        // na konci kalibracniho mereni se jeste jednou spusti "astro_vypocty()" s aktualnim casem
+            astro_vypocty();                                                                          //   jejichz vysledky se zapisi do CSV souboru na posledni radku (Ka-Pr)
             
             znacka = 7;                                                                               // znacka "Ka-Pr" - posledni zaznam je prumer predchozich 10 hodnot
             if (znacka_stability == true)   bitSet (znacka,3);                                        // kdyz je hodnota stabilni, provede se zaznam do poznamkoveho bajtu
@@ -996,7 +1146,7 @@ void mereni(uint8_t param)
           {
             znacka_stability = test_stability(true,9);                                                // pred hlavnim merenim se provadi test stability mereni (2 az 5 pokusu) - neblika zadna tecka [9] (blika odpocet), pipa
     
-            uint32_t suma_svetla = 0;                                                            // prumerovani mereni svetla
+            uint32_t suma_svetla = 0;                                                                 // prumerovani mereni svetla
             uint16_t posledni_jas = 0;
             for (uint8_t vzorek = 1; vzorek <= prumery ; vzorek ++ )
               {

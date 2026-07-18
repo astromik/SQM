@@ -892,92 +892,163 @@ uint16_t rychly_naklon(void)
       }
   }
 //----------------------------------------------
+
+
+
+//----------------------------------------------
 // z 'pole_azimutu[]' vytvori prumerny azimut zaokrouhleny na cele stupne.
-// neprumeruje se cele pole, ale jen pocet vzorku, ktery je uveden v globalni promenne 'velikost_pole_azimutu'. Povoleny interval 1 az 20.
+// Neprumeruje se cele pole, ale jen pocet vzorku, ktery je uveden v globalni promenne 'velikost_pole_prumeru'. Povoleny interval 1 az 20.
 // Bere se ohled i na pripadne kolisani azimutu kolem severniho smeru (mezi 359 a 0 stupni).
 // Kdyz jsou hodnoty v poli stabilni, (jejich rozdil neprekrocil hodnotu v globalni promenne 'povoleny_rozptyl_azimutu'), je vysledkem prumerovana hodnota pole.
-// Pri nestabilnm mereni se neprumeruje, ale jen vezme se posledni hodnotu v poli (pole_azimutu[velikost_pole_azimutu-1]) a pricte se k ni cislo 500. 
-uint16_t prumeruj_azimuty(void) 
+// Pri nestabilnm mereni se neprumeruje, ale jen vezme se posledni hodnotu v poli (pole_azimutu[velikost_pole_prumeru-1]) a pricte se k ni cislo 500. 
+// Pri specialnich situacich, kdy nelze prumer urcit (azimuty se navzajem vynuluji) se take neprumeruje a vrati se posledni prvek pole zvetseny o 500.
+//  Reseni:   https://copilot.microsoft.com/shares/z9QSxNvQRygQvPSqMusUa
+uint16_t prumeruj_azimuty(void)
   {
-    float suma = 0;                              // soucet vsech hodnot pro vytvoreni prumeru
-    float prumer = 0;                            // vysledek prumerovani azimutu
-    int16_t posun_stupnice = 0;                      // kdyz se hodnoty nachazi pobliz severu, stupnice se kvuli vypoctum pootoci o 90 stupnu
-    bool stabil = false;                         // znacka nalezni takoveho posunu, kdy je rozdil mezi hodnotami mensi nez povoleny rozptyl
+    // --- 1) Overeni rozsahu hodnot v poli (s ohledem na prechod 359 -> 0) ---
+    int16_t minA = pole_azimutu[0];
+    int16_t maxA = pole_azimutu[0];
 
+    for (uint8_t i = 1; i < velikost_pole_prumeru; i++)
+      {
+        int16_t a = pole_azimutu[i];
 
-    if (rozdily_v_poli() == true)                                 // rozdily v merenich po posunu stupnice jsou v toleranci
-      {
-        stabil = true;
-      }
-    else                                                          // kdyz je rozdil mezi minimem a maximem moc velky, muze se jednat o prechod pres nulovy azimut
-      {
-        for (uint8_t i = 0; i < velikost_pole_azimutu; i++)          // ke kazdemu azimutu v poli ...
-          {
-            pole_azimutu[i] = pole_azimutu[i] + 90;               //  ...  se v tom pripade pricte +90 stupnu
-            if (pole_azimutu[i] > 359) pole_azimutu[i] =  pole_azimutu[i] - 360;      // pri prekroceni hranice 359 stupnu se azimut pocita od nuly
-          }
-        posun_stupnice = 90;
-        if (rozdily_v_poli() == true)                             // rozdily v merenich po posunu stupnice jsou v toleranci
-          {
-            stabil = true;
-          }
+        // Rozdil pres kruh - nejmensi uhlova vzdalenost
+        int16_t diff1 = abs(a - minA);
+        int16_t diff2 = 360 - diff1;
+        int16_t realDiffMin = (diff1 < diff2) ? diff1 : diff2;
+
+        diff1 = abs(a - maxA);
+        diff2 = 360 - diff1;
+        int16_t realDiffMax = (diff1 < diff2) ? diff1 : diff2;
+
+        // Aktualizace min/max podle skutecne kruhove vzdalenosti
+        if (realDiffMin > realDiffMax)      maxA = a;
+        else                                minA = a;
       }
 
-    if (stabil == true)                                               // kdyz se podarilo takove posunuti vsech hodnot, ze je mezi nimi rozdil do 10 stupnu, provede se normalni prumerovani
-      {
-        suma = 0;
-        for (uint8_t i = 0; i < velikost_pole_azimutu; i++)              // spocte se normalni prumer
-          {
-            suma += pole_azimutu[i];                                  // soucet vsech (upravenych) azimutu
-          }
-        
-        prumer = suma / velikost_pole_azimutu;
-        prumer -= posun_stupnice;                                     // od prumeru se ale jeste musi odecist hodnota posunu stupnice
-        if (prumer < 0) prumer += 360;                                // zaporna hodnota vysledneho prumeru se pripadne pootoci do rozsahu 0 az 360 stupnu
+    // Skutecny rozdil mezi min a max pres kruh
+    int16_t diff = abs(maxA - minA);
+    if (diff > 180)                    diff = 360 - diff;
 
-        if (posun_stupnice == 90)                                     // kdyz bylo nutne pro urceni stability posunout stupnici o 90 stupnu ...
-          {
-            for (uint8_t i = 0; i < velikost_pole_azimutu; i++)          // ... vrati vsechny hodnoty v poli na puvodni hodnoty
-              {
-                pole_azimutu[i] = pole_azimutu[i] - 90;
-                if (pole_azimutu[i] < 0) pole_azimutu[i] = 360 + pole_azimutu[i];      // pri podlezeni hranice 0 stupnu se azimut pocita od 360
-              }
-          }
-        prumer =(uint16_t) (prumer +  0.5);                       // zaokrouhleni na vele stupne (hodnota je vzdycky kladna, tak staci pricist 0.5 a oseknout desetinnou cast)
-        return prumer;
-      }
-    else                                                              // ani po posunu stupnice nebyl rozdil mezi merenimi mensi nez 10 stupnu
+    if (diff > povoleny_rozptyl_azimutu)
       {
-        for (uint8_t i = 0; i < velikost_pole_azimutu; i++)              // vsechny hodnoty v poli se vrati na puvodni hodnoty
-          {
-            pole_azimutu[i] = pole_azimutu[i] - 90;
-            if (pole_azimutu[i] < 0) pole_azimutu[i] = 360 + pole_azimutu[i];      // pri podlezeni hranice 0 stupnu se azimut pocita od 360
-          }
-        return pole_azimutu[velikost_pole_azimutu-1] + 500;           // pricteni cisla 500 znamena, ze se prumer nepocital, protoze mereni azimutu nebylo stabilni
-      }  
-  }
+        return pole_azimutu[velikost_pole_prumeru - 1] + 500;        // (max - min) je mimo povoleny rozptyl, nic se neprumeruje, vezme posledni hodnotu a pricte k ni 500
+      }
+
+    // --- 2) Vektorove skladani azimutu ---
+    float sumX = 0.0;
+    float sumY = 0.0;
+
+    for (uint8_t i = 0; i < velikost_pole_prumeru; i++)
+      {
+        float rad = pole_azimutu[i] * (PI / 180.0);
+        sumX += cos(rad);
+        sumY += sin(rad);
+      }
+
+    // --- 3) Kontrola nuloveho vektoru (napr. 90 a 270) ---
+    float magnitude = sqrt(sumX * sumX + sumY * sumY);
+    if (magnitude < 0.0001)
+    {
+        return pole_azimutu[velikost_pole_prumeru - 1] + 500;    // prumerny azimut nelze urcit, protoze se jednotlive smery navzajem vyrusi
+    }
+
+    // --- 4) Vypocet vysledneho azimutu ---
+    float angle = atan2(sumY, sumX) * (180.0 / PI);
+    if (angle < 0) angle += 360.0;
+
+    return (uint16_t)(angle + 0.5);                   // zaokrouhleni
+}
+//-------------------------------------------------
+
+
+
+
 
 
 //-------------------------------------------------
 // vstupem jsou:
 //    globalni pole zmerenych hodnot int16_t 'pole_azimutu[]'
-//    globalni promenna 'velikost_pole_azimutu', ktera udava pocet prvku v poli 
+//    globalni promenna 'velikost_pole_prumeru', ktera udava pocet prvku v poli 
 //    globalni promenna 'povoleny_rozptyl_azimutu', ze ktere se urcuje stabilni / nestabilni mereni
 // vystupem je:
 //    TRUE v pripade, ze je rozdil mezi minimem a maximem mensi nez povoleny rozptyl (stabilni mereni)
 //    FALSE v pripade, ze je rozdil mezi minimem a maximem vetsi nez povoleny rozptyl (nestabilni mereni, nebo hodnoty kolem azimutu 0 stupnu)
-bool rozdily_v_poli(void)
+
+
+//----------------------------------------------
+// z 'pole_naklonu[]' vytvori prumernou hodnotu (Neresi se zadne prepocty na stupne. Jde jen o prumery nejakych hodnot)
+// Neprumeruje se cele pole, ale jen pocet vzorku, ktery je uveden v globalni promenne 'velikost_pole_prumeru'. Povoleny interval 1 az 20.
+// Na stabilitu se (na rozdil od prumerovani azimutu) nehledi. Zprumeruji se vsechny pozadovane vzorky.
+uint16_t prumeruj_naklony(void) 
   {
-    int16_t min_azim = 999;                                                 // minimum nastavit nerealne vysoko (pri prvnim vzorku v poli se prepise)
-    int16_t max_azim = 0;                                                   // maximum nastavit velice nizko (pri prvnim nenulovem azimutu se prepise)
-    
-    for (uint8_t i = 0; i < velikost_pole_azimutu; i++)
+    uint32_t suma = 0;                                                // soucet vsech hodnot pro vytvoreni prumeru
+    float prumer = 0;                                                 // vysledek prumerovani naklonu
+    for (uint8_t i = 0; i < velikost_pole_prumeru; i++)               // kazdy vzorek v poli se secte
       {
-        if (pole_azimutu[i] > max_azim ) max_azim = pole_azimutu[i];    // nalezeni maximalni hodnoty v poli
-        if (pole_azimutu[i] < min_azim ) min_azim = pole_azimutu[i];    // nalezeni minimalni hodnoty v poli
+        suma = suma + pole_naklonu[i];
       }
-    if ((max_azim - min_azim) < povoleny_rozptyl_azimutu) return true;  // rozdil mezi krajnimi hodnotami je maly (mereni je v poradku)
-    else                                                 return false;  // rozdil mezi krajnimi hodnotami je velky (mereni je nestabilni, nebo se jedna o prechod kolem nulteho azimutu)
+    prumer = (1.0f * suma / velikost_pole_prumeru)    + 0.5;          // prumer + zaokrouhleni
+
+    return (uint16_t)prumer;                                          // prevod z floatu na puvodni format
   }
-//-------------------------------------------------
-    
+//----------------------------------------------
+
+
+
+//----------------------------------------------
+// z 'pole_tlaku[]' vytvori prumernou hodnotu (Neresi se zadne prepocty na stupne. Jde jen o prumery nejakych hodnot)
+// Neprumeruje se cele pole, ale jen pocet vzorku, ktery je uveden v globalni promenne 'velikost_pole_prumeru'. Povoleny interval 1 az 20.
+// Na stabilitu se (na rozdil od prumerovani azimutu) nehledi. Zprumeruji se vsechny pozadovane vzorky.
+uint16_t prumeruj_tlaky(void) 
+  {
+    uint32_t suma = 0;                                                // soucet vsech hodnot pro vytvoreni prumeru
+    float prumer = 0;                                                 // vysledek prumerovani tlaku
+    for (uint8_t i = 0; i < velikost_pole_prumeru; i++)               // kazdy vzorek v poli se secte
+      {
+        suma = suma + pole_tlaku[i];
+      }
+    prumer = (1.0f * suma / velikost_pole_prumeru)    + 0.5;          // prumer + zaokrouhleni
+    return (uint16_t)prumer;                                          // prevod z floatu na puvodni format
+  }
+//----------------------------------------------
+
+
+
+//----------------------------------------------
+// z 'pole_vlhkosti[]' vytvori prumernou hodnotu (Neresi se zadne prepocty na procenta. Jde jen o prumery nejakych hodnot)
+// Neprumeruje se cele pole, ale jen pocet vzorku, ktery je uveden v globalni promenne 'velikost_pole_prumeru'. Povoleny interval 1 az 20.
+// Na stabilitu se (na rozdil od prumerovani azimutu) nehledi. Zprumeruji se vsechny pozadovane vzorky.
+uint16_t prumeruj_vlhkosti(void) 
+  {
+    uint32_t suma = 0;                                                // soucet vsech hodnot pro vytvoreni prumeru
+    float prumer = 0;                                                 // vysledek prumerovani vlhkosti
+    for (uint8_t i = 0; i < velikost_pole_prumeru; i++)               // kazdy vzorek v poli se secte
+      {
+        suma = suma + pole_vlhkosti[i];
+      }
+    prumer = (1.0f * suma / velikost_pole_prumeru)    + 0.5;          // prumer + zaokrouhleni
+
+    return (uint16_t)prumer;                                          // prevod z floatu na puvodni format
+  }
+//----------------------------------------------
+
+
+//----------------------------------------------
+// z 'pole_teplot[]' vytvori prumernou hodnotu (Neresi se zadne prepocty na stupne. Jde jen o prumery nejakych hodnot)
+// Neprumeruje se cele pole, ale jen pocet vzorku, ktery je uveden v globalni promenne 'velikost_pole_prumeru'. Povoleny interval 1 az 20.
+// Na stabilitu se (na rozdil od prumerovani azimutu) nehledi. Zprumeruji se vsechny pozadovane vzorky.
+uint16_t prumeruj_teploty(void) 
+  {
+    uint32_t suma = 0;                                                // soucet vsech hodnot pro vytvoreni prumeru
+    float prumer = 0;                                                 // vysledek prumerovani teploty
+    for (uint8_t i = 0; i < velikost_pole_prumeru; i++)               // kazdy vzorek v poli se secte
+      {
+        suma = suma + pole_teplot[i];
+      }
+    prumer = (1.0f * suma / velikost_pole_prumeru)    + 0.5;          // prumer + zaokrouhleni
+
+    return (uint16_t)prumer;                                          // prevod z floatu na puvodni format
+  }
+//----------------------------------------------

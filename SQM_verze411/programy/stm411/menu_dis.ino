@@ -1155,7 +1155,7 @@ void podmenu(uint8_t polozka)
             int16_t posledni_azimut;
             
             uint8_t kompas_fce = 0;
-            velikost_pole_azimutu = 5;
+            velikost_pole_prumeru = 5;
             bool zacni_prumerobvat = true;                                       // prvnich 5 vzorku se neprumeruje (pole klouzaku pro hodnoty azimutu jeste neni naplnene)
             uint8_t ukazatel_azimpole = 0;                                       // kvuli prumerovani azimutu se pouziva klouzave pole 5 poslednich hodnot
             while (digitalRead(pin_tl_ok) == HIGH)                               // Dokud neni stisknuto tlacitko OK
@@ -1191,7 +1191,7 @@ void podmenu(uint8_t polozka)
                     posledni_azimut = akt_azimut;                                // pro pripad nestabilniho mereni (azimuty se v poli lisi o vic nez 10 stupnu) ae ignalizuje problem a posledni hodnota
                     pole_azimutu[ukazatel_azimpole] = akt_azimut;
                     ukazatel_azimpole ++;
-                    if (ukazatel_azimpole > velikost_pole_azimutu - 1)
+                    if (ukazatel_azimpole > velikost_pole_prumeru - 1)
                       {
                         ukazatel_azimpole = 0;
                         zacni_prumerobvat = true;                                // probehlo alespon 1 kompletni zaplneni pole, zacina se prumerobvat

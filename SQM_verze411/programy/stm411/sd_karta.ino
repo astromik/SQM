@@ -87,9 +87,7 @@ void SD_save(void)
                 EEPROM_write_long(eeaddr_posledni_den,rokmesden);
               }
 
-        
-            SdFile::dateTimeCallback(dateTime);
-           
+                   
             open_OK = soubor.open(cesta, O_WRITE | O_APPEND | O_CREAT);
     
             if (open_OK)
@@ -192,9 +190,7 @@ void RTC_SD(uint32_t novy, uint32_t v_rtc, long odchylka, uint32_t interval, uin
             sd.begin(SD_CONFIG);                                            //inicializace SD karty pro pripad, ze by byla predtim vytazena
             bool RTC_hlavicka = false;
             if (!sd.exists(dbg_cesta))    RTC_hlavicka = true;              // Soubor neexistuje - bude se zapisovat hlavicka
-       
-            SdFile::dateTimeCallback(dateTime);
-            
+                
             open_OK = soubor.open(dbg_cesta, O_WRITE | O_APPEND | O_CREAT);
             if (open_OK)
               {
@@ -304,7 +300,6 @@ void SD_sysMEM_WRITE(void)
             sd_out_err = true;                                              // pri vytazeni karty a pokusu o pristi zapis se 1x zahlasi "no-Sd"
             zobraz_RTC(false);
             sd.begin(SD_CONFIG);                                            //inicializace SD karty pro pripad, ze by byla predtim vytazena
-            SdFile::dateTimeCallback(dateTime);
             
             open_OK = soubor.open(cesta, O_WRITE | O_CREAT);                // pripadny stary soubor se prepisuje
             if (open_OK)
@@ -451,9 +446,7 @@ void SD_log(uint32_t adresa , uint16_t logdata)
             
             if (!sd.exists("LOGS"))   sd.mkdir("LOGS");                     // kdyz slozka "\LOGS\" neexistuje, tak se vytvori
             
-            
-            SdFile::dateTimeCallback(dateTime);
-            
+                       
             open_OK = log_soubor.open(log_cesta,  O_WRITE | O_APPEND | O_CREAT);    // dalsi logy se pridavaji na konec logovaciho souboru
             if (open_OK)
               {
@@ -535,9 +528,7 @@ void logjas(uint16_t logovane_cislo)
             sd.begin(SD_CONFIG);                                                //inicializace SD karty pro pripad, ze by byla predtim vytazena
 
             if (!sd.exists("LOGS"))   sd.mkdir("LOGS");                     // kdyz slozka "\LOGS\" neexistuje, tak se vytvori
-                        
-            SdFile::dateTimeCallback(dateTime);
-            
+                                   
             open_OK = soubor.open(cesta,  O_WRITE | O_APPEND | O_CREAT);        // dalsi logy se pridavaji na konec logovaciho souboru
             if (open_OK)
               {
@@ -626,7 +617,6 @@ void logafd(uint32_t logovane_cislo)
             zobraz_RTC(false);
             sd.begin(SD_CONFIG);                                                //inicializace SD karty pro pripad, ze by byla predtim vytazena
             if (!sd.exists("LOGS"))   sd.mkdir("LOGS");                         // kdyz slozka "\LOGS\" neexistuje, tak se vytvori
-            SdFile::dateTimeCallback(dateTime);
             
             open_OK = soubor.open(cesta,  O_WRITE | O_APPEND | O_CREAT);        // dalsi logy se pridavaji na konec logovaciho souboru
             if (open_OK)
@@ -1153,7 +1143,6 @@ void zaloz_GPX_soubor(void)
             sd_out_err = true;                                                  // pri vytazeni karty a pokusu o pristi zapis se 1x zahlasi "no-Sd"
             sd.begin(SD_CONFIG);                                                //inicializace SD karty pro pripad, ze by byla predtim vytazena
             if (!sd.exists("TRCK"))   sd.mkdir("TRCK");                         // kdyz slozka "\TRCK\" neexistuje, tak se vytvori
-            SdFile::dateTimeCallback(dateTime);
             open_OK = soubor.open(GPS_track_cesta,  O_WRITE | O_APPEND | O_CREAT); 
 
             if (open_OK)
@@ -1228,7 +1217,6 @@ void track_GPS(void)
             if (GPS_alt_akt < 9500 and GPS_alt_akt > 0 )                        // k zapisu bodu dojde jen v pripade, ze jsou vyskova data v normalnich mezich. Kdyz jeste neni zafixovano, odesila se ve vysce hodnota 65535m n.m.
               {
                 sd.begin(SD_CONFIG);                                            //inicializace SD karty pro pripad, ze by byla predtim vytazena
-                SdFile::dateTimeCallback(dateTime);
                 
                 open_OK = soubor.open(GPS_track_cesta,  O_WRITE | O_APPEND | O_CREAT);        // dalsi souradnice se pridavaji na konec souboru
                 if (open_OK)
@@ -1454,7 +1442,6 @@ void ukonci_GPX_soubor(void)
 // ----------- treti otevreni GPX souboru uz jen zapise statistiky a zaverecne znacky
 
             sd.begin(SD_CONFIG);                                                //inicializace SD karty pro pripad, ze by byla predtim vytazena
-            SdFile::dateTimeCallback(dateTime);
             
             open_OK = soubor.open(GPS_track_cesta,  O_WRITE | O_APPEND | O_CREAT);   // pridani dat na konec souboru
             if (open_OK)
