@@ -5,8 +5,8 @@
 // Detaily (schema, plosnak, navod, fotky):
 //           http://sqm.astromik.org
 //
-#define verzeSW "2026-07-18 (STM32F4x1CEU)"
-//        V desce SQM-GPS je nutna verze programu alespon "2026-05-17..INT" (doplneni nezprumerovanych souradnic v I2C registrech 20 az 29)
+#define verzeSW "2026-07-27 (STM32F4x1CEU)"
+//        V desce SQM-GPS je nutna verze programu alespon "2026-07-27..INT" (doplneni SOG v logaritmicke stupnici, textova verze HW pro GPS prijimac a watchdog)
 //============================================================================
 // Odladeno pro Board Manager:
 //          https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
@@ -408,6 +408,7 @@ uint16_t  GPS_alt;
 uint32_t  GPS_lat_akt;
 uint32_t  GPS_lon_akt;
 uint16_t  GPS_alt_akt;
+uint8_t   GPS_SOG;
 
 uint16_t  int_rezerva_1;                                // zatim nepouzita rezervni cidla
 uint16_t  int_rezerva_2;

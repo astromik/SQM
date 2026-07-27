@@ -26,8 +26,28 @@
 
 //17 ---   7       Pocet satelitu
 //18 ---  20       10x HDoP
-//19 ---   7       pole klouzaku zaplneno, muzou se stahovat data, bit 2= int/ext
 
+//19 ---   6       status bajt:
+//                    bit 0 = '0' pole klouzaku jeste neni zaplneno
+//                    bit 0 = '1' pole klouzaku zaplneno, muzou se stahovat data
+//                    bit 1 = '0' cas se do RTC nezapise (v GPS nejsou casove znacky, nebo je v ext. verzi prepinac casu v poloze "nenastavovat cas")
+//                    bit 1 = '1' pri stazeni dat se do RTC ulozi cas z GPS (pokud bude k dispozci)
+//                    bit 2 = '0' puvodni externi verze GPS
+//                    bit 2 = '1' nova interni verze GPS
+//
+// doplneni registru ve verzi 2026-05-17
+// 20 ---  8        aktualni (posledni) LAT bez prumerovani (pro severni polokouli zvetseny o 90 stupnu)
+// 21 ---  79
+// 22 --- 192
+// 23 --- 172
+// 24 ---  11       aktualni (posledni) LON bez prumerovani (pro vychodni polokouli zvetseny o 180 stupnu)
+// 25 --- 149
+// 26 --- 204
+// 27 --- 147
+// 28 ---   1       aktualni (posledni) nadmorska vyska zvysena o 500m
+// 29 --- 241
+//
+// 30 --- 100       rychlost v 0.2 x km/h     (255 je rychlost pres 51km/h)   
 
 //GPS LAT: 139444277 = [N] 49.444278
 //GPS LON: 194366620 = [E] 14.366621
@@ -71,7 +91,7 @@ void gps(uint8_t RTC_param)
         
         i = 0;
         delay(20);
-        Wire.requestFrom(I2C_ADDR_GPS,30);                                    // zadost o 30 bajtu (registru)
+        Wire.requestFrom(I2C_ADDR_GPS,31);                                    // zadost o 31 bajtu (registru)
         delay(20);
         while (Wire.available())                                              // postupne ulozeni prijatych hodnot do pole
           {
@@ -111,6 +131,7 @@ void gps(uint8_t RTC_param)
         pole_GPS_I2C[27]  = 156;      // aktual LON
         pole_GPS_I2C[28] =   3;       // aktual ALT
         pole_GPS_I2C[29] = 229;       // aktual ALT
+        pole_GPS_I2C[30] = 100;       // aktualni rychlost prevedena na logaritmickou stupnici (130km/h odpovida cislu 255). Nizke rychlosti maji vyssi rozliseni.
         
 
 
@@ -118,7 +139,7 @@ void gps(uint8_t RTC_param)
 
 
         bool problem = false;
-        if (i < 29)                                                           // nebyl prijaty prislusny pocet bajtu - NECO JE SPATNE
+        if (i < 30)                                                           // nebyl prijaty prislusny pocet bajtu - NECO JE SPATNE
           {
             zobraz_text(41);                                                  // "Err-G"
             SD_log(998 , 11);
@@ -159,9 +180,12 @@ void gps(uint8_t RTC_param)
               {
                 problem = true;                                               // neni dostatek dat pro klouzak, nebo je signal casto prerusovany
               }
+
+            GPS_SOG = pole_GPS_I2C[30];
           }
     
-    
+
+         
         if (problem == true)                                                  // pri problemu se prenastavi hodnoty zamerne mimo rozsah, aby se ve vypisu zobrazily pomlcky
           {
             GPS_lat = 0x1FFFFFFFUL;                                           // hodnoty mimo rozsah se ve vypisu zobrazi jako pomlcky (nejvyssi 3 bity slouzi jako znacka pro prednastavene stanoviste)
@@ -381,6 +405,11 @@ void gps_NMEA(uint8_t typ_zpravy)
             GET_I2C_NMEA(70);
           }
 
+        if (typ_zpravy == 3)
+          {
+            GET_I2C_NMEA(80);
+          }
+
     
         for (i = 0; i < 90 ; i++)                                             // vypsat kompletni stazenou zpravu
           {
@@ -425,6 +454,11 @@ void GET_I2C_NMEA(uint8_t blok)
         if (blok == 70)
           {
             pole_GPS_NMEA[((blok-70)*15) + i] = Wire.read();
+          }
+
+        if (blok == 80)
+          {
+            pole_GPS_NMEA[((blok-80)*15) + i] = Wire.read();
           }
 
 

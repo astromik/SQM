@@ -831,7 +831,7 @@ void file_to_serkom(char typ, uint16_t param2, uint16_t param3)
 
             for (uint8_t fn_znak = 0; fn_znak < 17 ; fn_znak ++) { cesta[fn_znak] = f_name_H[fn_znak]; }
             cesta[17] = '\0';
-            delka_radky = 109;
+            delka_radky = 262;                   // po doplneni o extensions
           }
 
         if (typ == 'I')                          // soubor "CALB/seznam.txt"
@@ -895,7 +895,7 @@ void file_to_serkom(char typ, uint16_t param2, uint16_t param3)
                   
                   }
 
-                if (typ == 'H' or typ == '?' or typ == 'T' )                        // u trasovaciho souboru, souboru pro nastaveni parametru dalekohledu a u napovedy se vypisuje vzdycky vsechno
+                if (typ == '?' or typ == 'T' )                                      // u souboru pro nastaveni parametru dalekohledu a u napovedy se vypisuje vzdycky vsechno
                   {
                     param2 = pocet_radek;                                           // proto se parametr 2 nastavi na celkove zjisteny pocet radek
                   } 
@@ -903,6 +903,7 @@ void file_to_serkom(char typ, uint16_t param2, uint16_t param3)
 
                 if (typ == 'H')                                                     // u trasovaciho souboru a u napovedy se misto poctu radek vypisuje pocet zaznamenanych bodu
                   {
+                    pocet_radek = pocet_radek / 2;                                  // trasovaci soubor ma vic nez 256 znaku na radku, a proto se pocita 2x (stejne jako normalni zaznam)
                     param2 = pocet_radek;                                           // u trasovaciho souboru, se vypisuje vzdycky vsechno proto se parametr 2 nastavi na celkove zjisteny pocet radek
                     Serial.print("     (");
                     Serial.print(lng383);                                           // "Celkovy pocet GPS bodu v souboru: "
@@ -912,7 +913,7 @@ void file_to_serkom(char typ, uint16_t param2, uint16_t param3)
                       }
                     else                                   
                       {
-                        pocet_radek = pocet_radek - 11;                             // ve vsech ostatnich pripadech se odecita 9 radek (5 na zacatku souboru, 6 na konci)                                
+                        pocet_radek = pocet_radek - 11;                            // ve vsech ostatnich pripadech se odecita 9 radek (5 na zacatku souboru, 6 na konci)                                
                       }
                     
                     Serial.print(pocet_radek);
@@ -1150,9 +1151,9 @@ void zaloz_GPX_soubor(void)
                 bitClear(err_bit,1);                                            // SD karta je v poradku, maze se pripadny bit v promenne 'err_bit'       
 
                 //     zapsat GPX hlavicku na zacatek souboru       
-                soubor.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>                                                                     ");
-                soubor.println("<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"http://sqm.astromik.org/\">           ");
-                soubor.println("<trk>                                                                                                      ");
+                soubor.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>                                                                                                                                                                                                                                ");
+                soubor.println("<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"http://sqm.astromik.org/\">                                                                                                                                                                      ");
+                soubor.println("<trk>                                                                                                                                                                                                                                                                 ");
                 soubor.print("<name>SQM - ");
                 for (uint8_t zn = 5 ; zn <= 16 ; zn++)
                   {
@@ -1175,8 +1176,8 @@ void zaloz_GPX_soubor(void)
                 soubor.print(':');
                 if(LOC_sek < 10)     soubor.print('0');
                 soubor.print(LOC_sek);              
-                soubor.println("</name>                                      ");
-                soubor.println("<trkseg>                                                                                                   ");
+                soubor.println("</name>                                                                                                                                                                                                 ");
+                soubor.println("<trkseg>                                                                                                                                                                                                                                                              ");
 
                 soubor.close();
                 uint16_t cislo_tracku = EEPROM_read_int(eeaddr_GPS_track_id) | 0x8000;   // nastavi nejvyssi bit (trasovani na spusteno)
@@ -1204,6 +1205,10 @@ void zaloz_GPX_soubor(void)
 // do posledniho vytvoreneho trasovaciho GPX souboru prida jeden zaznam nezprumerovanych (aktualnich) souradnic
 void track_GPS(void)
   {
+    float aktual_vyska , prumerna_vyska;
+    float aktual_delka , prumerna_delka;
+    float aktual_sirka , prumerna_sirka;
+    
     float sourad_print;
     
     if (pouzivat_SD_kartu == true)                                              // kdyz je nastaveno pouzivani SD karty, tak se muze ukladat   
@@ -1228,24 +1233,29 @@ void track_GPS(void)
 
                     if (pole_GPS_I2C[9] < 99 and pole_GPS_I2C[9] > 0)           // jen test spravneho roku (test funkcni komunikace I2C) (roky 2001 az 2099)
                       {                                                         // pri nejake necekane chybe komunikace se mi stalo, ze se vratil triznakovy rok
-                        soubor.print("<trkpt lat=\"");
+                        soubor.print("<trkpt ");
 
+                        soubor.print("lat=\"");                                 // aktualni (nezprumerovana) zemepisna sirka
                         if (GPS_lat_akt > 90000000UL)                           // severni sirka
                           {
                             sourad_print = (GPS_lat_akt-90000000UL) / 1000000.0;
                             soubor.print('+');
                           }
-                        else                                                     // jizni sirka
+                        else                                                    // jizni sirka
                           {                            
                             sourad_print = GPS_lat_akt / 1000000.0;
                             soubor.print('-');
                           }
 
-                        
+                        sourad_print = round(sourad_print * 100000.0f) / 100000.0f; // protoze existovalo riziko s doplnenim nuly navic pri extremnich 
+                                                                                    //   pripadech float formatu v okoli hranicnich podminek, provede se zaokrouhleni hned na zacatku
+                        aktual_sirka = sourad_print;
                         if (sourad_print < 10)        soubor.print('0');        // uvodni nula pro sirku
                         soubor.print( sourad_print, 6);
-                        soubor.print("\" lon=\"");
+                        soubor.print("\"");
 
+
+                        soubor.print(" lon=\"");                                // aktualni (nezprumerovana) zemepisna delka
                         if (GPS_lon_akt > 180000000UL)                          // vychodni delka
                           {
                             sourad_print = (GPS_lon_akt - 180000000UL) / 1000000.0;
@@ -1256,22 +1266,29 @@ void track_GPS(void)
                             sourad_print = GPS_lon_akt / 1000000.0;
                             soubor.print('-');
                           }
-                        
-                        
-                        if (sourad_print < 100)       soubor.print('0');        // uvodni nula pro delku
-                        if (sourad_print <  10)       soubor.print('0');        // uvodni nula pro delku
+                        sourad_print = round(sourad_print * 100000.0f) / 100000.0f; // protoze existovalo riziko s doplnenim nuly navic pri extremnich 
+                                                                                    //   pripadech float formatu v okoli hranicnich podminek, provede se zaokrouhleni hned na zacatku
+                        aktual_delka = sourad_print;                        
+                        if (sourad_print < 100)       soubor.print('0');        // uvodni nuly pro delku
+                        if (sourad_print <  10)       soubor.print('0');
                         soubor.print(sourad_print , 6);
-                        soubor.print("\"><ele>");
+                        soubor.print("\">");
+
+                        
+                        soubor.print("<ele>");                                  // aktualni (nezprumerovana) nadmorska vyska
                         sourad_print = GPS_alt_akt - 500;
                         if (sourad_print > 0)         soubor.print('+');
                         else                          soubor.print('-');
                         sourad_print = abs(sourad_print);
-                        if (sourad_print < 1000)      soubor.print('0');        // uvodni nula pro vysku
-                        if (sourad_print <  100)      soubor.print('0');        // uvodni nula pro vysku
-                        if (sourad_print <   10)      soubor.print('0');        // uvodni nula pro vysku
-    
-                        soubor.print(sourad_print , 6);
-                        soubor.print("</ele><time>20");
+                        aktual_vyska = sourad_print;
+                        if (sourad_print < 1000)      soubor.print('0');        // uvodni nuly pro vysku
+                        if (sourad_print <  100)      soubor.print('0');
+                        if (sourad_print <   10)      soubor.print('0');
+                        soubor.print(sourad_print , 0);                         // aktualni vyska se prenasi uz zaokrouhlena na cela cisla, proto se desetiny tisknout nemusi
+                        soubor.print("</ele>");
+
+
+                        soubor.print("<time>20");                               // datum a cas v UT formatu
                         soubor.print(pole_GPS_I2C[9]);                          // UT rok
                         soubor.print('-');
                         if (pole_GPS_I2C[10] < 10) soubor.print('0');           // UT mesic
@@ -1288,7 +1305,109 @@ void track_GPS(void)
                         soubor.print(':');
                         if (pole_GPS_I2C[14] < 10) soubor.print('0');           // UT sekunda
                         soubor.print(pole_GPS_I2C[14]);
-                        soubor.println("Z</time></trkpt>");                
+                        soubor.print("Z</time>");
+                        
+                        soubor.print("<extensions>");                           // jako poznamky se do GPX souboru zapisuji jeste "extensions"
+                        soubor.print("<satellites>");                           // pocet satelitu
+                        if (pole_GPS_I2C[17] < 100) soubor.print('0');
+                        if (pole_GPS_I2C[17] <  10) soubor.print('0');
+                        soubor.print(pole_GPS_I2C[17]);
+                        soubor.print("</satellites>");
+
+                        
+                        soubor.print("<hdop>");                                 // HDoP x10
+                        if (pole_GPS_I2C[18] < 100) soubor.print('0');
+                        if (pole_GPS_I2C[18] <  10) soubor.print('0');
+                        soubor.print(pole_GPS_I2C[18]);
+                        soubor.print("</hdop>");
+                        
+
+                        soubor.print("<SOG>");                                  // SOG
+                        float kmh = pow(10, (GPS_SOG * log10(131) / 250)) - 1;  // prevod z logaritmicke stupnice rychlosti zpatky na obycejne km/h
+                        kmh = round(kmh * 100.0f) / 100.0f;                     // protoze existovalo riziko s doplnenim nuly navic pri extremnich 
+                                                                                //   pripadech float formatu v okoli hranicnich podminek, provede se zaokrouhleni hned na zacatku
+                        if (kmh < 100) soubor.print('0');
+                        if (kmh <  10) soubor.print('0');
+                        soubor.print(kmh , 2);                                  // tisk rychlosti na 2 desetinna mista                
+                        soubor.print("</SOG>");
+
+                        soubor.print("<avglat>");                               // zprumerovana zemepisna sirka
+                        if (GPS_lat > 90000000UL)                               // severni sirka
+                          {
+                            sourad_print = (GPS_lat-90000000UL) / 1000000.0;
+                            soubor.print('+');
+                          }
+                        else                                                    // jizni sirka
+                          {                            
+                            sourad_print = GPS_lat / 1000000.0;
+                            soubor.print('-');
+                          }
+                        sourad_print = round(sourad_print * 100000.0f) / 100000.0f; // protoze existovalo riziko s doplnenim nuly navic pri extremnich 
+                                                                                    //   pripadech float formatu v okoli hranicnich podminek, provede se zaokrouhleni hned na zacatku
+                        prumerna_sirka = sourad_print;
+                        if (sourad_print < 10)        soubor.print('0');        // uvodni nula pro sirku
+                        soubor.print( sourad_print, 6);
+                        soubor.print("</avglat>");
+
+
+                        soubor.print("<avglon>");                               // zprumerovana zemepisna delka
+                        if (GPS_lon > 180000000UL)                              // vychodni delka
+                          {
+                            sourad_print = (GPS_lon - 180000000UL) / 1000000.0;
+                            soubor.print('+');
+                          }
+                        else                                                    // zapadni delka
+                          {
+                            sourad_print = GPS_lon / 1000000.0;
+                            soubor.print('-');
+                          }
+                          
+                        sourad_print = round(sourad_print * 100000.0f) / 100000.0f; // protoze existovalo riziko s doplnenim nuly navic pri extremnich 
+                                                                                    //   pripadech float formatu v okoli hranicnich podminek, provede se zaokrouhleni hned na zacatku
+                        prumerna_delka = sourad_print;                          // pro pripadne pozdejsi vypisy rozdilu horizontalnich souradnic 
+                        if (sourad_print < 100)       soubor.print('0');        // uvodni nula pro delku
+                        if (sourad_print <  10)       soubor.print('0');        // uvodni nula pro delku
+                        soubor.print(sourad_print , 6);
+                        soubor.print("</avglon>");
+
+
+                        soubor.print("<avgalt>");                               // zprumerovana nadmorska vyska
+                        sourad_print = GPS_alt - 500;
+                        sourad_print = round(sourad_print * 100.0f) / 100.0f;   // protoze existovalo riziko s doplnenim nuly navic pri extremnich 
+                                                                                //   pripadech float formatu v okoli hranicnich podminek, provede se zaokrouhleni hned na zacatku
+                        prumerna_vyska = sourad_print;
+                        if (sourad_print > 0)         soubor.print('+');
+                        else                          soubor.print('-');
+                        sourad_print = abs(sourad_print);
+                        if (sourad_print < 1000)      soubor.print('0');        // uvodni nuly pro prumerovanou nadmorskou vysku
+                        if (sourad_print <  100)      soubor.print('0');
+                        if (sourad_print <   10)      soubor.print('0');
+                        soubor.print(sourad_print , 0);                         // prumerne i zaokrouhlene vysky se vraci v celych metrech, neni tedy nutne vypisovat desetiny
+                        soubor.print("</avgalt>");
+
+
+/*
+                        soubor.print("<v_delta>");                              // rozdil aktualni a prumerne nadmorske vysky
+                        float v_delta = abs(aktual_vyska - prumerna_vyska);
+                        if (v_delta < 100)       soubor.print('0');             // uvodni nula pro rozdil vysek
+                        if (v_delta <  10)       soubor.print('0');             // uvodni nula pro rozdil vysek
+                        soubor.print(v_delta , 3);
+                        soubor.print("</v_delta>");
+
+                        soubor.print("<h_delta>");                              // rozdil aktualnich a zprumerovanych horizontalnich souradnic (Pythagorova veta - neplati v okoli polu)
+                        float h_delta = sqrt( sq(((aktual_sirka - prumerna_sirka) * 111000)) + sq(((aktual_delka - prumerna_delka) * 72000)) );
+                        if (h_delta < 100)       soubor.print('0');             // uvodni nula pro horizontalni rozdil
+                        if (h_delta <  10)       soubor.print('0');             // uvodni nula pro horizontalni rozdil
+                        soubor.print(h_delta , 4);
+                        soubor.print("</h_delta>");
+
+                        soubor.print("<fixn>");                                 // pocet fixu v rade
+                        if (pole_GPS_I2C[8] < 100)  soubor.print('0'); 
+                        if (pole_GPS_I2C[8] <  10)  soubor.print('0');
+                        soubor.print(pole_GPS_I2C[8]);
+                        soubor.print("</fixn>");
+*/
+                        soubor.println("</extensions></trkpt>");                // zakonceni jednoho datoveho bodu
                       }
 
                     soubor.close();
@@ -1448,8 +1567,8 @@ void ukonci_GPX_soubor(void)
               {
                 bitClear(err_bit,1);                                            // SD karta je v poradku, maze se pripadny bit v promenne 'err_bit'       
 
-                soubor.println("</trkseg>                                                                                                  ");
-                soubor.println("</trk>                                                                                                     ");
+                soubor.println("</trkseg>                                                                                                                                                                                                                                                             ");
+                soubor.println("</trk>                                                                                                                                                                                                                                                                ");
 
 //             zapis prumernych souradnic do GPX souboru jako waypoint (zapisuje az za blok <trk>....</trk>)
 //             "<wpt   lat="+46.576388" lon="-008.892638"><ele>+0372.000000</ele><name> AvgPoint </name></wpt>                    "
@@ -1482,7 +1601,7 @@ void ukonci_GPX_soubor(void)
 
                 soubor.print("</ele><name>");
                 soubor.print(" AvgPoint ");
-                soubor.println("</name></wpt>             "); 
+                soubor.println("</name></wpt>                                                                                                                                                                        "); 
                 
 
 //             zapis strednich souradnic do GPX souboru jako waypoint (zapisuje az za blok <trk>....</trk>)
@@ -1518,7 +1637,7 @@ void ukonci_GPX_soubor(void)
 
                 soubor.print("</ele><name>");
                 soubor.print(" MidPoint ");
-                soubor.println("</name></wpt>             "); 
+                soubor.println("</name></wpt>                                                                                                                                                                        "); 
                 
 
 //zapis znacky <bounds> s minimalnimi a maximalnimi souradnicemi 
@@ -1557,10 +1676,10 @@ void ukonci_GPX_soubor(void)
                 if (prum_lon <  100)  soubor.print('0');
                 if (prum_lon <   10)  soubor.print('0');
                 soubor.print(prum_lon,6); 
-                soubor.println("\" />               "); 
+                soubor.println("\" />                                                                                                                                                                          "); 
 
 
-                soubor.println("</gpx>                                                                                                     "); 
+                soubor.println("</gpx>                                                                                                                                                                                                                                                                "); 
 
 
 //             zapis poznamky s poctem bodu
@@ -1573,7 +1692,7 @@ void ukonci_GPX_soubor(void)
                 if (pocet_bodu <   100) soubor.print(' ');
                 if (pocet_bodu <    10) soubor.print(' ');
                 soubor.print(pocet_bodu);
-                soubor.println("              -->                                                               ");
+                soubor.println("              -->                                                                                                                                                                                                                          ");
                 
                 soubor.print("<!-- Local DateTime: ");
 
@@ -1593,7 +1712,7 @@ void ukonci_GPX_soubor(void)
                 soubor.print(':');
                 if(LOC_sek < 10)     soubor.print('0');
                 soubor.print(LOC_sek);              
-                soubor.println(" -->                                                               ");
+                soubor.println(" -->                                                                                                                                                                                                                          ");
 
                 soubor.close();
               }

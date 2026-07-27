@@ -1,9 +1,10 @@
-// Rozsirujici deska k SQM pro zpracovani GPS signalu
-//=====================================================
-//                 sqm.astromik.org
-//
-//     verze 17.5.2026 pro desku SQM-GPS-5(6)
-//     ----------------------------------
+// Rozsirujici deska k SQM (SQM-GPS-5 nebo 6) pro zpracovani GPS signalu
+//=========================================================================
+//  https://sqm.astromik.org
+// ----------------------------------
+
+
+char verzeSW[] = "2026-07-27..INT";                        // 15 znaku popisu verze
 
 //  POZOR!
 //       V Arduino IDE nastavit hardware (soubor boards.txt) na 4MHz krystal
@@ -19,10 +20,11 @@
 // Druha strana komunikace probiha pres I2C s hlavni SQM deskou.
 // Pomoci I2C komunikace je mozne stahnout data (zprumerovane souradnice, cas a dalsi informace o GPS modulu).
 // Take je mozne pres I2C ovladat LED - docasne vsechny zhasnout (funkce 20) a pak obnovit do puvodniho stavu (funkce 21),
-//   nebo provest HOT restart GPS modulu (funkce 22).
+//   nebo provest HOT restart GPS modulu (funkce 22). Funkce 23 byla doplnena pro otestovani vyprseni 4-sekundoveho watchdogu (WDT).
 //
 // Pri sepnuti servisniho pinu behem zapnuti napajeni se nastavi GPS modul na prijem zprav GxRMC a GxGGA (ostatni zpravy se vypnou).
 //   Nastavi se i rychlost odesilani NMEA zprav na 1 sekundu.
+//   Do EEPROM se ulozi i typ prijimaciho modulu ve zkracene (15-znakove) verzi. Napriklad "UBX-G60xx000400"
 // Pri beznem provozu se spojenim servisniho pinu na GND rozblikaji vsechny LED frekvenci 1Hz (strida 50%)
 //   Po 5 sekundach spojeni dochazi k prepinani faze blikani LED1. Nektere GPS moduly odesilaji NMEA zpravy v obracenem poradi a to zpusobuje, 
 //     ze LED1 blika s vyrazne delsim rozsvicenym stavem. Po prepnuti faze se pak usetri trochu energie a snizi celkove vyzarovani svetla z SQM.
@@ -37,7 +39,7 @@
 //   Spravny stav je tedy takovy, ze blika LED1 a ostatni LED jsou zhasnute.
 //   V pripade, ze blika LED1 a LED2 je zhasnuta, dojde pri mereni jasu automaticky k serizeni casu v RTC na hlavni desce SQM-BAS. 
 
-// Data se do SQM odesilaji pomoci 29 8-bitovych registru 
+// Data se do SQM odesilaji pomoci 31 8-bitovych registru 
 // priklad exportnich dat:
 //  0 ---  8        prumer LAT (pro severni polokouli zvetseny o 90 stupnu)
 //  1 ---  79
@@ -82,20 +84,24 @@
 // 27 --- 147
 // 28 ---   1       aktualni (posledni) nadmorska vyska zvysena o 500m
 // 29 --- 241
+//
+// 30 ---  50       rychlost 0 az 130 km/h v logaritmicke stupnici (nizke rychlosti maji vetsi rozliseni, vysoke rychlosti jsou ulozene nepresne)
+
 
 //
 //   Na zvlastni pozadavek odeslany pres I2C sbernici (prikazy 50 az 55 a 60 az 65) je mozne si vyzadat i kompletni
-//           obsah NMEA vet GxRMC a GxGGA. Vety se zpatky do SQM odesilaji po 15 znacich.
+//           obsah poslednich NMEA vet GxRMC a GxGGA. Vety se zpatky do SQM odesilaji po 15 znacich.
 //   Pri pozadavku s kodem 70 se vrati 15-znakovy text s verzi programu (yyyy-mm-dd..INT)
+//   Pri pozadavku s kodem 80 se vrati 15-znakovy text s HW verzi prijimaci desky
 //======================================================================================================================
 
-
-char verzeSW[] = "2026-05-17..INT";                        // 15 znaku popisu verze
 
 #define F_CPU 4000000UL
 
 #include <Wire.h>                                          // knihovna pro I2C komunikaci
 #include <EEPROM.h>                                        // knihovna pro vnitrni EEPROM
+#include <avr/wdt.h>                                       // knihovna pro watchdog
+
 
 #define pin_LED1            2
 #define pin_LED2            3
@@ -127,7 +133,7 @@ byte    ukazatel_klouzaku;
 long    klouzak_LAT[10];                                   // pole pro prumerovani zjistenych souradnic (znamenkove)
 long    klouzak_LON[10];
 float   klouzak_ALT[10];
-boolean pripraveno = false;                                // je zaznamenany alespon 1 blok klouzaku (10 vzorku), tak se da pocitat prumer 
+boolean pripraveno = false;                                // az bude zaznamenany alespon 1 blok klouzaku (10 vzorku), tak se da pocitat prumer 
 
 byte volatile prikaz_I2C;                                  // z SQM (MASTER) se da do modulu (SLAVE) poslat prikaz:
                                                            //   0 = bez prikazu (predchozi prikaz byl vykonan)
@@ -137,6 +143,7 @@ byte volatile prikaz_I2C;                                  // z SQM (MASTER) se 
                                                            // 50 az 55 = stahnout 15 bajtu dlouhy blok textu ze zpravy GxRMC (dohromady az 90 znaku)
                                                            // 60 az 65 = stahnout 15 bajtu dlouhy blok textu ze zpravy GxGGA (dohromady az 90 znaku)
                                                            // 70       = stahnout 15 bajtu dlouhy blok textu s verzi programu
+                                                           // 80       = stahnout 15 bajtu dlouhy blok textu s verzi HW prijimace NEO
                                                            
 
 boolean  stav_LED_1;                                       // kvuli zhasinani a obnovovavni LED pre I2C prikaz se musi zapamatovat aktualni stav LED
@@ -222,6 +229,8 @@ byte SAVE_EEPROM[]      = {0xB5, 0x62, 0x06, 0x09, 0x0D, 0x00, 0x00, 0x00, 0x00,
 
 byte hot_start[]        = {0xB5, 0x62, 0x06, 0x04, 0x04, 0x00, 0x00, 0x00, 0x02, 0x00, 0x10, 0x68};
 
+char verzeHW[] = "               ";                     // 15 znaku popisu verze (uklada se do EEPROM pri zakladnim konfiguraci desky a pak se pri kazdem startu nacita z EEPROM)
+
 
 //======================================================================================================================
 
@@ -230,6 +239,8 @@ byte hot_start[]        = {0xB5, 0x62, 0x06, 0x04, 0x04, 0x00, 0x00, 0x00, 0x02,
 //======================================================================================================================
 void setup(void)
   {
+    MCUSR = 0;                                                                                   // vymazat vsechny flagy resetu (vcetne WDRF)
+    wdt_disable();
     UBRR0H = 0;                                                                                  // doladeni rychlosti seriove linky na 9600bps pro 4MHz krystal (kat. list ATmega328 str. 201)
     UBRR0L = 25;
 
@@ -280,6 +291,8 @@ void setup(void)
         if (digitalRead(pin_setup) == LOW)                                                       // kdyz je i po 5 sekundach sepnuty kontakt, nastavi se modul NEO-6M
           {
             GPS_setup();                                                                         // povoleni GxGGA a GxRMC vet. Ostatni zrusit.
+            zjisti_typ_HW();                                                                     // 'GPS_setup()' konci HOT STARTem a hned nasleduje 3-sekundovy test na prijem informaci o HW
+
 
             while (true)                                                                         // Z teto nekonecne smycky se vypadne jen resetem
               {
@@ -292,10 +305,7 @@ void setup(void)
                 LED3(false);
                 delay(900);
               }
-
-
           }
-
       }
 
     bitSet(statusy_LED,0);                                                                       // po zapnuti napajeni se vsechny LED rozsviti (znameni vsech chyb: GPS neodesila vety, signal neobsahuje cas, signal je spatny)
@@ -312,12 +322,20 @@ void setup(void)
     EXPORT_pole[19] = 0b00000100;                                                                // Interni verze desky SQM-GPS, neni dostupny cas, neni zaplneno pole pro klouzaky
                                                                                                  //             bit2=1                 bit1=0               bit0=0
 
-    // pro novejsi typy modulu NEO8-M se musi provest nastaveni konfigurace pri kazdem zapnuti (nemaji EEPROM)
+    EXPORT_pole[30] = 0;                                                                         // rychlost (SOG) se pri startu nastavi na 0 km/h (defaultne by byla I2C hodnota 255 a to je pres 130km/h)
 
+
+    for (byte i = 100; i < 115 ; i++)                                                            // Precteni drive ulozeneho typu HW prijimace NEO
+      {
+        char znak = EEPROM.read(i);
+        if (znak >= 32 and znak <= 127)            verzeHW[i-100] = znak;
+        else                                       verzeHW[i-100] = 32;
+      }
+
+    // pro novejsi typy modulu NEO8-M se musi provest nastaveni konfigurace pri kazdem zapnuti (nemaji EEPROM)
     setup_neo_8();
 
-
-  
+    wdt_enable(WDTO_4S);                                                                         // kdyz se program z nejakeho duvodu zasekne na vic nez 4 sekundy, dojde k resetu  
   }
 //======================================================================================================================
 
@@ -326,6 +344,8 @@ void setup(void)
 //======================================================================================================================
 void loop(void)
   {
+    wdt_reset();                                                                                 // v kazde smycce se resetuje WDT (nesmi se prekrocit 4 sekundy)
+    
     ignoruj_vetu = false;
     if(prikaz_I2C == 0)
       {
@@ -398,6 +418,7 @@ void loop(void)
                   
                 if (typ_vety == 'G' and ocekavana_veta == 'G') zpracuj_vetu_GxGGA();                                     // Nektere prijimace vraci retezec GNGGA, ale protoze se druhy znak nevyhodnocuje, tak to nevadi
                 if (typ_vety == 'R' and ocekavana_veta == 'R') zpracuj_vetu_GxRMC();                                     // Nektere prijimace vraci retezec GNRMC, ale protoze se druhy znak nevyhodnocuje, tak to nevadi
+                wdt_reset();
     
                 byte i;
                 for (i = 0 ; i < 90 ; i ++)                                                      // po zpracovani prislusne vety se pole veta[] smaze
@@ -528,7 +549,7 @@ void zpracuj_vetu_GxGGA(void)
             EXPORT_pole[17] = 0;                                                                 // pocet satelitu
             EXPORT_pole[18] = 255;                                                               // HDoP (Err)
             
-            EXPORT_pole[19] = EXPORT_pole[19] & 0b11111110;                                      // status maze informaci o zaplnenem poli klouzaku
+//            EXPORT_pole[19] = EXPORT_pole[19] & 0b11111110;                                      // status maze informaci o zaplnenem poli klouzaku
 
             EXPORT_pole[20]  = 255;                                                              // aktual LAT nastavit mimo rozsah (Err)
             EXPORT_pole[21]  = 255;
@@ -539,15 +560,13 @@ void zpracuj_vetu_GxGGA(void)
             EXPORT_pole[26]  = 255;
             EXPORT_pole[27]  = 255;
             EXPORT_pole[28]  = 255;                                                              // aktual ALT nastavit mimo rozsah (Err)
-            EXPORT_pole[29]  = 255;
-          
-
-            
+            EXPORT_pole[29]  = 255;           
+            EXPORT_pole[30]  = 0;                                                                // SOG (rychlost) na 0 km/h           
           }    
       }
     else                                                                                         // neco je spatne (nebyly prijate souradnice nebo nesouhlasi CRC, nebo je ve vete vystrazna znacka)
       {
-        OK_byte = 0;                                                                             // nulovani poctu byzchybnych prijmu v rade
+        OK_byte = 0;                                                                             // nulovani poctu bezchybnych prijmu v rade
         EXPORT_pole[8] = 0;
         bitSet(statusy_LED,2);                                                                   // LED3 rozsvitit 
       }  
@@ -618,7 +637,7 @@ void zpracuj_vetu_GxRMC(void)
         if (faze_LED1 == true)       bitClear(statusy_LED,0);                                    // LED1 zhasni    - LED1 bude blikat (v GxGGA vete se rozsveci, v GxRMC vete se zhasina)
         else                         bitSet(statusy_LED,0);                                      // LED1 rozsvit   - LED1 bude blikat (v GxGGA vete se zhasina, v GxRMC vete se rozsveci)
         
-        if (rozlozeny_pole[2][0] == 'A')                                                         // znacky, ze je signal v poradku
+        if (rozlozeny_pole[2][0] == 'A')                                                         // znacka, ze je signal v poradku
           {
             // rozklad casu na hodiny, minuty a sekundy
             byte GMT_hod = 0;
@@ -706,13 +725,17 @@ void zpracuj_vetu_GxRMC(void)
             else if (rozlozeny_pole[6][0] == 'W')       geolon_sign = -geoLON;                   // zapadni polokoule je zaporna
             else                                        geolon_sign = 200000000L;                // neni zafixovano, vraci se kod pro poruchu
 
-            if (geolon_sign >= 0) aktual_geolon = geolon_sign + 180000000;                        // pro vychodni polokouli se k zmerene hodnote pricita +180 stupnu
+            if (geolon_sign >= 0) aktual_geolon = geolon_sign + 180000000;                       // pro vychodni polokouli se k zmerene hodnote pricita +180 stupnu
             else                  aktual_geolon = abs(geolat_sign);                              // pro zapadni polokouli se zmerena hodnota jen prevede na kladne cislo
             EXPORT_pole[24] = (aktual_geolon >> 24) & 0xFF;                                      // do I2C pole se tedy ukladaji kladna cisla a VYCHOD je odlisen tak, ze ma vic nez 180 stupnu
             EXPORT_pole[25] = (aktual_geolon >> 16) & 0xFF;
             EXPORT_pole[26] = (aktual_geolon >>  8) & 0xFF;
             EXPORT_pole[27] = aktual_geolon         & 0xFF;
 
+            float SOG = atof(rozlozeny_pole[7]);                                                 // Speed Over Ground v uzlech
+            float kmh_log = 250 * log((SOG * 1.852) + 1) / log(131);                             // prevod na logaritmickou stupnici, kde nizke rychlosti maji velke bitove rozliseni
+            if (kmh_log > 255) EXPORT_pole[30] = 255;                                            // pri prekroceni 130 km/h se zapisuje maximalni povolene cislo 
+            else               EXPORT_pole[30] = (uint8_t)(round(kmh_log));
 
 
             EW_polokoule[ukazatel_klouzaku] = rozlozeny_pole[6][0];                              // kvuli problemum s prumerovanim v okoli +/- 180 stupnu se do extra pole poznamenava i aktualni znamenko polokoule
@@ -844,13 +867,6 @@ void zpracuj_vetu_GxRMC(void)
           {
             OK_byte = 0;                                                                         // nulovani poctu bezchybnych prijmu v rade
             
-            for (byte i = 0; i < 10 ; i++)                                                       // vsechny klouzaky se nuluji
-              {
-                klouzak_LAT[ukazatel_klouzaku] = 200000000L;
-                klouzak_LON[ukazatel_klouzaku] = 200000000L;
-              } 
-            pripraveno = false;
-
             bitSet(statusy_LED,2);                                                               // LED3 rozsvitit 
 
             EXPORT_pole[0]  = 255;                                                               // LAT nastavit mimo rozsah (Err)
@@ -961,7 +977,7 @@ void obsluha_LED(void)
   {
     while (digitalRead(pin_setup) == LOW)                                                        // servisni funkce, ktera by mela kdykoliv rozblikat vsechny LED frekvenci 1Hz
       {
-        
+        wdt_reset();                                                                             // i po dobu drzeni servisniho pinu se musi obcerstvovat WDT
         if ((millis() % 1000) < 500)                                                             // pravidelne blikani vsech LED s periodou 1s
           {
             digitalWrite(pin_LED1, LOW);
@@ -1069,24 +1085,27 @@ void requestEvent(void)
         prikaz_I2C = 0;
       }
 
-    
-    
-    if (prikaz_I2C == 10)                                                                        // prikaz 10 odesle 30 bajtu velke pole zpracovanych dat
+
+    if (prikaz_I2C == 80)                                                                        // pro prikaz 80 vrati v textovem formatu verzi HW ("  UBX-G60xx    ")
       {
-         Wire.write(EXPORT_pole, 30);
+        for (byte snd = 0 ; snd < 15 ; snd ++)
+          {
+            Wire.write(verzeHW[snd]);
+          }
+        prikaz_I2C = 0;
+      }
+    
+    
+    if (prikaz_I2C == 10)                                                                        // prikaz 10 odesle 31 bajtu velke pole zpracovanych dat
+      {
+         Wire.write(EXPORT_pole, 31);
          prikaz_I2C = 0;
       }
 
-    if (prikaz_I2C == 20 )                                                                       // prikaz 20 se zpracovava v RecieveEventu.
+    if (prikaz_I2C >= 20 and prikaz_I2C <= 23 )                                                  // prikazy 20 az 23 se zpracovavaji v RecieveEventu.
       {
-        prikaz_I2C = 0;                                                                          // tady se jen nastavi znacka, ze byl vykonan
+        prikaz_I2C = 0;                                                                          // tady se jen nastavi znacka, ze byly vykonany
       }
-
-    if (prikaz_I2C == 21 )                                                                       // prikaz 21 se zpracovava v RecieveEventu.
-      {
-        prikaz_I2C = 0;                                                                          // tady se jen nastavi znacka, ze byl vykonan
-      }
-
 
   }
 //----------------------------------------------
@@ -1109,7 +1128,7 @@ void receiveEvent(int prijato)
       }
 
 
-    if (prikaz_I2C == 20 )                                                                       // zhasnuti vsech LED pred merenim jasu
+    if (prikaz_I2C == 20)                                                                        // zhasnuti vsech LED pred merenim jasu
       {
         pamet_LED_1 = stav_LED_1;
         pamet_LED_2 = stav_LED_2;
@@ -1121,7 +1140,7 @@ void receiveEvent(int prijato)
         prikaz_I2C = 0;
       }
 
-    if (prikaz_I2C == 21 )                                                                       // obnoveni stavu vsech LED po mereni jasu
+    if (prikaz_I2C == 21)                                                                        // obnoveni stavu vsech LED po mereni jasu
       {
         LED1(pamet_LED_1);
         LED2(pamet_LED_2);
@@ -1130,19 +1149,31 @@ void receiveEvent(int prijato)
         prikaz_I2C = 0;
       }
 
-    if (prikaz_I2C == 22 )                                                                       // HOT restart GPS modulu
+    if (prikaz_I2C == 22)                                                                        // HOT restart GPS modulu
       {
         LED1(false);
         LED2(false);
         LED3(false);
+        wdt_reset();
         delay(1500);
         LED1(true);
         LED2(true);
         LED3(true);
-
         Serial.write(hot_start , 12);
+        wdt_reset();
         delay(1500);
+        wdt_reset();
       }
+
+    if (prikaz_I2C == 23)                                                                        // zamerne vyprseni 4-sekundoveho WTD
+      {
+        wdt_reset();
+        LED1(false);
+        LED2(true);
+        LED3(false);
+        while(true);
+      }
+
 
   }
 //----------------------------------------------
@@ -1254,11 +1285,55 @@ void GPS_setup(void)
     LED3(true);
 
     Serial.write(hot_start , 12);
-
     
   }
 //----------------------------------------------
 
+
+//----------------------------------------------
+// Spousti se okamzite po resetu.
+// Maximalne 3 sekundy na seriove lince ceka na prijem dvojice znaku "HW". Kdyz dorazi, nasledujicich 15 znaku ulozi do EEPROM (mezery se preskakuji)
+// Kdyz nedorazi, ulozi se do EEPROM 15 otazniku.
+void zjisti_typ_HW(void)
+  {
+    uint32_t start_time = millis();                  // zacatek 3-sekundoveho timeoutu
+    bool nalezeno = false;                           // znacka, ze byl nalezen retezec "HW"
+    char znak;                                       // prijaty znak ze seriove linky
+    uint16_t adresa = 100;                           // aktualni ukazatel na adresu do EEPROM, kam se bude ukladat prijaty znak
+
+    while (millis() - start_time < 3000)             // 3 sekundy po hot startu testuj seriovou linku
+      {
+        wdt_reset();                                 // sice by hned po resetu nemel byt jeste WD aktivni, ale pro jistotu se muze prubezne obcerstvovat
+        if (Serial.available())
+          {
+            znak = Serial.read();
+            if (znak == 'H' and nalezeno == false)
+              {
+                delay(10);                           // chvilku pauza na prijeti druheho znaku
+                znak = Serial.peek();                // jen se otestuje, jestli je dalsi znak v bufferu hledane 'W'
+                if (znak == 'W' )
+                  {
+                    nalezeno = true;
+                    Serial.read();                   // vyprazdneni znaku 'W' z bufferu
+                    znak = ' ';                      // 'W' z predchoziho Serial.peek() se nahradi mezerou, ktera se o krok dal preskoci
+                  }
+              }
+            if (nalezeno == true and znak != ' ')    // pripadne mezery se preskakuji a do EEPROM se nezapisuji
+              {
+                EEPROM.write(adresa , znak);
+                adresa ++;
+                if (adresa == 115)  return;          // po 15. znaku se podprogram ukonci
+              } 
+          }
+      }
+
+    // zprava o HW nedorazila a vyprsel 3-sekundovy timeout (nebo dorazilo jen mene nez 15 znaku)
+    for (byte i = adresa; i < 115 ; i++)             // blok EEPROM se zaplni otaznikama (pokud ale nekolk znaku stacilo dorazit, tak se neprepisuji)
+      {
+        EEPROM.write(i , '?');
+      }
+
+  }
 
 
 //----------------------------------------------

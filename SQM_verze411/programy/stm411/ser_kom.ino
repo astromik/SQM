@@ -1653,6 +1653,9 @@ void tajne_funkce(void)                                                         
         
                     Serial.print("ver_SW:");
                     gps_NMEA(2);
+                    Serial.print("ver_HW:");
+                    gps_NMEA(3);
+
 
                     Serial.println("NMEA:");
                     Serial.print(' ');

@@ -947,18 +947,23 @@ uint16_t prumeruj_azimuty(void)
         sumY += sin(rad);
       }
 
+
+
+
     // --- 3) Kontrola nuloveho vektoru (napr. 90 a 270) ---
-    float magnitude = sqrt(sumX * sumX + sumY * sumY);
+    //----------------------------
+    float magnitude = sqrtf(sumX * sumX + sumY * sumY);            // zjisteni delky vysledneho vektoru pomoci Pythagorovy vety
     if (magnitude < 0.0001)
-    {
-        return pole_azimutu[velikost_pole_prumeru - 1] + 500;    // prumerny azimut nelze urcit, protoze se jednotlive smery navzajem vyrusi
-    }
+      {
+        return pole_azimutu[velikost_pole_prumeru - 1] + 500;      // prumerny azimut nelze urcit, protoze se jednotlive smery navzajem vyrusi
+      }
+
 
     // --- 4) Vypocet vysledneho azimutu ---
-    float angle = atan2(sumY, sumX) * (180.0 / PI);
+    float angle = atan2f(sumY, sumX) * (180.0 / PI);
     if (angle < 0) angle += 360.0;
 
-    return (uint16_t)(angle + 0.5);                   // zaokrouhleni
+    return (uint16_t)(angle + 0.5);                                // zaokrouhleni
 }
 //-------------------------------------------------
 

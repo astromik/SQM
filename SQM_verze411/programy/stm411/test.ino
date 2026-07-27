@@ -691,10 +691,22 @@ void test_GPS(void)
     test_text(2);                                                                  //  "6P5  "
     if (digitalRead(pin_DATA_RDY) == osazeno_gps)
       {
+
+        Wire.beginTransmission (I2C_ADDR_GPS);                                     // pokus o reset sbernice
+        if (Wire.endTransmission () != 0)   Wire.begin();
+
+       
+        Serial.print("ver_SW:");
+        gps_NMEA(2);
+        Serial.print("ver_HW:");
+        gps_NMEA(3);
+
+
         Serial.println("NMEA:");
+        Serial.print(' ');
         gps_NMEA(0);
+        Serial.print(' ');
         gps_NMEA(1);
-        gps_NMEA(2);    
       }
     else
       {
