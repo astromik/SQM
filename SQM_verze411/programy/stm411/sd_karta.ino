@@ -1909,7 +1909,7 @@ uint64_t SDfree(SdFat& sd)
         uint32_t fsinfoSector;
         uint32_t totSec;
     
-        // Krok 1: peecist sektor 0
+        // Krok 1: precist sektor 0
         if (!sd.card()->readSector(0, buf))
           {
             return 0;                                                              // chyba cteni sektoru 0
@@ -1974,7 +1974,8 @@ uint64_t SDfree(SdFat& sd)
       }
     else
       {
-        bitSet(err_bit,2);                                                  // SD karta je vysunuta, nastavuje se bit v promenne 'err_bit' 
+        bitSet(err_bit,2);                                                         // SD karta je vysunuta, nastavuje se bit v promenne 'err_bit' 
+        return 0;                                                                  // i bez zasunute karty musi funkce vratit nejakou hodnotu, jinak program zhavaruje
       }         
   }
 //--------------------------------------------------------------
