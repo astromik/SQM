@@ -896,78 +896,160 @@ uint16_t rychly_naklon(void)
 
 
 //----------------------------------------------
-// z 'pole_azimutu[]' vytvori prumerny azimut zaokrouhleny na cele stupne.
+// Z globalniho 'pole_azimutu[]' vytvori prumerny azimut zaokrouhleny na cele stupne.
 // Neprumeruje se cele pole, ale jen pocet vzorku, ktery je uveden v globalni promenne 'velikost_pole_prumeru'. Povoleny interval 1 az 20.
 // Bere se ohled i na pripadne kolisani azimutu kolem severniho smeru (mezi 359 a 0 stupni).
-// Kdyz jsou hodnoty v poli stabilni, (jejich rozdil neprekrocil hodnotu v globalni promenne 'povoleny_rozptyl_azimutu'), je vysledkem prumerovana hodnota pole.
-// Pri nestabilnm mereni se neprumeruje, ale jen vezme se posledni hodnotu v poli (pole_azimutu[velikost_pole_prumeru-1]) a pricte se k ni cislo 500. 
+// Kdyz jsou hodnoty v poli stabilni, (skutecny kruhovy rozsah neprekrocil hodnotu v globalni promenne 'povoleny_rozptyl_azimutu'), je vysledkem prumerovana hodnota pole.
+// Pri nestabilnim mereni se neprumeruje, ale jen se vezme posledni hodnota v poli (pole_azimutu[velikost_pole_prumeru-1]) a pricte se k ni cislo 500 (znacka nestability).
 // Pri specialnich situacich, kdy nelze prumer urcit (azimuty se navzajem vynuluji) se take neprumeruje a vrati se posledni prvek pole zvetseny o 500.
-//  Reseni:   https://copilot.microsoft.com/shares/z9QSxNvQRygQvPSqMusUa
+//  Puvodni reseni:   https://copilot.microsoft.com/shares/z9QSxNvQRygQvPSqMusUa
+//  Opravene reseni:  https://chatgpt.com/share/6a7f3dc9-4f9c-83ed-933f-b611b67cf41c
 uint16_t prumeruj_azimuty(void)
   {
-    // --- 1) Overeni rozsahu hodnot v poli (s ohledem na prechod 359 -> 0) ---
-    int16_t minA = pole_azimutu[0];
-    int16_t maxA = pole_azimutu[0];
+    // =========================================================
+    // 1) Vytvoreni kopie hodnot a serazeni vzestupne
+    // =========================================================
 
-    for (uint8_t i = 1; i < velikost_pole_prumeru; i++)
+    int16_t serazene[20];
+
+    for (uint8_t i = 0; i < velikost_pole_prumeru; i++)
       {
-        int16_t a = pole_azimutu[i];
-
-        // Rozdil pres kruh - nejmensi uhlova vzdalenost
-        int16_t diff1 = abs(a - minA);
-        int16_t diff2 = 360 - diff1;
-        int16_t realDiffMin = (diff1 < diff2) ? diff1 : diff2;
-
-        diff1 = abs(a - maxA);
-        diff2 = 360 - diff1;
-        int16_t realDiffMax = (diff1 < diff2) ? diff1 : diff2;
-
-        // Aktualizace min/max podle skutecne kruhove vzdalenosti
-        if (realDiffMin > realDiffMax)      maxA = a;
-        else                                minA = a;
+        serazene[i] = pole_azimutu[i];
       }
 
-    // Skutecny rozdil mezi min a max pres kruh
-    int16_t diff = abs(maxA - minA);
-    if (diff > 180)                    diff = 360 - diff;
-
-    if (diff > povoleny_rozptyl_azimutu)
+    // Jednoduche serazeni - pole ma maximalne 20 prvku,
+    // takze zde bohate postaci.
+    for (uint8_t i = 0; i < velikost_pole_prumeru - 1; i++)
       {
-        return pole_azimutu[velikost_pole_prumeru - 1] + 500;        // (max - min) je mimo povoleny rozptyl, nic se neprumeruje, vezme posledni hodnotu a pricte k ni 500
+        for (uint8_t j = i + 1; j < velikost_pole_prumeru; j++)
+          {
+            if (serazene[j] < serazene[i])
+              {
+                int16_t pomocna = serazene[i];
+                serazene[i] = serazene[j];
+                serazene[j] = pomocna;
+              }
+          }
       }
 
-    // --- 2) Vektorove skladani azimutu ---
+
+    // =========================================================
+    // 2) Hledani nejvetsi mezery mezi sousednimi azimuty
+    // =========================================================
+    //
+    // Priklad:
+    //
+    //  0, 1, 2, 358, 359
+    //
+    // mezery:
+    //  0 -> 1       = 1
+    //  1 -> 2       = 1
+    //  2 -> 358   = 356
+    //  358 -> 359   = 1
+    //  359 -> 0     = 1   (pres 360)
+    //
+    // Nejvetsi mezera je 356 stupnu.
+    // Skutecny rozsah mereni je tedy:
+    //
+    //  360 - 356 = 4 stupne
+    //
+    // Tato metoda funguje bez ohledu na to, kde je sever.
+
+    int16_t nejvetsi_mezera = 0;
+
+    for (uint8_t i = 0; i < velikost_pole_prumeru - 1; i++)
+      {
+        int16_t mezera = serazene[i + 1] - serazene[i];
+
+        if (mezera > nejvetsi_mezera)
+          {
+            nejvetsi_mezera = mezera;
+          }
+      }
+
+    // Posledni hodnota -> prvni hodnota pres 360 stupnu
+    int16_t mezera_pres_sever = (360 - serazene[velikost_pole_prumeru - 1])
+                              + serazene[0];
+
+    if (mezera_pres_sever > nejvetsi_mezera)
+      {
+        nejvetsi_mezera = mezera_pres_sever;
+      }
+
+
+    // Skutecny rozsah vsech azimutu na kruhu
+    int16_t skutecny_rozsah = 360 - nejvetsi_mezera;
+
+
+    // =========================================================
+    // 3) Kontrola stability mereni
+    // =========================================================
+
+    if (skutecny_rozsah > povoleny_rozptyl_azimutu)
+      {
+        // Mereni je nestabilni.
+        // Vraci se posledni namereny azimut + 500.
+        return pole_azimutu[velikost_pole_prumeru - 1] + 500;
+      }
+
+
+    // =========================================================
+    // 4) Vektorove skladani azimutu
+    // =========================================================
+
     float sumX = 0.0;
     float sumY = 0.0;
 
     for (uint8_t i = 0; i < velikost_pole_prumeru; i++)
       {
         float rad = pole_azimutu[i] * (PI / 180.0);
+
         sumX += cos(rad);
         sumY += sin(rad);
       }
 
 
+    // =========================================================
+    // 5) Kontrola nuloveho vysledneho vektoru
+    // =========================================================
 
+    float magnitude = sqrtf(sumX * sumX + sumY * sumY);
 
-    // --- 3) Kontrola nuloveho vektoru (napr. 90 a 270) ---
-    //----------------------------
-    float magnitude = sqrtf(sumX * sumX + sumY * sumY);            // zjisteni delky vysledneho vektoru pomoci Pythagorovy vety
     if (magnitude < 0.0001)
       {
-        return pole_azimutu[velikost_pole_prumeru - 1] + 500;      // prumerny azimut nelze urcit, protoze se jednotlive smery navzajem vyrusi
+        // Jednotlive smery se navzajem vyrusily
+        // a prumerny azimut nelze urcit.
+        return pole_azimutu[velikost_pole_prumeru - 1] + 500;
       }
 
 
-    // --- 4) Vypocet vysledneho azimutu ---
+    // =========================================================
+    // 6) Vypocet vysledneho azimutu
+    // =========================================================
+
     float angle = atan2f(sumY, sumX) * (180.0 / PI);
-    if (angle < 0) angle += 360.0;
 
-    return (uint16_t)(angle + 0.5);                                // zaokrouhleni
-}
+    if (angle < 0)
+      {
+        angle += 360.0;
+      }
+
+
+    // =========================================================
+    // 7) Zaokrouhleni na cele stupne
+    // =========================================================
+
+    uint16_t vysledek = (uint16_t)(angle + 0.5);
+
+    // 359.6° -> 360° -> spravne je 0°
+    if (vysledek >= 360)
+      {
+        vysledek = 0;
+      }
+
+    return vysledek;
+  }
 //-------------------------------------------------
-
-
 
 
 

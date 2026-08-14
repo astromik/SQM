@@ -5,7 +5,7 @@
 // Detaily (schema, plosnak, navod, fotky):
 //           http://sqm.astromik.org
 //
-#define verzeSW "2026-07-27 (STM32F4x1CEU)"
+#define verzeSW "2026-08-14 (STM32F4x1CEU)"
 //        V desce SQM-GPS je nutna verze programu alespon "2026-07-27..INT" (doplneni SOG v logaritmicke stupnici, textova verze HW pro GPS prijimac a watchdog)
 //============================================================================
 // Odladeno pro Board Manager:
