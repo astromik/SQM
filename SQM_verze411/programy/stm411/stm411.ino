@@ -5,8 +5,8 @@
 // Detaily (schema, plosnak, navod, fotky):
 //           http://sqm.astromik.org
 //
-#define verzeSW "2026-08-14 (STM32F4x1CEU)"
-//        V desce SQM-GPS je nutna verze programu alespon "2026-07-27..INT" (doplneni SOG v logaritmicke stupnici, textova verze HW pro GPS prijimac a watchdog)
+#define verzeSW "2026-09-12 (STM32F4x1CEU)"
+//        V desce SQM-GPS je nutna verze programu alespon "2026-09-12..INT" (filtrovani GPS souradnic v trackovacim souboru)
 //============================================================================
 // Odladeno pro Board Manager:
 //          https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
@@ -383,7 +383,7 @@ bool TS_lock;                                           // znacka, ze je bocni t
 uint8_t alarm_bat_pamet = 1;                            // pouzito pro varovne akusticke signaly pri poklesu napeti pod nastavene meze
 
 uint8_t pole_EEPROM[55];                                // globalni promenna, do ktere se pri kazdem mereni ukladaji namerena data. Toto pole se nasledne zapisuje do EEPROM a na SD kartu
-uint8_t pole_GPS_I2C[40];                               // pole, do ktereho se stahuji data z GPS modulu pres I2C
+uint8_t pole_GPS_I2C[60];                               // pole, do ktereho se stahuji data z GPS modulu pres I2C
 uint8_t pole_KALIB_I2C[12];                             // pole, do ktereho se ctou data z pridavneho kalibratoru
 uint8_t pole_proudy_kalib[64];                          // sem se stahuji kalibracni proudove udaje z kalibratoru (hodnoty proudu LED pro 0.5, 1, 1.5 ... 10mA)
 
@@ -402,13 +402,17 @@ uint16_t  int_naklon;
 uint16_t  int_azimut;
 uint32_t  int_luxy;
 uint8_t   byte_cnf;
-uint32_t  GPS_lat;
-uint32_t  GPS_lon;
+uint32_t  GPS_lat;                                      // prumer z poslednich 10 souradnic (ARITMETICKY PRUMER! - v okoli polu by to mohl byt problem)
+uint32_t  GPS_lon;                                      //                                   Aritmeticky prumer s osetrenim zemepisne delky kolem hranice 180 stupnu 
 uint16_t  GPS_alt;
-uint32_t  GPS_lat_akt;
+uint32_t  GPS_lat_akt;                                  // posledni nezprumerovane souradnice
 uint32_t  GPS_lon_akt;
 uint16_t  GPS_alt_akt;
-uint8_t   GPS_SOG;
+uint8_t   GPS_SOG;                                      // logaritmizovana rychlost z registru 'pole_GPS_I2C[20]'
+uint8_t   GPS_PDoP10;                                   // informace o kvalite GPS souradnic. Ziskavaji se pres I2C z registru: 'pole_GPS_I2C[17]'
+uint8_t   GPS_HDoP10;                                   //                                                                      'pole_GPS_I2C[18]'
+uint8_t   GPS_VDoP10;                                   //                                                                      'pole_GPS_I2C[19]'
+
 
 uint16_t  int_rezerva_1;                                // zatim nepouzita rezervni cidla
 uint16_t  int_rezerva_2;
@@ -443,7 +447,8 @@ uint16_t peribity_maska = 0b1111111111111111;           // bitova maska, pri kte
                                                          
 uint32_t GPS_temp_time;                                 // pri automatickem mereni se zapnutou a zafixovanou GPS se nenastavuje RTC, ale do zaznamu se pouziva prijaty cas z GPS
 bool GPS_RTC_flag;                                      // globalni promenna, ktera signaluzuje, ze se misto casu z RTC ma pouzit cas z GPS ('GPS_temp_time')
-bool vnitrniGPS = false;                                // typ pouzite GPS desky (urcuje se z prijatych dat z GPS modulu)
+bool vnitrniGPS = true;                                 // typ pouzite GPS desky je od verze 2026-08-05 uz jen interni (externi byl zrusen a dale uz se nebude aktualizovat)
+
 uint8_t test_prg_flag = 1;                              // jen pro testovaci ucely - SMAZAT !!--
 
 uint8_t posledni_i2C_prikaz;                            // aby se zbytecne neustale neobnovoval stav LED v GPS modulu
@@ -1837,8 +1842,6 @@ void setup(void)
 
     SD_volno = SDfree(sd)>>20;                           // Zjisteni volneho prostoru na SD karte (prevod z bajtu na MB)
 
-
-
     pouzivat_kalibrator = EEPROM_read(eeaddr_autokalibrator);            // 0=vypnuto; 1=zrychleny test; 2=kompletni test
     if (pouzivat_kalibrator > 0)                                         // pokud je povoleno zjistovani pripojeni kalibratoru ...
     if (KAL_test() == true)                                              // ... a kdyz je kalibrator pripojeny ...
@@ -2177,7 +2180,8 @@ void sys_info(void)
               }
             else                                               // nejaka chyba pri zjistovani volneho prostoru z MBR, Boot, nebo FSinfo sektoru
               {
-                Serial.println("???)");                
+                Serial.print("??");                            // kompilator hlasi problem pri pokusu o tisk tri otazniku v rade, proto musi byt retezes rozdelen
+                Serial.println("?)");
               }
           }
         else

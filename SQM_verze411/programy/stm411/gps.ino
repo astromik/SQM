@@ -2,64 +2,85 @@
 //================================================
 
 // priklad exportnich dat v registrech:
-// 0 ---   8       prumer 10 poslednich LAT
-// 1 ---  79
-// 2 --- 192
-// 3 ---  53
+//  0 ---   8       prumer 10 poslednich LAT
+//  1 ---  79
+//  2 --- 192
+//  3 ---  53
 
-// 4 ---  11       prumer 10 poslednich LON
-// 5 --- 149
-// 6 --- 204
-// 7 --- 156
+//  4 ---  11       prumer 10 poslednich LON
+//  5 --- 149
+//  6 --- 204
+//  7 --- 156
 
-// 8 --- 100       OK cnt
+//  8 --- 100       OK cnt
 
-// 9 ---  23       YY
-//10 ---  10       MM
-//11 ---  25       DD
-//12 ---  17       HH
-//13 ---  33       NN
-//14 ---  36       SS
+//  9 ---  23       YY
+// 10 ---  10       MM
+// 11 ---  25       DD
+// 12 ---  17       HH
+// 13 ---  33       NN
+// 14 ---  36       SS
 
-//15 ---   3       prumer 10 poslednich ALT
-//16 --- 229
+// 15 ---   3       prumer 10 poslednich ALT
+// 16 --- 229
 
-//17 ---   7       Pocet satelitu
-//18 ---  20       10x HDoP
-
-//19 ---   6       status bajt:
-//                    bit 0 = '0' pole klouzaku jeste neni zaplneno
-//                    bit 0 = '1' pole klouzaku zaplneno, muzou se stahovat data
-//                    bit 1 = '0' cas se do RTC nezapise (v GPS nejsou casove znacky, nebo je v ext. verzi prepinac casu v poloze "nenastavovat cas")
-//                    bit 1 = '1' pri stazeni dat se do RTC ulozi cas z GPS (pokud bude k dispozci)
-//                    bit 2 = '0' puvodni externi verze GPS
-//                    bit 2 = '1' nova interni verze GPS
+// 17 ---  58       10x PDoP (Position Dilution of Precision) ... mensi cislo = vetsi presnost
+// 18 ---  23       10x HDoP (Horizontal Dilution of Precision) ... mensi cislo = vetsi presnost
+// 19 ---  83       10x VDoP (Vertical Dilution of Precision) ... mensi cislo = vetsi presnost
+// 20 ---  50       rychlost 0 az 130 km/h v logaritmicke stupnici (nizke rychlosti maji vetsi rozliseni, vysoke rychlosti jsou ulozene nepresne)
+// 21 ---   6       status bajt:
+//                      bity 0 az 3 .... pocet satelitu
+//                      bit 4 = '0' pole klouzaku jeste neni zaplneno
+//                      bit 4 = '1' pole klouzaku zaplneno, muzou se stahovat data
+//                      bit 5 = '0' cas se do RTC nezapise (v GPS nejsou casove znacky)
+//                      bit 5 = '1' pri stazeni dat se do RTC ulozi cas z GPS (pokud bude k dispozci)
+//                      bity 6 a 7  kvalita (spolehlivost) souradnic
+//                                  "00" ....  OK    data se zapisuji do GPX souboru a pocitaji se z nich statistiky
+//                                  "01" .... WAR    data se do GPX souboru zapisuji, ale oznacuji se znackou varovani a nepocitaji se do statistik
+//                                  "10" .... BAD    data se do GPX souboru nezapisuji
+//                                  "11" .... OFF    filtrovani je vypnute, vsechny zaznamy se zapisuji jako v predchozich verzich programu
 //
-// doplneni registru ve verzi 2026-05-17
-// 20 ---  8        aktualni (posledni) LAT bez prumerovani (pro severni polokouli zvetseny o 90 stupnu)
-// 21 ---  79
-// 22 --- 192
-// 23 --- 172
-// 24 ---  11       aktualni (posledni) LON bez prumerovani (pro vychodni polokouli zvetseny o 180 stupnu)
-// 25 --- 149
-// 26 --- 204
-// 27 --- 147
-// 28 ---   1       aktualni (posledni) nadmorska vyska zvysena o 500m
-// 29 --- 241
+// 22 ---  8        aktualni (posledni) LAT bez prumerovani (pro severni polokouli zvetseny o 90 stupnu)
+// 23 ---  79
+// 24 --- 192
+// 25 --- 172
+// 26 ---  11       aktualni (posledni) LON bez prumerovani (pro vychodni polokouli zvetseny o 180 stupnu)
+// 27 --- 149
+// 28 --- 204
+// 29 --- 147
+// 30 ---   1       aktualni (posledni) nadmorska vyska zvysena o 500m
+// 31 --- 241
 //
-// 30 --- 100       rychlost v 0.2 x km/h     (255 je rychlost pres 51km/h)   
+// 32 ---  typ fixu (1=nofix, 2=2D fix, 3=3D fix)
+// 33 ---  10x Speed over Ground prevedene na [m/s] MSB
+// 34 ---                                           LSB
+//
+// 35 ---  10x rychlost podle souradnic v [m/s] MSB
+// 36 ---                                       LSB
+//
+// 37 ---  rozdil nadmorskych vysek v nasledujicich zpravach [m]
+//
+// 38 ---  ktery filtr kvality souradnic byl aktivovany
+//
 
-//GPS LAT: 139444277 = [N] 49.444278
-//GPS LON: 194366620 = [E] 14.366621
-//GPS ALT: 997 = 497 [m]
-//GPS satelites: 7
-//GPS HDoP: 2.00
-//GPS date time (UTC): 25.10.2023 17:33:36
+
+
+//GPS LAT: 139444353 = [N] 49.444353
+//GPS LON: 194366611 = [E] 14.366611
+//GPS ALT: 989 = 489 [m]
+//GPS satelites: 5
+//GPS xDoP: H= 2.4; P= 3.8; V= 3.0
+//GPS date time (UTC): 12.09.2026 17:31:18
+//RTC date time (UTC): 12.09.2026 17:30:47
 //GPS OK cnt: 100
-//GPS status: 7  (data: OK ; Time_SET: ON ; Int.)
+//GPS status: 0b0011####   (Filter: OK  ; Time_SET: ON ; Data: OK)
+//ver_SW:2026-09-12..INT                                                                           
+//ver_HW:UBX-G70xx000700                                                                           
 //NMEA:
-// $GPRMC,173336.00,A,4926.65677,N,01421.99742,E,0.091,,251023,,,A*78
-// $GPGGA,173337.00,4926.65683,N,01421.99756,E,1,08,1.13,495.3,M,44.3,M,,*58
+// $GPRMC,173119.00,A,4926.66081,N,01421.99654,E,0.856,181.83,120926,,,A*65
+// $GPGGA,173120.00,4926.66085,N,01421.99653,E,1,05,2.40,492.6,M,44.3,M,,*51
+// $GPGSA,A,3,17,19,32,10,22,,,,,,,,3.83,2.40,2.99*00
+ 
 //----------------------------------------------
 // stazeni dat z GPS rozsirujici desky
 void gps(uint8_t RTC_param)
@@ -70,7 +91,7 @@ void gps(uint8_t RTC_param)
 
         uint8_t i;
     
-        for (i = 0 ; i < 30 ; i++)                                            // nejdriv smazat vsechna predchozi data
+        for (i = 0 ; i < 32 ; i++)                                            // nejdriv smazat vsechna predchozi data
           {
             pole_GPS_I2C[i] = 0;
           }
@@ -85,19 +106,38 @@ void gps(uint8_t RTC_param)
     
         Wire.beginTransmission(I2C_ADDR_GPS);                                 // tady nacitat data z I2C adresy 0x17 (modul GPS) do promennych pole_GPS_I2C[] 
         delay(12);
-        Wire.write(10);                                                       // 10 = zadost o data   (50 az 70 by byly zadosti o NMEA zpravy)
+        Wire.write(10);                                                       // 10 = zadost o data   (50 az 95 by byly zadosti o NMEA zpravy a verze HW a SW)
         delay(12);
         Wire.endTransmission();    
         
         i = 0;
         delay(20);
-        Wire.requestFrom(I2C_ADDR_GPS,31);                                    // zadost o 31 bajtu (registru)
+        Wire.requestFrom(I2C_ADDR_GPS,32);                                    // zadost o 32 bajtu (registru)
         delay(20);
         while (Wire.available())                                              // postupne ulozeni prijatych hodnot do pole
           {
             pole_GPS_I2C[i] = Wire.read();
             i++;
           }    
+
+        if (trackuj == true)                                                  // pri zapnutem zaznamu do trackovaciho souboru se v druhem baliku stahnou i servisni data
+          {
+            Wire.beginTransmission(I2C_ADDR_GPS);                             // tady nacitat data z I2C adresy 0x17 (modul GPS) do promennych pole_GPS_I2C[] 
+            delay(12);
+            Wire.write(11);                                                   // 11 = zadost o servisni data
+            delay(12);
+            Wire.endTransmission();    
+            delay(20);
+            Wire.requestFrom(I2C_ADDR_GPS,7);                                 // zadost o 7 bajtu (registru)
+            delay(20);
+            while (Wire.available())                                          // postupne ulozeni prijatych hodnot do pole (pokracuje se od indexu 32)
+              {
+                pole_GPS_I2C[i] = Wire.read();
+                i++;
+              }    
+            
+          }
+
 
 //  moznost podvrhnout GPS data v pripade, ze nebude pro testy dostupny GPS signal
 /*
@@ -118,28 +158,35 @@ void gps(uint8_t RTC_param)
         pole_GPS_I2C[14] =   0;       // ss
         pole_GPS_I2C[15] =   3;       // ALT
         pole_GPS_I2C[16] = 229;       // ALT
-        pole_GPS_I2C[17] =   8;       // sat
+        pole_GPS_I2C[17] =   8;       // 10x PDoP
         pole_GPS_I2C[18] =  22;       // 10x HDoP
-        pole_GPS_I2C[19] =   7;       // info
-        pole_GPS_I2C[20]  =   8;      // aktual LAT
-        pole_GPS_I2C[21]  =  79;      // aktual LAT
-        pole_GPS_I2C[22]  = 192;      // aktual LAT
-        pole_GPS_I2C[23]  =  53;      // aktual LAT
-        pole_GPS_I2C[24]  =  11;      // aktual LON
-        pole_GPS_I2C[25]  = 149;      // aktual LON
-        pole_GPS_I2C[26]  = 204;      // aktual LON
-        pole_GPS_I2C[27]  = 156;      // aktual LON
-        pole_GPS_I2C[28] =   3;       // aktual ALT
-        pole_GPS_I2C[29] = 229;       // aktual ALT
-        pole_GPS_I2C[30] = 100;       // aktualni rychlost prevedena na logaritmickou stupnici (130km/h odpovida cislu 255). Nizke rychlosti maji vyssi rozliseni.
+        pole_GPS_I2C[19] =  53;       // 10x VDoP
+        pole_GPS_I2C[20] = 100;       // aktualni rychlost prevedena na logaritmickou stupnici (130km/h odpovida cislu 255). Nizke rychlosti maji vyssi rozliseni.
+        pole_GPS_I2C[21] =   7;       // Status + satelity
+
+        pole_GPS_I2C[22]  =   8;      // aktual LAT
+        pole_GPS_I2C[23]  =  79;      // aktual LAT
+        pole_GPS_I2C[24]  = 192;      // aktual LAT
+        pole_GPS_I2C[25]  =  53;      // aktual LAT
+        pole_GPS_I2C[26]  =  11;      // aktual LON
+        pole_GPS_I2C[27]  = 149;      // aktual LON
+        pole_GPS_I2C[28]  = 204;      // aktual LON
+        pole_GPS_I2C[29]  = 156;      // aktual LON
+        pole_GPS_I2C[30] =   3;       // aktual ALT
+        pole_GPS_I2C[31] = 229;       // aktual ALT
         
-
-
+        pole_GPS_I2C[32]  =   3;      // typ fixu
+        pole_GPS_I2C[33]  =   0;      // 100x SoG [m/s] MSB
+        pole_GPS_I2C[34]  = 150;      // 100x SoG [m/s] LSB
+        pole_GPS_I2C[35]  =   0;      // 100x rychlost v [m/s] podle zmeny souradnic MSB
+        pole_GPS_I2C[36]  = 130;      // 100x rychlost v [m/s] podle zmeny souradnic LSB
+        pole_GPS_I2C[37]  =   1;      // rozdil nadmorskych vysek
+        pole_GPS_I2C[38]  =   0;      // ktery filtr aktivoval WAR nebo BAD
 */        
 
 
         bool problem = false;
-        if (i < 30)                                                           // nebyl prijaty prislusny pocet bajtu - NECO JE SPATNE
+        if (i < 31)                                                           // nebyl prijaty prislusny pocet bajtu - NECO JE SPATNE
           {
             zobraz_text(41);                                                  // "Err-G"
             SD_log(998 , 11);
@@ -149,10 +196,10 @@ void gps(uint8_t RTC_param)
           }
         else                                                                  // pres I2C dorazil ocekavany pocet bajtu
           {
-            if (bitRead(pole_GPS_I2C[19],2) == true) vnitrniGPS = true;       // podle bitu 2 ve statusovem bajtu se urcuje, jestli je GPS deska interni nebo externi
-            else                                     vnitrniGPS = false;
+//ZRUSENO            if (bitRead(pole_GPS_I2C[19],2) == true) vnitrniGPS = true;       // podle bitu 2 ve statusovem bajtu se urcuje, jestli je GPS deska interni nebo externi
+//ZRUSENO            else                                     vnitrniGPS = false;
             
-            if (bitRead(pole_GPS_I2C[19],1) == true and pole_GPS_I2C[9] > 20) // prisel spravny pocet bajtu, je vyzadan zapis casu do RTC a rok se zda byt v poradku
+            if (bitRead(pole_GPS_I2C[21],5) == true and pole_GPS_I2C[9] > 20) // prisel spravny pocet bajtu, je vyzadan zapis casu do RTC a rok se zda byt v poradku
               {
                 GPS_nastav_cas(RTC_param);                                    // parametr: 0 ... cas v RTC se neupravuje, casove promenne zustavaji beze zmeny - nezavisle na casu v GPS
                                                                               //           1 ... cas v RTC se neupravuje, casove promenne se docasne nastavi na presny cas v GPS
@@ -165,23 +212,25 @@ void gps(uint8_t RTC_param)
               }
     
             
-            if (bitRead(pole_GPS_I2C[19],0) == true)                          // klouzak uz je pripraveny
+            if (bitRead(pole_GPS_I2C[21],4) == true)                          // klouzak uz je pripraveny
               {
                 GPS_lat = (pole_GPS_I2C[0] << 24) | (pole_GPS_I2C[1] << 16) | (pole_GPS_I2C[2] << 8) | (pole_GPS_I2C[3]); 
                 GPS_lon = (pole_GPS_I2C[4] << 24) | (pole_GPS_I2C[5] << 16) | (pole_GPS_I2C[6] << 8) | (pole_GPS_I2C[7]); 
                 GPS_alt = (pole_GPS_I2C[15] << 8) | (pole_GPS_I2C[16]);           
 
-                GPS_lat_akt = (pole_GPS_I2C[20] << 24) | (pole_GPS_I2C[21] << 16) | (pole_GPS_I2C[22] << 8) | (pole_GPS_I2C[23]);  // do trackovaciho souboru se zapisuji jen aktualni hodnoty bez prumerovani
-                GPS_lon_akt = (pole_GPS_I2C[24] << 24) | (pole_GPS_I2C[25] << 16) | (pole_GPS_I2C[26] << 8) | (pole_GPS_I2C[27]); 
-                GPS_alt_akt = (pole_GPS_I2C[28] <<  8) | (pole_GPS_I2C[29]);           
-
+                GPS_lat_akt = (pole_GPS_I2C[22] << 24) | (pole_GPS_I2C[23] << 16) | (pole_GPS_I2C[24] << 8) | (pole_GPS_I2C[25]);  // do trackovaciho souboru se zapisuji jen aktualni hodnoty bez prumerovani
+                GPS_lon_akt = (pole_GPS_I2C[26] << 24) | (pole_GPS_I2C[27] << 16) | (pole_GPS_I2C[28] << 8) | (pole_GPS_I2C[29]); 
+                GPS_alt_akt = (pole_GPS_I2C[30] <<  8) | (pole_GPS_I2C[31]);           
               }
             else
               {
                 problem = true;                                               // neni dostatek dat pro klouzak, nebo je signal casto prerusovany
               }
 
-            GPS_SOG = pole_GPS_I2C[30];
+            GPS_PDoP10  = pole_GPS_I2C[17];
+            GPS_HDoP10  = pole_GPS_I2C[18];
+            GPS_VDoP10  = pole_GPS_I2C[19];
+            GPS_SOG     = pole_GPS_I2C[20];
           }
     
 
@@ -369,7 +418,7 @@ void GPS_nastav_cas(uint8_t RTC_param)
 
 
 //----------------------------------------------
-// do pole NMEA se ulozi cela neupravena NMEA veta (0 = GxRMC; 1 = GxGGA; 2 = verze programu; 3 = typ NEO modulu)
+// do pole NMEA se ulozi cela neupravena NMEA veta (0 = GxRMC; 1 = GxGGA; 2 = verze programu; 3 = typ NEO modulu; 4 = GxGSA)
 void gps_NMEA(uint8_t typ_zpravy)
   {
     if (digitalRead(pin_DATA_RDY) == osazeno_gps)                              // modul pripojeny (interni v HIGH / externi v LOW)
@@ -398,6 +447,16 @@ void gps_NMEA(uint8_t typ_zpravy)
             GET_I2C_NMEA(63);
             GET_I2C_NMEA(64);
             GET_I2C_NMEA(65);
+          }
+
+        if (typ_zpravy == 4)
+          {
+            GET_I2C_NMEA(90);
+            GET_I2C_NMEA(91);
+            GET_I2C_NMEA(92);
+            GET_I2C_NMEA(93);
+            GET_I2C_NMEA(94);
+            GET_I2C_NMEA(95);
           }
 
         if (typ_zpravy == 2)
@@ -461,6 +520,15 @@ void GET_I2C_NMEA(uint8_t blok)
             pole_GPS_NMEA[((blok-80)*15) + i] = Wire.read();
           }
 
+        if (blok < 100 and blok >=90)
+          {
+            pole_GPS_NMEA[((blok-90)*15) + i] = Wire.read();
+          }
+
+        if (blok == 110)
+          {
+            pole_GPS_NMEA[((blok-110)*15) + i] = Wire.read();
+          }
 
         delay(5);
         i++;

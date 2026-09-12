@@ -92,7 +92,7 @@ Priklady:
 
 @> D,45              vypise jen poslednich 45 radek ze souboru "/LOGS/RTC_set.csv"
 
-@> E                 vypise vsech 700 radek se zalohovanymi systemovymi parametry (soubor "/LOGS/SYS_MEM.TXT")
+@> E                 vypise vsech 701 radek se zalohovanymi systemovymi parametry (soubor "/LOGS/SYS_MEM.TXT")
 
 @> E,100             vypise jen poslednich 100 radek (adresy 599 az 699) se zalohovanymi systemovymi parametry
                              (soubor "/LOGS/SYS_MEM.TXT")

@@ -333,6 +333,7 @@ void test_ser_kom(void)
 
         if (funkce == '=')                                                       // '=' testy
           {
+           ukonci_GPX_soubor();
           }
 
 // ----------------------------------------------------------------------------
@@ -577,7 +578,7 @@ void PC_funkce(void)                                                       // fu
         if (podfunkce == 'f')                                              // '*f' zadost o seznam znakovych kodu vsech pouzitych funkci 
           {                                                                //              (kvuli zachovani komunikace s PC pri uzivatelske zmene jazyka, nebo znaku)
             index_kodu = 0;                                                // index prvniho ovladaciho kodu se nastavi na 0
-            Serial.print("CHAR:008:");                                     // verze datoveho bloku 
+            Serial.print("CHAR:009:");                                     // verze datoveho bloku 
             Serial.print(kod_jazyka);                                      //       "CZ" nebo "EN"
             Serial.println(':');
             ovladaci_znak = ' ';                         // cela nasledujici sada je bez ovladaciho znaku
@@ -760,7 +761,10 @@ void PC_funkce(void)                                                       // fu
         //  ovladaci_znak = '@';                         // 
         //  posli_kod_f(USB_fce_3_70);                   // [146] ...     "@Q" nejaka dalsi funkce
         //--------------------------------------------------------------------------
+            ovladaci_znak = '@';                         // 
+            posli_kod_f(USB_fce_3_70);                   //  [145] ...   "@Gf n        ... vypnout (0) nebo zapnout (1) filtrovani souradnic"
 
+            
             Serial.println(":END");                      // zakoncovaci znacka + <CR><LF>
 
           }
@@ -1455,7 +1459,7 @@ void tajne_funkce(void)                                                         
               if (podpodfunkce == USB_fce_3_23)                                  // "@Gp SEC SELC" = nastaveni popisku pro zimni a letni casovou zonu
                 {
                   delay(10);
-                  uint8_t pozice = 0;                                               // ulozi prvni 4 znaky (popis zimni zony)
+                  uint8_t pozice = 0;                                            // ulozi prvni 4 znaky (popis zimni zony)
                   if (Serial.read() == ' ')
                     {
                       while (Serial.available() and pozice < 4)
@@ -1468,7 +1472,7 @@ void tajne_funkce(void)                                                         
                         }
                       char_Xzima[0] = '_';
 
-                      uint8_t pozice = 0;                                           // ulozi zbyle 4 znaky (popis letni zony)
+                      uint8_t pozice = 0;                                        // ulozi zbyle 4 znaky (popis letni zony)
                       while (Serial.available() and pozice < 4)
                         {
                           char znak = Serial.read();
@@ -1487,20 +1491,49 @@ void tajne_funkce(void)                                                         
                     }
                 }
 
-
+              if (podpodfunkce == USB_fce_3_70)                                  // "@Gf n" zapina a vypina filtrovani souradnic pro GPX soubor
+                {
+                  if (digitalRead(pin_DATA_RDY) == osazeno_gps)
+                    {
+                      delay(10);
+                      uint8_t param = Serial.parseInt();
+                      if (param == 1)
+                        {
+                          Wire.beginTransmission(I2C_ADDR_GPS);
+                          delay(12);
+                          Wire.write(201);
+                          delay(12);
+                          Wire.endTransmission();
+    
+                          Serial.println(lng387);                                // "Filtrovani souradnic pro GPX soubor zapnute"
+                        }
+                      else
+                        {
+                          Wire.beginTransmission(I2C_ADDR_GPS);
+                          delay(12);
+                          Wire.write(200);
+                          delay(12);
+                          Wire.endTransmission();
+    
+                          Serial.println(lng388);                                // "Filtrovani souradnic pro GPX soubor vypnute"
+                        }
+                    }
+                  else
+                    {
+                      Serial.println("GPS-OFF");
+                    }
+                }
               }
-
-
-            else                                                                   // za prikazem "@G" uz nic nenasledovalo
+            else                                                                 // za prikazem "@G" uz nic nenasledovalo
               {
-                if (digitalRead(pin_DATA_RDY) == osazeno_gps)                      // testuje se jen v pripade, je je GPS zasunuta (/zapnuta)
+                if (digitalRead(pin_DATA_RDY) == osazeno_gps)                    // testuje se jen v pripade, je GPS zasunuta (/zapnuta)
                   {
-                    gps(0);                                                        // jen zpbrazeni stavu GPS bez jakychkoliv operaci s RTC
+                    gps(0);                                                      // jen zpbrazeni stavu GPS bez jakychkoliv operaci s RTC
                     Serial.print("GPS LAT: ");
                     Serial.print(GPS_lat);
                     Serial.print(" = ");
                     uint32_t pom_prom_gps = GPS_lat;
-                    
+
                     if (pom_prom_gps > 180000000UL)
                       {
                         Serial.println("Err");
@@ -1576,17 +1609,39 @@ void tajne_funkce(void)                                                         
         
         
                     Serial.print("GPS satelites: ");
-                    Serial.println(pole_GPS_I2C[17]);
+                    Serial.println(pole_GPS_I2C[21] & 0b00001111);                             // pocet satelitu ve spodnich 4 bitech
                     
-                    Serial.print("GPS HDoP: ");
+                    Serial.print("GPS xDoP: H= ");
                     if (pole_GPS_I2C[18] == 255 or GPS_alt > 10000)
+                      {
+                        Serial.print("99.99 (Err)");
+                      }
+                    else
+                      {
+                        Serial.print(pole_GPS_I2C[18] / 10.0,1);
+                      }
+
+
+                    Serial.print("; P= ");
+                    if (pole_GPS_I2C[17] == 255 or GPS_alt > 10000)
+                      {
+                        Serial.print("99.99 (Err)");
+                      }
+                    else
+                      {
+                        Serial.print(pole_GPS_I2C[17] / 10.0,1);
+                      }
+        
+                    Serial.print("; V= ");
+                    if (pole_GPS_I2C[19] == 255 or GPS_alt > 10000)
                       {
                         Serial.println("99.99 (Err)");
                       }
                     else
                       {
-                        Serial.println(pole_GPS_I2C[18] / 10.0);
+                        Serial.println(pole_GPS_I2C[19] / 10.0,1);
                       }
+        
         
                     Serial.print("GPS date time (UTC): ");
                     if (pole_GPS_I2C[11] < 10)  Serial.print('0');
@@ -1636,18 +1691,44 @@ void tajne_funkce(void)                                                         
                     Serial.print("GPS OK cnt: ");
                     Serial.println(pole_GPS_I2C[8]);
         
-                    Serial.print("GPS status: ");
-                    Serial.print(pole_GPS_I2C[19]);
-                    Serial.print("  (data: ");
-                    if ((pole_GPS_I2C[19] & 0b00000001) == 1) Serial.print("OK");
-                    else                                      Serial.print("--");
+                    Serial.print("GPS status: 0b");
+
+                    for (int16_t b = 7; b >= 4 ; b--)                                        // rozlozeni hodnoty na jednotive bity kvuli spravnemu zarovnani (vypisuji se jen horni 4 bity)
+                      {
+                        if (bitRead(pole_GPS_I2C[21],b) == false)      Serial.print('0');
+                        else                                           Serial.print('1');
+                      }
+
+                    Serial.print("####   (Filter: ");                                        // znaky # signalizuji nezobrazene spodni bity (pocet satelitu)
+                    if ((pole_GPS_I2C[21] & 0b11000000) == 0b11000000)                       // filtrovani je vypnute
+                      {
+                        Serial.print("OFF");
+                      }
+                    else
+                      {
+                        if (GPS_lat <= 180000000UL)                                          // jsou k dispozici nejake realne souradnice
+                          {
+                            if ((pole_GPS_I2C[21] & 0b11000000) == 0b00000000) Serial.print("OK ");  // analyza probiha primo desce SQM-GPS na zaklade vyhodnocovani filtru
+                            if ((pole_GPS_I2C[21] & 0b11000000) == 0b01000000) Serial.print("WAR");
+                            if ((pole_GPS_I2C[21] & 0b11000000) == 0b10000000) Serial.print("BAD");
+                          }
+                        else
+                          {
+                            Serial.print("---");                                             // nejsou souradnice, filtry se nevyhodnocuji
+                          }
+                      }
                     Serial.print(" ; Time_SET: ");
-                    if ((pole_GPS_I2C[19] & 0b00000010) == 2) Serial.print("ON");
-                    else                                      Serial.print("OFF");
+                    if ((pole_GPS_I2C[21] & 0b00100000) == 0b00100000) Serial.print("ON");   // casovy udaj je ve zpravach dostupny
+                    else                                               Serial.print("OFF");
+
+                    
+                    Serial.print(" ; Data: ");
+                    if ((pole_GPS_I2C[21] & 0b00010000) == 0b00010000) Serial.print("OK");   // pole pro klouzave prumerovani naplneno
+                    else                                               Serial.print("--");
+
     
-                    if ((pole_GPS_I2C[19] & 0b00000100) == 4) Serial.print(" ; Int.");
-                    else                                      Serial.print(" ; Ext.");
-    
+//ZRUSENO                    if ((pole_GPS_I2C[21] & 0b00000100) == 4) Serial.print(" ; Int.");
+//ZRUSENO                    else                                      Serial.print(" ; Ext.");
                     
                     Serial.println(')');
         
@@ -1661,9 +1742,9 @@ void tajne_funkce(void)                                                         
                     Serial.print(' ');
                     gps_NMEA(0);
                     Serial.print(' ');
-                    gps_NMEA(1);
-                    
-
+                    gps_NMEA(1);                    
+                    Serial.print(' ');
+                    gps_NMEA(4);
                   }
                 else
                   {
@@ -1775,6 +1856,7 @@ void tajne_funkce(void)                                                         
             H_par2 = par2;                                                      // docasne se poznamena prvni parametr pro typ funkce 'H', ktera se da spoustet jednodussim prikazem 
             I_par2 = par2;                                                      // docasne se poznamena prvni parametr pro typ funkce 'I', ktera se da spoustet jednodussim prikazem 
 
+            if (typ_souboru == 'E' and par2 == 0) par2 = 701;                   // vypis zalohovane SYS_MEM se bez parametru nastavuje na cely soubor (701 radek)
             
             if (par2 == 0) par2 = 50;                                            // povolene minimum poctu radek je 1. Kdyz je zadana nula nebo nic, nastavi se defaultne 50 radek
                                                                                  // pro typy napoveda '?', vypis trasovaciho souboru 'H' a kalibrace 'I' se vypisuje vzdycky cely obsah souboru
@@ -1891,6 +1973,7 @@ void tajne_funkce(void)                                                         
         {
           SD_sysMEM_WRITE();
         } 
+        
 
       if (podfunkce == USB_fce_3_25)                                             //  "@O" Obnoveni systemovych parametru z karty
         {
@@ -2358,7 +2441,8 @@ void ser_napoveda3(void)
     Serial.println(lng242);                                                      //  Serial.println("@Gz nn       ... domaci zimni casova zona");
     Serial.println(lng243);                                                      //  Serial.println("@Gl nn       ... domaci letni casova zona");
     Serial.println(lng246);                                                      //  Serial.println("@Gp SEC SELC ... textovy popis pro zimni a letni casovou zonu");
-
+    Serial.println(lng386);                                                      //  Serial.println("@Gf n        ... vypnout (0) nebo zapnout (1) filtrovani souradnic");
+       
     Serial.println(lng209);                                                      //  Serial.println("@S n         ... rychlost seriove komunikace (0=9600; 1=19200; 2=38400; 3=115200)");  
     Serial.println(lng222);                                                      //  Serial.println("@P           ... povolit/zakazat pipani  
     Serial.println(lng322);                                                      //  Serial.println("     @Pb (B) ... zakazat (povolit) pipani pro signalizaci baterie");

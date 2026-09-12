@@ -70,6 +70,7 @@ kt               ... ?k  ... kalibracni mereni teploty (vystup bez korekce)
 @Gz nn           ... ?@G ... domaci zimni casova zona
 @Gl nn           ... ?@G ... domaci letni casova zona
 @Gp SEC SELC     ... ?@G ... textovy popis pro zimni a letni casovou zonu
+@Gf n            ... ?@G ... zapnout nebo vypnout filtrovani GPS souradnic do GPX souboru
 @S n             ... ?@S ... rychlost seriove komunikace (0=9600; 1=19200; 2=38400; 3=115200)
 @P               ... ?@P ... zakazat / povolit pipani
      @Pb (B)     ... ?@P ... zakazat (povolit) pipani pro signalizaci baterie

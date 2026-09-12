@@ -384,8 +384,8 @@ char ssm_hlavicka[]     = "    datum   ;  zapad Sl. ; azimut ; AS konec ; DS zac
 #define lng357    ".gpx' ZAPNUTO."
 #define lng358    "Trasovani do GPX souboru vypnuto."
 #define lng383    "Celkovy pocet GPS bodu v souboru: "
-#define lng360    "pocet GPS bodu: "            // zapis poznamky do GPX souboru. Musi byt dodrzena delka textu.
-#define lng361    "prumery  "                   // zapis nazvu waypointu do GPX souboru. Musi byt dodrzena delka textu.
+#define lng360    "pocet GPS bodu: "            // zapis poznamky do GPX souboru. Musi byt dodrzena delka textu 16 znaku.
+#define lng361    "prumery  "                   // zapis nazvu waypointu do GPX souboru. Musi byt dodrzena delka textu 9 znaku.
 #define lng362    "@A l,f,o     ... automaticke odesilani zaznamu do seriove linky (bez vyzadani)"
 #define lng363    "   Linka:    "
 #define lng364    " USB"
@@ -409,7 +409,10 @@ char ssm_hlavicka[]     = "    datum   ;  zapad Sl. ; azimut ; AS konec ; DS zac
 #define lng382    "Zapnutim modbusu bylo vypnuto automaticke odesilani zaznamu pres RS485"
 #define lng384    "[V] (nyni na USB)"
 #define lng385    "*e aaa       ... cteni 1 bajtu z EEPROM"
-// pokracovat:  #define lng386
+#define lng386    "@Gf n        ... vypnout (0) nebo zapnout (1) filtrovani souradnic"
+#define lng387    "Filtrovani souradnic pro GPX soubor zapnute"
+#define lng388    "Filtrovani souradnic pro GPX soubor vypnute"
+// pokracovat:  #define lng389
 
 
 // textove popisky do testovacich funkci
@@ -659,6 +662,7 @@ char hlavicka_E10[] =       "  adr. ;        sek 1970       ;  teplota  ;  vlhko
 #define USB_fce_3_21          'z'             // ... @Gz = nastaveni domaci casove zony pro "zimni" cas
 #define USB_fce_3_22          'l'             // ... @Gl = nastaveni domaci casove zony pro "letni" cas
 #define USB_fce_3_23          'p'             // ... @Gp = nastaveni textovych popisku pro zimni a letni cas
+#define USB_fce_3_70          'f'             // ... @Gf = vypnuti nebo zapnuti filtrovani souradnic 
 #define USB_fce_3_12 'S'                      // ... @S = nastaveni rychlosti seriove komunikace
 #define USB_fce_3_15 '>'                      // ... @> = vypis souboru z SD karty do seriove linky
 #define USB_fce_3_16 'h'                      // ... @h = vypnuti zapisu informaci o nastaveni RTC obvodu do souboru "RTC_set.csv
@@ -706,7 +710,7 @@ char hlavicka_E10[] =       "  adr. ;        sek 1970       ;  teplota  ;  vlhko
 #define USB_fce_3_66                      'Z' // ...       @PZ zapnout pipnuti pri zapnuti
 #define USB_fce_3_64 'N'                      // ... @N nn = nastaveni elevace Slunce pro definovatelny soumrak
 #define USB_fce_3_69 'A'                      // ... @A l,i,f,o = zapinani a vypinani rezimu automatickeho odesialni dat do seriove linky
-// pokracovat indexem 3_70 #define USB_fce_3_70
+// pokracovat indexem 3_71 #define USB_fce_3_71
 
 
 #define USB_fce_4_01 'I'                      // ... %I     ... detailni informace
@@ -1412,7 +1416,7 @@ char ssm_hlavicka[]     = "    date    ;   Sunset   ;  azim. ;  AD end  ;  DD be
 #define lng358    "Tracking to GPX file is off."
 #define lng383    "Count of GPS points in the GPX file: "
 #define lng360    "GPS points:     "              //  Exactly 16 characters!
-#define lng361    "averages "                    //  waypoint name in GPX file. Exactly 9 characters!
+#define lng361    "averages "                     //  waypoint name in GPX file. Exactly 9 characters!
 #define lng362    "@A l,i,f,o   ... automatic sendings records to any serial line (USB or 485) without request"
 #define lng363    "   Line:    "
 #define lng364    " USB"
@@ -1436,7 +1440,10 @@ char ssm_hlavicka[]     = "    date    ;   Sunset   ;  azim. ;  AD end  ;  DD be
 #define lng382    "By turning on Modbus, automatic sending of records via RS485 was disabled."
 #define lng384    "[V] (on USB now)"
 #define lng385    "*e aaa       ... read 1 byte EEPROM"
-// continue:  #define lng386
+#define lng386    "@Gf n        ... OFF (0) or ON (1) filtering coordinates"
+#define lng387    "Filtering coordinates for GPX file is ON"
+#define lng388    "Filtering coordinates for GPX file is OFF"
+// continue:  #define lng389
 
 
 
@@ -1683,6 +1690,7 @@ char hlavicka_E10[] =       " addr. ;        sec 1970       ; temperat. ;  humid
 #define USB_fce_3_21          'w'             // ... @Gw = home timezone for winter
 #define USB_fce_3_22          's'             // ... @Gs = home timezone for summer
 #define USB_fce_3_23          'd'             // ... @Gd = text desctiption for winter and summer timzone ("@Gd CET CEST")
+#define USB_fce_3_70          'f'             // ... @Gf = filtering coordinates @Gf0=filtering off; @Gf1=filtering on (default)
 #define USB_fce_3_12 'S'                      // ... @S = serial baudrate (USB / RS485)
 #define USB_fce_3_15 '>'                      // ... @> = dump of "RTC_set.csv" to USB serial bus
 #define USB_fce_3_16 'h'                      // ... @h = Switch OFF for write data into file  "RTC_set.csv"
@@ -1730,7 +1738,7 @@ char hlavicka_E10[] =       " addr. ;        sec 1970       ; temperat. ;  humid
 #define USB_fce_3_66                      'P' // ...       @PP beeper ON  - power ON
 #define USB_fce_3_64 'N'                      // ... @N nn = set elevation of Sun for user defined dusk/dawn"
 #define USB_fce_3_69 'A'                      // ... @A l,i,f,o = automatic sendings records to any serial line (USB or RS485)
-// continue by index 3_70 #define USB_fce_3_70
+// continue by index 3_71 #define USB_fce_3_71
 
 
 #define USB_fce_4_01 'I'                      // ... %I     ... detail information

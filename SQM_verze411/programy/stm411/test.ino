@@ -707,6 +707,8 @@ void test_GPS(void)
         gps_NMEA(0);
         Serial.print(' ');
         gps_NMEA(1);
+        Serial.print(' ');
+        gps_NMEA(4);
       }
     else
       {

@@ -912,6 +912,8 @@ uint16_t prumeruj_azimuty(void)
 
     int16_t serazene[20];
 
+    if (velikost_pole_prumeru == 1) return pole_azimutu[0];                                // Kdyz se neprumeruje, tak nema cenu se zatezovat matematikou a hned se vrati prvni a jediny prvek v poli
+
     for (uint8_t i = 0; i < velikost_pole_prumeru; i++)
       {
         serazene[i] = pole_azimutu[i];
@@ -1041,7 +1043,7 @@ uint16_t prumeruj_azimuty(void)
 
     uint16_t vysledek = (uint16_t)(angle + 0.5);
 
-    // 359.6° -> 360° -> spravne je 0°
+    // 359.6 -> 360 -> spravne je 0
     if (vysledek >= 360)
       {
         vysledek = 0;
@@ -1050,6 +1052,8 @@ uint16_t prumeruj_azimuty(void)
     return vysledek;
   }
 //-------------------------------------------------
+
+
 
 
 
