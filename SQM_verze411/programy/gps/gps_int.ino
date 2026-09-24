@@ -4,7 +4,7 @@
 // ----------------------------------
 
 
-char verzeSW[] = "2026-09-12..INT";                        // 15 znaku popisu verze SW
+char verzeSW[] = "2026-09-19..INT";                        // 15 znaku popisu verze SW
 //  POZOR!
 //       V Arduino IDE nastavit hardware (soubor boards.txt) na 4MHz krystal
 //       Po nahrani prelozeneho programu pak upravit FUSE:
@@ -29,7 +29,7 @@ char verzeSW[] = "2026-09-12..INT";                        // 15 znaku popisu ve
 //     ze LED1 blika s vyrazne delsim rozsvicenym stavem. Po prepnuti faze se pak usetri trochu energie a snizi celkove vyzarovani svetla z SQM.
 //     Prepnuti faze je signalizovano rychlym zablikanim LED1.
 // 3 signalizacni LEDky informuji o stavu GPS modulu:
-//   LED1 - prepina se podle prave zpracovavane vety (GxRMC nesviti / GxGGA sviti) -  blikani je spravny stav, modul NEO-6M vysila obe zpravy
+//   LED1 - prepina se podle prave zpracovavane vety -  blikani je spravny stav, modul NEO-6M vysila 
 //   LED2 - stav prijmu datumu a casu (cas neni k dispozici - sviti / cas je k dispozici - zhasnuto)
 //   LED3 - dostupnost souradnic 
 //                     sviti = souradnice jeste nejsou k dispozici, neni zafixovano ani na jeden satelit
@@ -38,7 +38,7 @@ char verzeSW[] = "2026-09-12..INT";                        // 15 znaku popisu ve
 //   Spravny stav je tedy takovy, ze blika LED1 a ostatni LED jsou zhasnute.
 //   V pripade, ze blika LED1 a LED2 je zhasnuta, dojde pri mereni jasu automaticky k serizeni casu v RTC na hlavni desce SQM-BAS. 
 
-// Data se do SQM odesilaji pomoci 32 8-bitovych registru 
+// Data se do SQM odesilaji pomoci 39 8-bitovych registru 
 // priklad exportnich dat:
 //  0 ---  8        prumer LAT (pro severni polokouli zvetseny o 90 stupnu)
 //  1 ---  79
@@ -103,6 +103,7 @@ char verzeSW[] = "2026-09-12..INT";                        // 15 znaku popisu ve
 //
 // 38 ---  bitova znacka ktera udava, ktery filtr kvality souradnic byl aktivovany
 //
+// 39 --- skutecny pocet satelitu (ve status registru je pocet omezeny jen na 4 bity, tady je skutecny pocet)
 //
 //   Na zvlastni pozadavek odeslany pres I2C sbernici (prikazy 50 az 55, 60 az 65 a 90 az 95) je mozne si vyzadat i kompletni
 //           obsah poslednich NMEA vet GxRMC, GxGGA a GxGSA. Vety se zpatky do SQM odesilaji po 15 znacich.
@@ -285,7 +286,7 @@ const PROGMEM byte jeden_Hz[]         = { 0xB5, 0x62, 0x06, 0x08, 0x06, 0x00,   
 const PROGMEM byte SAVE_EEPROM[]      = { 0xB5, 0x62, 0x06, 0x09, 0x0D, 0x00,   0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x17, 0x31, 0xBF};
 const PROGMEM byte hot_start[]        = { 0xB5, 0x62, 0x06, 0x04, 0x04, 0x00,   0x00, 0x00, 0x02, 0x00, 0x10, 0x68};
 
-char verzeHW[] = "               ";                     // 15 znaku popisu verze (uklada se do EEPROM pri zakladnim konfiguraci desky a pak se pri kazdem startu nacita z EEPROM)
+char verzeHW[] = "               ";                     // 15 znaku popisu verze (uklada se do EEPROM pri zakladni konfiguraci desky a pak se pri kazdem startu nacita z EEPROM)
 
 
 //======================================================================================================================
@@ -382,12 +383,12 @@ void setup(void)
     LED3(true);
     delay(500);
 
-    if (filtr_ON_OFF == 1)  EXPORT_pole[21] = 0b00000000;                                        // po zapnuti se status registr naplni hodnotami podle toho, jestli je filtrovani zapnute, nebo vypnute
+    if (filtr_ON_OFF == 1)  EXPORT_pole[21] = 0b10000000;                                        // po zapnuti se status registr naplni hodnotami podle toho, jestli je filtrovani zapnute, nebo vypnute
     else                    EXPORT_pole[21] = 0b11000000;
                             //                  ||||^^^^--- pocet satelitu = 0
                             //                  |||^------- neni zaplneno pole pro klouzaky
                             //                  ||^-------- neni dostupny cas
-                            //                  ^^--------- kvalita souradnic BAD ('11'=OFF / '01' nebo '10'=WAR / '00'=BAD)
+                            //                  ^^--------- kvalita souradnic ('11'=OFF / '01'=WAR  /  '10'=BAD / '00'=OK)
 
     EXPORT_pole[20] = 0;                                                                         // rychlost (SoG) se pri startu nastavi na 0 km/h (defaultne by byla I2C hodnota 255 a to je pres 130km/h)
 
@@ -910,7 +911,9 @@ void zpracuj_vetu_GxGGA(void)
             pocet_satelitu =                  (rozlozeny_pole[7][0] - 48) * 10;                  // desitky satelitu
             pocet_satelitu = pocet_satelitu + (rozlozeny_pole[7][1] - 48)     ;                  // jednotky satelitu
 
-    
+            if (pocet_satelitu > 15) pocet_satelitu = 15;                                        // U vicesystemovych GNSS prijimacu muze byt v dosahu vice nez 15 satelitu.
+                                                                                                 // Ve status registru jsou pro pocet satilitu dostupne jen 4 bity.
+                                                                                                 //  Aby nedoslo k prekroceni, musi se vyssi pocet satelitu omezit na tyto 4 bity.
 
             EXPORT_pole[21] = (EXPORT_pole[21] & 0b11110000) | pocet_satelitu;                   // maximalne by jich melo byt 12 (to se vejde do 4 bitu statusoveho registru)
     
